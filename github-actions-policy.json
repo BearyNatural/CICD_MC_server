@@ -113,6 +113,27 @@
                 "logs:PutRetentionPolicy"
             ],
             "Resource": "arn:aws:logs:*:*:log-group:/ecs/minecraft*"
+        },
+        {
+            "Sid": "ElasticLoadBalancingAccess",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:CreateLoadBalancer",
+                "elasticloadbalancing:DeleteLoadBalancer",
+                "elasticloadbalancing:DescribeLoadBalancers",
+                "elasticloadbalancing:CreateTargetGroup",
+                "elasticloadbalancing:DeleteTargetGroup",
+                "elasticloadbalancing:DescribeTargetGroups",
+                "elasticloadbalancing:CreateListener",
+                "elasticloadbalancing:DeleteListener",
+                "elasticloadbalancing:DescribeListeners",
+                "elasticloadbalancing:RegisterTargets",
+                "elasticloadbalancing:DeregisterTargets",
+                "elasticloadbalancing:ModifyTargetGroup",
+                "elasticloadbalancing:AddTags",
+                "elasticloadbalancing:RemoveTags"
+            ],
+            "Resource": "*"
         }
     ]
 }

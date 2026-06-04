@@ -124,7 +124,7 @@ jobs:
           fi
 
           echo "RESOLVED_TEMPLATE_PATH=$RESOLVED_TEMPLATE" >> "$GITHUB_ENV"
-          echo "RESOLVED_FREEDNS_HOSTNAME=$RESOLVED_DNS" >> "$GITHUB_ENV"
+          echo "RESOLVED_DNS_HOSTNAME=$RESOLVED_DNS" >> "$GITHUB_ENV"
           echo "RESOLVED_VPC_ID=$RESOLVED_VPC" >> "$GITHUB_ENV"
           echo "RESOLVED_SUBNET_ID=$RESOLVED_SUBNET" >> "$GITHUB_ENV"
           echo "RESOLVED_MINECRAFT_IMAGE_TAG=$RESOLVED_MINECRAFT_IMAGE_TAG" >> "$GITHUB_ENV"
@@ -192,7 +192,7 @@ jobs:
 
           PARAMS=(
             "ParameterKey=ServerState,ParameterValue=${{ github.event.inputs.server_state_on_create }}"
-            "ParameterKey=FreeDnsHostname,ParameterValue=$FREEDNS_HOSTNAME_RESOLVED"
+            "ParameterKey=DnsHostname,ParameterValue=$DNS_HOSTNAME_RESOLVED"
             "ParameterKey=ECSClusterName,ParameterValue=$STACK_NAME"
             "ParameterKey=VpcId,ParameterValue=$VPC_ID"
             "ParameterKey=SubnetId,ParameterValue=$SUBNET_ID"
@@ -316,8 +316,8 @@ jobs:
 
           if [ "${PUBLIC_IP:-unavailable}" != "unavailable" ]; then
             HOSTNAME="ec2-${PUBLIC_IP//./-}.${{ env.AWS_REGION }}.compute.amazonaws.com"
-            if [ -n "${RESOLVED_FREEDNS_HOSTNAME:-}" ]; then
-              MSG="Minecraft stack '${STACK_NAME}' started.\nMinecraft address: ${RESOLVED_FREEDNS_HOSTNAME}:25565\nCurrent IP: ${PUBLIC_IP}:25565\nHost DNS updated in FreeDNS."
+            if [ -n "${RESOLVED_DNS_HOSTNAME:-}" ]; then
+              MSG="Minecraft stack '${STACK_NAME}' started.\nMinecraft address: ${RESOLVED_DNS_HOSTNAME}:25565\nCurrent IP: ${PUBLIC_IP}:25565\nHost DNS updated in DNS."
             else
               MSG="Minecraft stack '${STACK_NAME}' started.\nIP: ${PUBLIC_IP}:25565\nHostname: ${HOSTNAME}"
             fi

@@ -246,7 +246,20 @@ jobs:
           if ! aws cloudformation update-stack \
             --stack-name "$STACK_NAME" \
             --use-previous-template \
-            --parameters ParameterKey=ServerState,ParameterValue=Running \
+            --parameters \
+              ParameterKey=ServerState,ParameterValue=Stopped \
+              ParameterKey=SubnetId,UsePreviousValue=true \
+              ParameterKey=VpcId,UsePreviousValue=true \
+              ParameterKey=ECSClusterName,UsePreviousValue=true \
+              ParameterKey=MinecraftImageTag,UsePreviousValue=true \
+              ParameterKey=Memory,UsePreviousValue=true \
+              ParameterKey=Cpu,UsePreviousValue=true \
+              ParameterKey=Seed,UsePreviousValue=true \
+              ParameterKey=Whitelist,UsePreviousValue=true \
+              ParameterKey=AdminPlayerNames,UsePreviousValue=true \
+              ParameterKey=LogGroupName,UsePreviousValue=true \
+              ParameterKey=DnsHostname,UsePreviousValue=true \
+              ParameterKey=DnsUpdateUrl,UsePreviousValue=true \
             --capabilities CAPABILITY_NAMED_IAM; then
             echo "No changes to apply or start update failed. Checking status..."
           fi
@@ -449,7 +462,20 @@ jobs:
           if ! aws cloudformation update-stack \
             --stack-name "$STACK_NAME" \
             --use-previous-template \
-            --parameters ParameterKey=ServerState,ParameterValue=Stopped \
+            --parameters \
+              ParameterKey=ServerState,ParameterValue=Stopped \
+              ParameterKey=SubnetId,UsePreviousValue=true \
+              ParameterKey=VpcId,UsePreviousValue=true \
+              ParameterKey=ECSClusterName,UsePreviousValue=true \
+              ParameterKey=MinecraftImageTag,UsePreviousValue=true \
+              ParameterKey=Memory,UsePreviousValue=true \
+              ParameterKey=Cpu,UsePreviousValue=true \
+              ParameterKey=Seed,UsePreviousValue=true \
+              ParameterKey=Whitelist,UsePreviousValue=true \
+              ParameterKey=AdminPlayerNames,UsePreviousValue=true \
+              ParameterKey=LogGroupName,UsePreviousValue=true \
+              ParameterKey=DnsHostname,UsePreviousValue=true \
+              ParameterKey=DnsUpdateUrl,UsePreviousValue=true \
             --capabilities CAPABILITY_NAMED_IAM; then
             echo "No updates to apply or stop update failed. Checking status..."
           fi

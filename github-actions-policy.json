@@ -63,7 +63,15 @@
             "Action": [
                 "elasticfilesystem:CreateFileSystem",
                 "elasticfilesystem:DeleteFileSystem",
+                "elasticfilesystem:DescribeBackupPolicy",
                 "elasticfilesystem:DescribeFileSystems",
+                "elasticfilesystem:DescribeFileSystemPolicy",
+                "elasticfilesystem:DescribeLifecycleConfiguration",
+                "elasticfilesystem:DescribeMountTargetSecurityGroups",
+                "elasticfilesystem:DescribeReplicationConfigurations",
+                "elasticfilesystem:DescribeTags",
+                "elasticfilesystem:PutFileSystemPolicy",
+                "elasticfilesystem:PutLifecycleConfiguration",
                 "elasticfilesystem:CreateMountTarget",
                 "elasticfilesystem:DeleteMountTarget",
                 "elasticfilesystem:DescribeMountTargets"
@@ -99,9 +107,16 @@
                 "iam:AttachRolePolicy",
                 "iam:DetachRolePolicy",
                 "iam:GetRole",
-                "iam:PassRole"
+                "iam:PassRole",
+                "iam:TagRole",
+                "iam:UntagRole"
             ],
-            "Resource": "arn:aws:iam::*:role/minecraft*"
+            "Resource": [
+                "arn:aws:iam::*:role/minecraft*",
+                "arn:aws:iam::*:role/*-ExecutionRole-*",
+                "arn:aws:iam::*:role/*-ecs-*",
+                "arn:aws:iam::*:role/GitHubActionsOIDCRole"
+            ]
         },
         {
             "Sid": "CloudWatchAccess",

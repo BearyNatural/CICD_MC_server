@@ -1,4 +1,4 @@
-# CICD Minecraft Server
+# CICD Minecraft Server - WIP
 
 Automated CloudFormation stack management for Minecraft servers on AWS ECS Fargate, controlled via GitHub Actions with Discord notifications.
 

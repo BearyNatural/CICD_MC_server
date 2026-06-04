@@ -28,8 +28,8 @@ on:
         required: false
         default: "CFN_FargateServer.yaml"
         type: string
-      freeddns_hostname:
-        description: "Optional stable Minecraft hostname (for Discord message), e.g. mc.example.mooo.com"
+      dns_hostname:
+        description: "Stable Minecraft hostname, e.g. minecraft.bearynatural.dev"
         required: false
         default: "minecraft.bearynatural.dev"
         type: string
@@ -68,7 +68,6 @@ env:
   AWS_REGION: ap-southeast-2
   ROLE_NAME: GitHubActionsOIDCRole
   ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  FREEDNS_UPDATE_URL: ${{ secrets.FREEDNS_UPDATE_URL }}
 
 jobs:
   control-stack:
@@ -94,7 +93,7 @@ jobs:
 
           PROFILE='${{ github.event.inputs.stack_config_profile }}'
           INPUT_TEMPLATE='${{ github.event.inputs.template_path }}'
-          INPUT_DNS='${{ github.event.inputs.freeddns_hostname }}'
+          INPUT_DNS='${{ github.event.inputs.dns_hostname }}'
           INPUT_VPC='${{ github.event.inputs.vpc_id }}'
           INPUT_SUBNET='${{ github.event.inputs.subnet_id }}'
 
@@ -112,7 +111,7 @@ jobs:
 
           if [ -f "stack-config.json" ]; then
             RESOLVED_TEMPLATE=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("template_path","") or ""))' "$PROFILE" "$INPUT_TEMPLATE")
-            RESOLVED_DNS=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("freeddns_hostname","") or ""))' "$PROFILE" "$INPUT_DNS")
+            RESOLVED_DNS=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("dns_hostname","") or ""))' "$PROFILE" "$INPUT_DNS")
             RESOLVED_VPC=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("vpc_id","") or ""))' "$PROFILE" "$INPUT_VPC")
             RESOLVED_SUBNET=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("subnet_id","") or ""))' "$PROFILE" "$INPUT_SUBNET")
             RESOLVED_MINECRAFT_IMAGE_TAG=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("minecraft_image_tag","") or ""))' "$PROFILE")
@@ -152,7 +151,7 @@ jobs:
           fi
 
           TEMPLATE_PATH="${RESOLVED_TEMPLATE_PATH:-${{ github.event.inputs.template_path }}}"
-          FREEDNS_HOSTNAME_RESOLVED="${RESOLVED_FREEDNS_HOSTNAME:-${{ github.event.inputs.freeddns_hostname }}}"
+          DNS_HOSTNAME_RESOLVED="${RESOLVED_DNS_HOSTNAME:-${{ github.event.inputs.dns_hostname }}}"
           VPC_ID="${RESOLVED_VPC_ID:-${{ github.event.inputs.vpc_id }}}"
           SUBNET_ID="${RESOLVED_SUBNET_ID:-${{ github.event.inputs.subnet_id }}}"
 
@@ -229,6 +228,15 @@ jobs:
 
           aws cloudformation wait stack-create-complete --stack-name "$STACK_NAME"
 
+          ELB_DNS=$(aws cloudformation describe-stacks \
+            --stack-name "$STACK_NAME" \
+            --query "Stacks[0].Outputs[?OutputKey=='LoadBalancerDNS'].OutputValue" \
+            --output text)
+
+          echo "ELB_DNS=$ELB_DNS" >> "$GITHUB_ENV"
+
+          echo "Load Balancer DNS: $ELB_DNS"
+
       - name: Start selected stack
         if: ${{ github.event.inputs.action == 'start' }}
         run: |
@@ -254,81 +262,19 @@ jobs:
           if [ "$STATUS" = "UPDATE_IN_PROGRESS" ] || [ "$STATUS" = "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]; then
             aws cloudformation wait stack-update-complete --stack-name "$STACK_NAME"
           fi
-
-      - name: Get public IP for login details
+      - name: Get Load Balancer DNS
         if: ${{ github.event.inputs.action == 'start' || (github.event.inputs.action == 'create' && github.event.inputs.server_state_on_create == 'Running') }}
         run: |
           set -euo pipefail
-          CLUSTER_NAME=$(aws cloudformation describe-stacks \
+
+          ELB_DNS=$(aws cloudformation describe-stacks \
             --stack-name "$STACK_NAME" \
-            --query "Stacks[0].Outputs[?OutputKey=='ECSClusterName'].OutputValue" \
+            --query "Stacks[0].Outputs[?OutputKey=='LoadBalancerDNS'].OutputValue" \
             --output text)
 
-          if [ -z "$CLUSTER_NAME" ] || [ "$CLUSTER_NAME" = "None" ]; then
-            echo "Could not resolve ECS cluster from stack outputs."
-            echo "PUBLIC_IP=unavailable" >> "$GITHUB_ENV"
-            exit 0
-          fi
+          echo "ELB_DNS=$ELB_DNS" >> "$GITHUB_ENV"
 
-          echo "Looking for running ECS task in cluster: $CLUSTER_NAME"
-          TASK_ARN=""
-          for _ in $(seq 1 20); do
-            TASK_ARN=$(aws ecs list-tasks \
-              --cluster "$CLUSTER_NAME" \
-              --desired-status RUNNING \
-              --query "taskArns[0]" \
-              --output text)
-            if [ -n "$TASK_ARN" ] && [ "$TASK_ARN" != "None" ]; then
-              break
-            fi
-            sleep 15
-          done
-
-          if [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; then
-            echo "No running ECS task found yet."
-            echo "PUBLIC_IP=unavailable" >> "$GITHUB_ENV"
-            exit 0
-          fi
-
-          ENI_ID=$(aws ecs describe-tasks \
-            --cluster "$CLUSTER_NAME" \
-            --tasks "$TASK_ARN" \
-            --query "tasks[0].attachments[0].details[?name=='networkInterfaceId'].value" \
-            --output text)
-
-          PUBLIC_IP=$(aws ec2 describe-network-interfaces \
-            --network-interface-ids "$ENI_ID" \
-            --query "NetworkInterfaces[0].Association.PublicIp" \
-            --output text)
-
-          if [ -z "$PUBLIC_IP" ] || [ "$PUBLIC_IP" = "None" ]; then
-            echo "PUBLIC_IP=unavailable" >> "$GITHUB_ENV"
-          else
-            echo "PUBLIC_IP=$PUBLIC_IP" >> "$GITHUB_ENV"
-          fi
-
-      - name: Update FreeDNS record
-        if: ${{ github.event.inputs.action == 'start' || (github.event.inputs.action == 'create' && github.event.inputs.server_state_on_create == 'Running') }}
-        run: |
-          set -euo pipefail
-          if [ -z "${FREEDNS_UPDATE_URL:-}" ]; then
-            echo "FREEDNS_UPDATE_URL secret not set; skipping FreeDNS update."
-            exit 0
-          fi
-
-          if [ "${PUBLIC_IP:-unavailable}" = "unavailable" ]; then
-            echo "No public IP available yet; skipping FreeDNS update."
-            exit 0
-          fi
-
-          UPDATE_URL="${FREEDNS_UPDATE_URL//\{ip\}/$PUBLIC_IP}"
-          echo "Updating FreeDNS record..."
-          RESPONSE=$(curl -fsS "$UPDATE_URL")
-          echo "FreeDNS response: $RESPONSE"
-
-          if [ -n "${RESOLVED_FREEDNS_HOSTNAME:-}" ]; then
-            echo "FREEDNS_HOSTNAME=${RESOLVED_FREEDNS_HOSTNAME}" >> "$GITHUB_ENV"
-          fi
+          echo "Load Balancer DNS: $ELB_DNS"
 
       - name: Notify Discord (create)
         if: ${{ github.event.inputs.action == 'create' }}
@@ -340,18 +286,20 @@ jobs:
           fi
 
           STACK_LINK="https://${{ env.AWS_REGION }}.console.aws.amazon.com/cloudformation/home?region=${{ env.AWS_REGION }}#/stacks"
-          if [ "${{ github.event.inputs.server_state_on_create }}" = "Running" ] && [ "${PUBLIC_IP:-unavailable}" != "unavailable" ]; then
-            HOSTNAME="ec2-${PUBLIC_IP//./-}.${{ env.AWS_REGION }}.compute.amazonaws.com"
-            if [ -n "${RESOLVED_FREEDNS_HOSTNAME:-}" ]; then
-              MSG="Created Minecraft stack '${STACK_NAME}'.\nMinecraft address: ${RESOLVED_FREEDNS_HOSTNAME}:25565\nCurrent IP: ${PUBLIC_IP}:25565\nHost DNS updated in FreeDNS.\nAWS Console: ${STACK_LINK}"
-            else
-              MSG="Created Minecraft stack '${STACK_NAME}'.\nServer is running at ${PUBLIC_IP}:25565\nHostname: ${HOSTNAME}\nAWS Console: ${STACK_LINK}"
-            fi
-          else
-            MSG="Created Minecraft stack '${STACK_NAME}'.\nInitial state: ${{ github.event.inputs.server_state_on_create }}\nAWS Console: ${STACK_LINK}"
-          fi
 
-          PAYLOAD=$(MSG="$MSG" python3 -c 'import json, os; print(json.dumps({"content": os.environ["MSG"]}))')
+          DNS_NAME="${RESOLVED_DNS_HOSTNAME:-minecraft.bearynatural.dev}"
+
+          MSG="Created Minecraft stack '${STACK_NAME}'.
+          Initial state: ${{ github.event.inputs.server_state_on_create }}
+
+          Minecraft address:
+          ${DNS_NAME}:25565
+
+          Load balancer DNS:
+          ${ELB_DNS:-not available}
+
+          AWS Console:
+          ${STACK_LINK}"
 
           curl -sS -X POST -H "Content-Type: application/json" \
             -d "$PAYLOAD" \

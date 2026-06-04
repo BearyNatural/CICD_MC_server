@@ -24,16 +24,13 @@ Before running any workflow/scripts, go to **Settings** -> **Secrets and variabl
 | Secret Name | Value | Notes |
 |-------------|-------|-------|
 | `AWS_ACCOUNT_ID` | Your 12-digit AWS account ID | Found in AWS Console top-right |
-| `DISCORD_WEBHOOK_URL` | Your Discord webhook URL | [Create webhook](https://discord.com/developers/applications) |
-| `FREEDNS_UPDATE_URL` | FreeDNS direct update URL | Keep private. You can use a URL with `address={ip}` placeholder. |
+| `DISCORD_WEBHOOK_URL` | Your Discord webhook URL | [Create webhook](https://discord.com/developers/applications) ||
 
-### 2. Configure FreeDNS record (No Route 53 required)
+### 2. Configure DNS record (No Route 53 required)
 
-1. Sign in to FreeDNS and create/choose a subdomain (for example `mc-yourname.mooo.com`).
-2. In the FreeDNS dashboard, open that record and copy the **Direct URL** / update URL.
-3. Save that URL as GitHub secret `FREEDNS_UPDATE_URL`.
-4. Optional but recommended: append `&address={ip}` to the URL so the workflow inserts the live ECS task IP.
-5. When running workflow `create` or `start`, provide `freeddns_hostname` with your player-facing hostname.
+1. Sign in to domain registrar and create/choose a subdomain (for example `mc-yourname.mooo.com`).
+2. In the DNS dashboard, open that record and copy the **Direct URL** / update URL.
+
 
 ### 3. Set Up OIDC + IAM in AWS (CloudFormation only)
 
@@ -67,7 +64,7 @@ aws iam put-role-policy \
    - **stack_name:** `my-minecraft-server`
     - **stack_config_profile:** `default`
    - **template_path:** `CFN_FargateServer.yaml`
-    - **freeddns_hostname:** `mc-yourname.mooo.com`
+    - **dns_hostname:** `mc-yourname.mooo.com`
     - **vpc_id:** optional (leave blank to auto-discover default VPC)
     - **subnet_id:** optional (leave blank to auto-discover subnet)
    - **server_state_on_create:** `Running`

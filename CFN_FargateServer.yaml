@@ -198,6 +198,39 @@ Resources:
           EFSVolumeConfiguration:
             FilesystemId: !GetAtt EFSFileSystem.FileSystemId
 
+  MinecraftNLB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${AWS::StackName}-nlb"
+      Type: network
+      Scheme: internet-facing
+      Subnets:
+        - !Ref SubnetId
+
+  MinecraftTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${AWS::StackName}-tg"
+      Port: 25565
+      Protocol: TCP
+      TargetType: ip
+      VpcId: !Ref VpcId
+      HealthCheckProtocol: TCP
+      HealthCheckPort: traffic-port
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      HealthCheckIntervalSeconds: 30
+
+  MinecraftListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref MinecraftNLB
+      Port: 25565
+      Protocol: TCP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref MinecraftTargetGroup
+
   ECSService:
     Type: AWS::ECS::Service
     Properties:
@@ -209,6 +242,7 @@ Resources:
           - DesiredCapacity
       LaunchType: FARGATE
       TaskDefinition: !Ref TaskDefinition
+      HealthCheckGracePeriodSeconds: 120
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -216,6 +250,10 @@ Resources:
             - !Ref SubnetId
           SecurityGroups:
             - !Ref ECSTaskSecurityGroup
+      LoadBalancers:
+        - TargetGroupArn: !Ref MinecraftTargetGroup
+          ContainerName: minecraft
+          ContainerPort: 25565
 
   S3BackupBucket:
     Type: AWS::S3::Bucket
@@ -281,3 +319,6 @@ Outputs:
       - HasFreeDnsUpdateUrl
       - "true"
       - "false"
+  LoadBalancerDNS:
+    Description: DNS of the load balancer created by the ECS service (visible once service is running)
+    Value: !GetAtt MinecraftNLB.DNSName

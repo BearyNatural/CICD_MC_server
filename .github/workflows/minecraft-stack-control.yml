@@ -29,9 +29,9 @@ on:
         default: "CFN_FargateServer.yaml"
         type: string
       dns_hostname:
-        description: "Stable Minecraft hostname, e.g. minecraft.bearynatural.dev"
+        description: "Optional stable Minecraft hostname override, e.g. minecraft.bearynatural.dev"
         required: false
-        default: "minecraft.bearynatural.dev"
+        default: ""
         type: string
       vpc_id:
         description: "Optional VPC ID override for create action"
@@ -330,16 +330,23 @@ jobs:
             exit 0
           fi
 
-          if [ "${PUBLIC_IP:-unavailable}" != "unavailable" ]; then
-            HOSTNAME="ec2-${PUBLIC_IP//./-}.${{ env.AWS_REGION }}.compute.amazonaws.com"
-            if [ -n "${RESOLVED_DNS_HOSTNAME:-}" ]; then
-              MSG="Minecraft stack '${STACK_NAME}' started.\nMinecraft address: ${RESOLVED_DNS_HOSTNAME}:25565\nCurrent IP: ${PUBLIC_IP}:25565\nHost DNS updated in DNS."
-            else
-              MSG="Minecraft stack '${STACK_NAME}' started.\nIP: ${PUBLIC_IP}:25565\nHostname: ${HOSTNAME}"
-            fi
-          else
-            MSG="Minecraft stack '${STACK_NAME}' started.\nPublic IP not available yet in ECS task metadata."
+          DNS_NAME="${RESOLVED_DNS_HOSTNAME:-${{ github.event.inputs.dns_hostname }}}"
+
+          if [ -z "$DNS_NAME" ]; then
+            DNS_NAME=$(aws cloudformation describe-stacks \
+              --stack-name "$STACK_NAME" \
+              --query "Stacks[0].Outputs[?OutputKey=='MinecraftConnectionHost'].OutputValue | [0]" \
+              --output text)
           fi
+
+          if [ -z "$DNS_NAME" ] || [ "$DNS_NAME" = "None" ] || [ "$DNS_NAME" = "(No DNS hostname configured)" ]; then
+            DNS_NAME=$(aws cloudformation describe-stacks \
+              --stack-name "$STACK_NAME" \
+              --query "Stacks[0].Parameters[?ParameterKey=='DnsHostname'].ParameterValue | [0]" \
+              --output text)
+          fi
+
+          MSG="The Minecraft server has started. Please join the game at \"${DNS_NAME}:25565\"."
 
           PAYLOAD=$(MSG="$MSG" python3 -c 'import json, os; print(json.dumps({"content": os.environ["MSG"]}))')
 

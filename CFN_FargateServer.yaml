@@ -73,8 +73,16 @@ Mappings:
       DesiredCapacity: 0
 
 Conditions:
-  HasFreeDnsHostname: !Not [!Equals [!Ref FreeDnsHostname, ""]]
-  HasFreeDnsUpdateUrl: !Not [!Equals [!Ref FreeDnsUpdateUrl, ""]]
+  HasFreeDnsHostname:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: FreeDnsHostname
+          - ""
+  HasFreeDnsUpdateUrl:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: FreeDnsUpdateUrl
+          - ""
 
 Resources:
   CloudWatchLogGroup:
@@ -194,7 +202,11 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref ECSCluster
-      DesiredCount: !FindInMap [ServerState, !Ref ServerState, DesiredCapacity]
+      DesiredCount:
+        Fn::FindInMap:
+          - ServerState
+          - Ref: ServerState
+          - DesiredCapacity
       LaunchType: FARGATE
       TaskDefinition: !Ref TaskDefinition
       NetworkConfiguration:

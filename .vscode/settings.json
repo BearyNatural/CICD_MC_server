@@ -1,0 +1,29 @@
+{
+    "yaml.validate": true,
+    "yaml.format.enable": true,
+    "yaml.hover": true,
+    "yaml.completion": true,
+    "yaml.customTags": [
+        "!Ref",
+        "!Sub",
+        "!GetAtt",
+        "!FindInMap sequence",
+        "!ImportValue",
+        "!Join",
+        "!Split",
+        "!Select",
+        "!If sequence",
+        "!Equals sequence",
+        "!Not sequence",
+        "!And",
+        "!Or",
+        "!Base64",
+        "!Cidr",
+        "!GetAZs",
+        "!Condition"
+    ],
+    "files.associations": {
+        "**/.github/workflows/*.yml": "yaml",
+        "**/.github/workflows/*.yaml": "yaml"
+    }
+}

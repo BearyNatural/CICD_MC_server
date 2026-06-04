@@ -1,0 +1,28 @@
+{
+    "default": {
+        "template_path": "CFN_FargateServer.yaml",
+        "freeddns_hostname": "minecraft.bearynatural.dev",
+        "vpc_id": "",
+        "subnet_id": "",
+        "minecraft_image_tag": "latest",
+        "memory": "2048",
+        "cpu": "1024",
+        "seed": "5685761492797",
+        "whitelist": "kaylene,BenBenGold",
+        "admin_player_names": "kaylene",
+        "log_group_name": "/ecs/minecraft1"
+    },
+    "dev": {
+        "template_path": "CFN_FargateServer.yaml",
+        "freeddns_hostname": "minecrafttest.bearynatural.dev",
+        "vpc_id": "",
+        "subnet_id": "",
+        "minecraft_image_tag": "latest",
+        "memory": "2048",
+        "cpu": "1024",
+        "seed": "5685761492797",
+        "whitelist": "kaylene,BenBenGold",
+        "admin_player_names": "kaylene",
+        "log_group_name": "/ecs/minecraft_temp"
+    }
+}

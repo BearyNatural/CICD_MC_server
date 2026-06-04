@@ -1,0 +1,271 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Simplified Minecraft Server on ECS Fargate using Default VPC and EFS
+
+Parameters:
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Provide the ID of an existing public subnet from your default VPC
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Provide the ID of the VPC that contains the provided subnet
+
+  ServerState:
+    Type: String
+    Default: Stopped
+    AllowedValues:
+      - Running
+      - Stopped
+    Description: Toggle between 'Running' or 'Stopped' to set ECS desired count.
+
+  ECSClusterName:
+    Type: String
+    Default: minecraft-cluster5
+
+  MinecraftImageTag:
+    Type: String
+    Default: latest
+
+  Memory:
+    Type: String
+    Default: "2048"
+
+  Cpu:
+    Type: String
+    Default: "1024"
+
+  Seed:
+    Type: String
+    Description: The seed used to generate the world
+    Default: "5685761492797"
+
+  Whitelist:
+    Type: String
+    Description: Usernames of your friends kaylene,BenBenGold,GrammaSandra
+    Default: "kaylene,BenBenGold"
+
+  AdminPlayerNames:
+    Type: String
+    Description: Op/Administrator Players
+    Default: "kaylene"
+
+  LogGroupName:
+    Type: String
+    Description: (Optional - An empty value disables this feature)
+    Default: "/ecs/minecraft5"
+
+  FreeDnsHostname:
+    Type: String
+    Description: Optional FreeDNS hostname players use (for example mc.yourdomain.example)
+    Default: ""
+
+  FreeDnsUpdateUrl:
+    Type: String
+    Description: Optional FreeDNS direct update URL. Prefer passing from workflow/secrets instead of storing in stack params.
+    NoEcho: true
+    Default: ""
+
+Mappings:
+  ServerState:
+    Running:
+      DesiredCapacity: 1
+    Stopped:
+      DesiredCapacity: 0
+
+Conditions:
+  HasFreeDnsHostname: !Not [!Equals [!Ref FreeDnsHostname, ""]]
+  HasFreeDnsUpdateUrl: !Not [!Equals [!Ref FreeDnsUpdateUrl, ""]]
+
+Resources:
+  CloudWatchLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref LogGroupName
+      RetentionInDays: 7
+
+  EFSFileSystem:
+    Type: AWS::EFS::FileSystem
+    Properties:
+      PerformanceMode: generalPurpose
+      ThroughputMode: bursting
+
+  ECSTaskSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ECS tasks access
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - FromPort: 25565
+          ToPort: 25565
+          IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+
+  EFSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow NFS access from ECS tasks
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 2049
+          ToPort: 2049
+          SourceSecurityGroupId: !Ref ECSTaskSecurityGroup
+
+  EFSMountTarget:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !GetAtt EFSFileSystem.FileSystemId
+      SubnetId: !Ref SubnetId
+      SecurityGroups:
+        - !Ref EFSSecurityGroup
+
+  Ec2Sg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${AWS::StackName}-ec2"
+      GroupDescription: !Sub "${AWS::StackName}-ec2"
+      SecurityGroupIngress:
+        - FromPort: 25565
+          ToPort: 25565
+          IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref VpcId
+
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ECSClusterName
+
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - arn:aws:iam::aws:policy/AmazonElasticFileSystemClientReadWriteAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: MinecraftFargateTask
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      ContainerDefinitions:
+        - Name: minecraft
+          Image: !Sub "itzg/minecraft-server:${MinecraftImageTag}"
+          Essential: true
+          PortMappings:
+            - ContainerPort: 25565
+              Protocol: tcp
+          Environment:
+            - Name: EULA
+              Value: "TRUE"
+            - Name: SEED
+              Value: !Ref Seed
+            - Name: WHITELIST
+              Value: !Ref Whitelist
+            - Name: OPS
+              Value: !Ref AdminPlayerNames
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroupName
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: minecraft
+          MountPoints:
+            - ContainerPath: /data
+              SourceVolume: minecraftdata
+      Volumes:
+        - Name: minecraftdata
+          EFSVolumeConfiguration:
+            FilesystemId: !GetAtt EFSFileSystem.FileSystemId
+
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      DesiredCount: !FindInMap [ServerState, !Ref ServerState, DesiredCapacity]
+      LaunchType: FARGATE
+      TaskDefinition: !Ref TaskDefinition
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+            - !Ref SubnetId
+          SecurityGroups:
+            - !Ref ECSTaskSecurityGroup
+
+  S3BackupBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${ECSClusterName}-${Seed}"
+
+  BackupTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: MinecraftBackupTask
+      Cpu: "1024"
+      Memory: "2048"
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      ContainerDefinitions:
+        - Name: minecraft-backup
+          Image: amazonlinux
+          Command:
+            - /bin/sh
+            - -c
+            - |
+              yum install -y zip awscli python3-pip && \
+              pip3 install boto3 botocore && \
+              mkdir -p /mnt/backup && \
+              zip -r /mnt/backup/world_$(date +%Y%m%d%H%M%S).zip /data/world && \
+              aws s3 cp /mnt/backup/world_*.zip s3://${ECSClusterName}-${Seed}/
+          Essential: true
+          Environment:
+            - Name: ECSClusterName
+              Value: !Ref ECSClusterName
+            - Name: Seed
+              Value: !Ref Seed
+          MountPoints:
+            - ContainerPath: /data
+              SourceVolume: minecraftdata
+            - ContainerPath: /mnt/backup
+              SourceVolume: minecraftdata
+      Volumes:
+        - Name: minecraftdata
+          EFSVolumeConfiguration:
+            FilesystemId: !GetAtt EFSFileSystem.FileSystemId
+
+Outputs:
+  DNSUpdateInfo:
+    Description: Public IP will be visible under ECS Service task networking tab once task is running.
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/ecs/v2/clusters/${ECSClusterName}/services"
+  ECSClusterName:
+    Description: Name of the ECS cluster
+    Value: !Ref ECSClusterName
+  MinecraftPublicAccess:
+    Description: Subnet to use to access your Minecraft server (port 25565)
+    Value: !Ref SubnetId
+  MinecraftConnectionHost:
+    Description: Use FreeDNS hostname when provided; otherwise connect via current task public IP from ECS console.
+    Value: !If
+      - HasFreeDnsHostname
+      - !Ref FreeDnsHostname
+      - "(No FreeDNS hostname configured)"
+  FreeDnsUpdateConfigured:
+    Description: Indicates whether FreeDNS update URL parameter was set.
+    Value: !If
+      - HasFreeDnsUpdateUrl
+      - "true"
+      - "false"

@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "CloudFormation template to set up OIDC provider and IAM role for GitHub Actions"
+
+Parameters:
+  GitHubOrg:
+    Type: String
+    Description: "GitHub organization or username (e.g., BearyNatural)"
+    AllowedPattern: "^[a-zA-Z0-9-]+$"
+
+  GitHubRepo:
+    Type: String
+    Description: "GitHub repository name (e.g., CICD_MC_server)"
+    AllowedPattern: "^[a-zA-Z0-9-_.]+$"
+
+Resources:
+  GitHubOIDCProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1 # GitHub's OIDC provider thumbprint
+
+  GitHubActionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: GitHubActionsOIDCRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "token.actions.githubusercontent.com:aud": sts.amazonaws.com
+              StringLike:
+                "token.actions.githubusercontent.com:sub": !Sub "repo:${GitHubOrg}/${GitHubRepo}:*"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+      Description: "Role for GitHub Actions OIDC authentication (Minecraft stack management)"
+
+Outputs:
+  OIDCProviderArn:
+    Description: "ARN of the OIDC Provider"
+    Value: !GetAtt GitHubOIDCProvider.Arn
+
+  GitHubActionsRoleArn:
+    Description: "ARN of the GitHub Actions IAM Role"
+    Value: !GetAtt GitHubActionsRole.Arn
+
+  GitHubActionsRoleName:
+    Description: "Name of the GitHub Actions IAM Role"
+    Value: !Ref GitHubActionsRole
+
+  AWSAccountId:
+    Description: "AWS Account ID (for GitHub secret AWS_ACCOUNT_ID)"
+    Value: !Ref AWS::AccountId

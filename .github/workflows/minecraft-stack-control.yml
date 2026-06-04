@@ -247,7 +247,7 @@ jobs:
             --stack-name "$STACK_NAME" \
             --use-previous-template \
             --parameters \
-              ParameterKey=ServerState,ParameterValue=Stopped \
+              ParameterKey=ServerState,ParameterValue=Running \
               ParameterKey=SubnetId,UsePreviousValue=true \
               ParameterKey=VpcId,UsePreviousValue=true \
               ParameterKey=ECSClusterName,UsePreviousValue=true \

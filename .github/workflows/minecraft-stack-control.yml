@@ -301,7 +301,10 @@ jobs:
           AWS Console:
           ${STACK_LINK}"
 
-          curl -sS -X POST -H "Content-Type: application/json" \
+          PAYLOAD=$(MSG="$MSG" python3 -c 'import json, os; print(json.dumps({"content": os.environ["MSG"]}))')
+
+          curl -sS -X POST \
+            -H "Content-Type: application/json" \
             -d "$PAYLOAD" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
@@ -327,7 +330,8 @@ jobs:
 
           PAYLOAD=$(MSG="$MSG" python3 -c 'import json, os; print(json.dumps({"content": os.environ["MSG"]}))')
 
-          curl -sS -X POST -H "Content-Type: application/json" \
+          curl -sS -X POST \
+            -H "Content-Type: application/json" \
             -d "$PAYLOAD" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
@@ -479,7 +483,8 @@ jobs:
 
           PAYLOAD=$(MSG="$MSG" python3 -c 'import json, os; print(json.dumps({"content": os.environ["MSG"]}))')
 
-          curl -sS -X POST -H "Content-Type: application/json" \
+          curl -sS -X POST \
+            -H "Content-Type: application/json" \
             -d "$PAYLOAD" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
@@ -501,8 +506,10 @@ jobs:
           fi
 
           MSG="Minecraft stack '${STACK_NAME}' has been deleted permanently."
+
           PAYLOAD=$(MSG="$MSG" python3 -c 'import json, os; print(json.dumps({"content": os.environ["MSG"]}))')
 
-          curl -sS -X POST -H "Content-Type: application/json" \
+          curl -sS -X POST \
+            -H "Content-Type: application/json" \
             -d "$PAYLOAD" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"

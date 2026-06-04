@@ -107,12 +107,18 @@
                 "iam:AttachRolePolicy",
                 "iam:DetachRolePolicy",
                 "iam:GetRole",
+                "iam:GetRolePolicy",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListRolePolicies",
                 "iam:PassRole",
+                "iam:PutRolePolicy",
+                "iam:DeleteRolePolicy",
                 "iam:TagRole",
                 "iam:UntagRole"
             ],
             "Resource": [
                 "arn:aws:iam::*:role/minecraft*",
+                "arn:aws:iam::*:role/*-idle-shutdown-role",
                 "arn:aws:iam::*:role/*-ExecutionRole-*",
                 "arn:aws:iam::*:role/*-ecs-*",
                 "arn:aws:iam::*:role/GitHubActionsOIDCRole"
@@ -154,6 +160,39 @@
                 "elasticloadbalancing:RemoveTags"
             ],
             "Resource": "*"
+        },
+        {
+            "Sid": "LambdaIdleShutdownAccess",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:CreateFunction",
+                "lambda:DeleteFunction",
+                "lambda:GetFunction",
+                "lambda:GetFunctionConfiguration",
+                "lambda:UpdateFunctionCode",
+                "lambda:UpdateFunctionConfiguration",
+                "lambda:AddPermission",
+                "lambda:RemovePermission",
+                "lambda:GetPolicy",
+                "lambda:TagResource",
+                "lambda:UntagResource"
+            ],
+            "Resource": "arn:aws:lambda:*:*:function:*-idle-shutdown"
+        },
+        {
+            "Sid": "EventBridgeIdleShutdownAccess",
+            "Effect": "Allow",
+            "Action": [
+                "events:PutRule",
+                "events:DeleteRule",
+                "events:DescribeRule",
+                "events:EnableRule",
+                "events:DisableRule",
+                "events:PutTargets",
+                "events:RemoveTargets",
+                "events:ListTargetsByRule"
+            ],
+            "Resource": "arn:aws:events:*:*:rule/*-idle-shutdown"
         }
     ]
 }

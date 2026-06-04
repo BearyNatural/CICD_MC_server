@@ -6,6 +6,7 @@ Automated CloudFormation stack management for Minecraft servers on AWS ECS Farga
 
 - **Create/Start/Stop/Delete** CloudFormation stacks via workflow dispatch
 - **Automatic world backups** to S3 before server shutdown
+- **Idle auto-shutdown** after 20 minutes with no players online
 - **Discord notifications** for all stack operations with login details & backup links
 - **OIDC authentication** - no long-lived AWS credentials stored in GitHub
 
@@ -137,6 +138,12 @@ action: stop
 stack_name: my-server
 include_backup_link: yes
 ```
+
+### Idle Auto-Shutdown
+
+The Minecraft container is configured to stop itself after 20 minutes with no players online. An EventBridge rule then invokes a Lambda function that sets the ECS service desired count to `0`, then updates the CloudFormation stack parameter to `ServerState=Stopped` so future stack updates stay aligned.
+
+This idle shutdown does not run the backup task. Use the manual `stop` workflow action when you want a backup before shutdown.
 
 ### Delete Stack
 

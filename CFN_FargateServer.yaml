@@ -57,6 +57,20 @@ Parameters:
     NoEcho: true
     Default: ""
 
+  AutoStopWhenIdle:
+    Type: String
+    Default: "TRUE"
+    AllowedValues:
+      - "TRUE"
+      - "FALSE"
+    Description: Automatically stop the server task when no players are online.
+
+  AutoStopIdleSeconds:
+    Type: String
+    Default: "1200"
+    AllowedPattern: "^[0-9]+$"
+    Description: Seconds with no players online before the server shuts itself down.
+
 Mappings:
   ServerState:
     Running:
@@ -151,6 +165,150 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonElasticFileSystemClientReadWriteAccess
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
 
+  IdleShutdownLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-idle-shutdown-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: idle-shutdown-cloudformation
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:DescribeStacks
+                  - cloudformation:UpdateStack
+                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*"
+              - Effect: Allow
+                Action:
+                  - ecs:UpdateService
+                Resource: !Sub "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:service/${ECSClusterName}/*"
+              - Effect: Allow
+                Action:
+                  - ecs:DescribeClusters
+                Resource: !GetAtt ECSCluster.Arn
+
+  IdleShutdownFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-idle-shutdown"
+      Runtime: python3.12
+      Handler: index.handler
+      Role: !GetAtt IdleShutdownLambdaRole.Arn
+      Timeout: 60
+      Environment:
+        Variables:
+          STACK_NAME: !Ref AWS::StackName
+          ECS_CLUSTER_NAME: !Ref ECSClusterName
+      Code:
+        ZipFile: |
+          import os
+
+          import boto3
+          from botocore.exceptions import ClientError
+
+          cloudformation = boto3.client("cloudformation")
+          ecs = boto3.client("ecs")
+
+
+          def handler(event, context):
+              containers = event.get("detail", {}).get("containers", [])
+              minecraft = next((c for c in containers if c.get("name") == "minecraft"), None)
+
+              if not minecraft:
+                  return {"status": "ignored", "reason": "not minecraft task"}
+
+              if str(minecraft.get("exitCode")) != "0":
+                  return {"status": "ignored", "reason": "minecraft task did not exit cleanly"}
+
+              service_group = event.get("detail", {}).get("group", "")
+              if not service_group.startswith("service:"):
+                  return {"status": "ignored", "reason": "stopped task was not owned by an ECS service"}
+
+              service_name = service_group.split(":", 1)[1]
+              ecs.update_service(
+                  cluster=os.environ["ECS_CLUSTER_NAME"],
+                  service=service_name,
+                  desiredCount=0,
+              )
+
+              stack_name = os.environ["STACK_NAME"]
+              stack = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]
+              stack_status = stack.get("StackStatus", "")
+              if stack_status.endswith("_IN_PROGRESS"):
+                  return {"status": "ecs_stopped", "reason": f"stack busy: {stack_status}"}
+
+              parameters = stack.get("Parameters", [])
+
+              if any(p["ParameterKey"] == "ServerState" and p.get("ParameterValue") == "Stopped" for p in parameters):
+                  return {"status": "ignored", "reason": "stack already stopped"}
+
+              updated_parameters = []
+              saw_server_state = False
+              for parameter in parameters:
+                  key = parameter["ParameterKey"]
+                  if key == "ServerState":
+                      updated_parameters.append({"ParameterKey": key, "ParameterValue": "Stopped"})
+                      saw_server_state = True
+                  else:
+                      updated_parameters.append({"ParameterKey": key, "UsePreviousValue": True})
+
+              if not saw_server_state:
+                  updated_parameters.append({"ParameterKey": "ServerState", "ParameterValue": "Stopped"})
+
+              try:
+                  response = cloudformation.update_stack(
+                      StackName=stack_name,
+                      UsePreviousTemplate=True,
+                      Parameters=updated_parameters,
+                      Capabilities=["CAPABILITY_NAMED_IAM"],
+                  )
+              except ClientError as error:
+                  message = str(error)
+                  if "No updates are to be performed" in message:
+                      return {"status": "ecs_stopped", "reason": "no stack update needed"}
+                  raise
+
+              return {"status": "ecs_stopped", "stack_id": response["StackId"]}
+
+  IdleShutdownTaskStoppedRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${AWS::StackName}-idle-shutdown"
+      EventPattern:
+        source:
+          - aws.ecs
+        detail-type:
+          - ECS Task State Change
+        detail:
+          clusterArn:
+            - !GetAtt ECSCluster.Arn
+          lastStatus:
+            - STOPPED
+          containers:
+            name:
+              - minecraft
+      Targets:
+        - Arn: !GetAtt IdleShutdownFunction.Arn
+          Id: IdleShutdownFunction
+
+  IdleShutdownInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref IdleShutdownFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt IdleShutdownTaskStoppedRule.Arn
+
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -176,6 +334,14 @@ Resources:
               Value: !Ref Whitelist
             - Name: OPS
               Value: !Ref AdminPlayerNames
+            - Name: ENABLE_AUTOSTOP
+              Value: !Ref AutoStopWhenIdle
+            - Name: AUTOSTOP_TIMEOUT_EST
+              Value: !Ref AutoStopIdleSeconds
+            - Name: AUTOSTOP_TIMEOUT_INIT
+              Value: !Ref AutoStopIdleSeconds
+            - Name: AUTOSTOP_PERIOD
+              Value: "10"
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -281,13 +447,22 @@ Resources:
               fi && \
               BACKUP_FILE="/tmp/world_$(date +%Y%m%d%H%M%S).zip" && \
               zip -r "$BACKUP_FILE" /data/world && \
-              aws s3 cp "$BACKUP_FILE" "s3://${ECSClusterName}-${Seed}/$(basename "$BACKUP_FILE")"
+              BACKUP_KEY="$(basename "$BACKUP_FILE")" && \
+              S3_URI="s3://${BACKUP_BUCKET_NAME}/${BACKUP_KEY}" && \
+              echo "Uploading backup to ${S3_URI}" && \
+              aws s3 cp "$BACKUP_FILE" "$S3_URI"
           Essential: true
           Environment:
             - Name: ECSClusterName
               Value: !Ref ECSClusterName
             - Name: Seed
               Value: !Ref Seed
+            - Name: BACKUP_BUCKET_NAME
+              Value: !Ref S3BackupBucket
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: AWS_DEFAULT_REGION
+              Value: !Ref AWS::Region
           LogConfiguration:
             LogDriver: awslogs
             Options:

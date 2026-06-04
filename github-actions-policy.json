@@ -125,9 +125,14 @@
                 "logs:CreateLogGroup",
                 "logs:DeleteLogGroup",
                 "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:GetLogEvents",
                 "logs:PutRetentionPolicy"
             ],
-            "Resource": "arn:aws:logs:*:*:log-group:/ecs/minecraft*"
+            "Resource": [
+                "arn:aws:logs:*:*:log-group:/ecs/minecraft*",
+                "arn:aws:logs:*:*:log-group:/ecs/minecraft*:log-stream:*"
+            ]
         },
         {
             "Sid": "ElasticLoadBalancingAccess",

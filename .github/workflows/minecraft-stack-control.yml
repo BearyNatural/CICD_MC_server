@@ -348,6 +348,47 @@ jobs:
             -d "$PAYLOAD" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
+      - name: Refresh stack template before backup
+        if: ${{ github.event.inputs.action == 'stop' }}
+        run: |
+          set -euo pipefail
+          echo "Refreshing stack template before backup: $STACK_NAME"
+
+          TEMPLATE_PATH="${RESOLVED_TEMPLATE_PATH:-${{ github.event.inputs.template_path }}}"
+          UPDATE_OUTPUT=$(aws cloudformation update-stack \
+            --stack-name "$STACK_NAME" \
+            --template-body "file://$TEMPLATE_PATH" \
+            --parameters \
+              ParameterKey=ServerState,UsePreviousValue=true \
+              ParameterKey=SubnetId,UsePreviousValue=true \
+              ParameterKey=VpcId,UsePreviousValue=true \
+              ParameterKey=ECSClusterName,UsePreviousValue=true \
+              ParameterKey=MinecraftImageTag,UsePreviousValue=true \
+              ParameterKey=Memory,UsePreviousValue=true \
+              ParameterKey=Cpu,UsePreviousValue=true \
+              ParameterKey=Seed,UsePreviousValue=true \
+              ParameterKey=Whitelist,UsePreviousValue=true \
+              ParameterKey=AdminPlayerNames,UsePreviousValue=true \
+              ParameterKey=LogGroupName,UsePreviousValue=true \
+              ParameterKey=DnsHostname,UsePreviousValue=true \
+              ParameterKey=DnsUpdateUrl,UsePreviousValue=true \
+            --capabilities CAPABILITY_NAMED_IAM 2>&1) || {
+              if echo "$UPDATE_OUTPUT" | grep -q "No updates are to be performed"; then
+                echo "Stack template already up to date."
+              else
+                echo "$UPDATE_OUTPUT"
+                exit 1
+              fi
+            }
+
+          STATUS=$(aws cloudformation describe-stacks \
+            --stack-name "$STACK_NAME" \
+            --query "Stacks[0].StackStatus" \
+            --output text)
+          if [ "$STATUS" = "UPDATE_IN_PROGRESS" ] || [ "$STATUS" = "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]; then
+            aws cloudformation wait stack-update-complete --stack-name "$STACK_NAME"
+          fi
+
       - name: Run ECS Backup Task
         if: ${{ github.event.inputs.action == 'stop' }}
         run: |
@@ -364,9 +405,10 @@ jobs:
             exit 0
           fi
 
-          TASK_DEF_ARN=$(aws ecs describe-task-definition \
-            --task-definition MinecraftBackupTask \
-            --query "taskDefinition.taskDefinitionArn" \
+          TASK_DEF_ARN=$(aws cloudformation describe-stack-resource \
+            --stack-name "$STACK_NAME" \
+            --logical-resource-id BackupTaskDefinition \
+            --query "StackResourceDetail.PhysicalResourceId" \
             --output text)
 
           if [ -z "$TASK_DEF_ARN" ] || [ "$TASK_DEF_ARN" = "None" ]; then
@@ -420,7 +462,35 @@ jobs:
             --output text)
 
           if [ "$EXIT_CODE" != "0" ]; then
+            STOPPED_REASON=$(aws ecs describe-tasks \
+              --cluster "$CLUSTER_NAME" \
+              --tasks "$BACKUP_TASK_ARN" \
+              --query "tasks[0].stoppedReason" \
+              --output text)
+            CONTAINER_REASON=$(aws ecs describe-tasks \
+              --cluster "$CLUSTER_NAME" \
+              --tasks "$BACKUP_TASK_ARN" \
+              --query "tasks[0].containers[0].reason" \
+              --output text)
+            LOG_GROUP_NAME=$(aws cloudformation describe-stacks \
+              --stack-name "$STACK_NAME" \
+              --query "Stacks[0].Parameters[?ParameterKey=='LogGroupName'].ParameterValue" \
+              --output text)
+            TASK_ID="${BACKUP_TASK_ARN##*/}"
+
             echo "Backup task failed with exit code $EXIT_CODE"
+            echo "Stopped reason: $STOPPED_REASON"
+            echo "Container reason: $CONTAINER_REASON"
+
+            if [ -n "$LOG_GROUP_NAME" ] && [ "$LOG_GROUP_NAME" != "None" ]; then
+              echo "Recent backup container logs:"
+              aws logs get-log-events \
+                --log-group-name "$LOG_GROUP_NAME" \
+                --log-stream-name "backup/minecraft-backup/$TASK_ID" \
+                --query "events[].message" \
+                --output text || true
+            fi
+
             exit 1
           fi
 

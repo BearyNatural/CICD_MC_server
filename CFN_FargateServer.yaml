@@ -259,12 +259,13 @@ Resources:
   BackupTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: MinecraftBackupTask
+      Family: !Sub "${ECSClusterName}-minecraft-backup"
       Cpu: "1024"
       Memory: "2048"
       NetworkMode: awsvpc
       RequiresCompatibilities: [FARGATE]
       ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      TaskRoleArn: !GetAtt ExecutionRole.Arn
       ContainerDefinitions:
         - Name: minecraft-backup
           Image: amazonlinux
@@ -272,21 +273,29 @@ Resources:
             - /bin/sh
             - -c
             - |
-              yum install -y zip awscli python3-pip && \
-              pip3 install boto3 botocore && \
-              mkdir -p /mnt/backup && \
-              zip -r /mnt/backup/world_$(date +%Y%m%d%H%M%S).zip /data/world && \
-              aws s3 cp /mnt/backup/world_*.zip s3://${ECSClusterName}-${Seed}/
+              yum install -y zip awscli && \
+              if [ ! -d /data/world ]; then \
+                echo "No Minecraft world directory found at /data/world"; \
+                ls -la /data; \
+                exit 1; \
+              fi && \
+              BACKUP_FILE="/tmp/world_$(date +%Y%m%d%H%M%S).zip" && \
+              zip -r "$BACKUP_FILE" /data/world && \
+              aws s3 cp "$BACKUP_FILE" "s3://${ECSClusterName}-${Seed}/$(basename "$BACKUP_FILE")"
           Essential: true
           Environment:
             - Name: ECSClusterName
               Value: !Ref ECSClusterName
             - Name: Seed
               Value: !Ref Seed
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroupName
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: backup
           MountPoints:
             - ContainerPath: /data
-              SourceVolume: minecraftdata
-            - ContainerPath: /mnt/backup
               SourceVolume: minecraftdata
       Volumes:
         - Name: minecraftdata

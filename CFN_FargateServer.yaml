@@ -20,7 +20,6 @@ Parameters:
 
   ECSClusterName:
     Type: String
-    Default: minecraft-cluster1
 
   MinecraftImageTag:
     Type: String
@@ -28,36 +27,29 @@ Parameters:
 
   Memory:
     Type: String
-    Default: "2048"
 
   Cpu:
     Type: String
-    Default: "1024"
 
   Seed:
     Type: String
     Description: The seed used to generate the world
-    Default: "-6390551043122794700"
 
   Whitelist:
     Type: String
-    Description: Usernames of your friends kaylene,BenBenGold,GrammaSandra
-    Default: "kaylene,BenBenGold"
+    Description: Usernames of your friends
 
   AdminPlayerNames:
     Type: String
     Description: Op/Administrator Players
-    Default: "kaylene"
 
   LogGroupName:
     Type: String
     Description: (Optional - An empty value disables this feature)
-    Default: "/ecs/minecraft1"
 
   DnsHostname:
     Type: String
     Description: Optional DNS hostname players use (for example mc.yourdomain.example)
-    Default: ""
 
   DnsUpdateUrl:
     Type: String

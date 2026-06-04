@@ -7,8 +7,8 @@
         "minecraft_image_tag": "latest",
         "memory": "2048",
         "cpu": "1024",
-        "seed": "5685761492797",
-        "whitelist": "kaylene,BenBenGold",
+        "seed": "-6390551043122794700",
+        "whitelist": "kaylene,BenBenGold,GrammaSandra",
         "admin_player_names": "kaylene",
         "log_group_name": "/ecs/minecraft1"
     },
@@ -20,8 +20,8 @@
         "minecraft_image_tag": "latest",
         "memory": "2048",
         "cpu": "1024",
-        "seed": "5685761492797",
-        "whitelist": "kaylene,BenBenGold",
+        "seed": "-6390551043122794700",
+        "whitelist": "kaylene",
         "admin_player_names": "kaylene",
         "log_group_name": "/ecs/minecraft_temp"
     }

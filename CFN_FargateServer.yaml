@@ -226,6 +226,8 @@ Resources:
   ECSService:
     Type: AWS::ECS::Service
     DependsOn:
+      - MinecraftNLB
+      - MinecraftTargetGroup
       - MinecraftListener
     Properties:
       Cluster: !Ref ECSCluster

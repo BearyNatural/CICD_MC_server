@@ -84,7 +84,7 @@ action: create
 stack_name: my-server
 stack_config_profile: default
 template_path: CFN_FargateServer.yaml
-freeddns_hostname: mc-yourname.mooo.com
+dns_hostname: mc-yourname.mooo.com
 vpc_id:
 subnet_id:
 server_state_on_create: Running
@@ -98,7 +98,7 @@ Starts an existing stopped stack (scales ECS service to 1).
 action: start
 stack_name: my-server
 stack_config_profile: default
-freeddns_hostname: mc-yourname.mooo.com
+dns_hostname: mc-yourname.mooo.com
 ```
 
 ## Stack Config Profiles
@@ -115,7 +115,7 @@ Example `stack-config.json`:
 {
     "default": {
         "template_path": "CFN_FargateServer.yaml",
-        "freeddns_hostname": "minecraft.bearynatural.dev",
+        "dns_hostname": "your-server.example.com",
         "vpc_id": "",
         "subnet_id": "",
         "minecraft_image_tag": "latest",
@@ -168,7 +168,7 @@ Creates:
 
 **Parameters:**
 - Non-sensitive server settings are managed in `stack-config.json` and passed on `create`.
-- Typical profile keys are `memory`, `cpu`, `seed`, `whitelist`, `admin_player_names`, `minecraft_image_tag`, `log_group_name`, and `freeddns_hostname`.
+- Typical profile keys are `memory`, `cpu`, `seed`, `whitelist`, `admin_player_names`, `minecraft_image_tag`, `log_group_name`, and `dns_hostname`.
 - `ServerState` is controlled by workflow action (`create` initial state, then `start` and `stop`).
 - Keep sensitive values out of `stack-config.json`. Use GitHub Secrets for `FREEDNS_UPDATE_URL`.
 

@@ -29,7 +29,7 @@ on:
         default: "CFN_FargateServer.yaml"
         type: string
       dns_hostname:
-        description: "Optional stable Minecraft hostname override, e.g. minecraft.bearynatural.dev"
+        description: "Optional stable Minecraft hostname override"
         required: false
         default: ""
         type: string
@@ -46,7 +46,7 @@ on:
       server_state_on_create:
         description: "Initial server state when creating the stack"
         required: false
-        default: "Running"
+        default: "Stopped"
         type: choice
         options:
           - Running
@@ -300,19 +300,16 @@ jobs:
 
           STACK_LINK="https://${{ env.AWS_REGION }}.console.aws.amazon.com/cloudformation/home?region=${{ env.AWS_REGION }}#/stacks"
 
-          DNS_NAME="${RESOLVED_DNS_HOSTNAME:-minecraft.bearynatural.dev}"
+          DNS_NAME="${RESOLVED_DNS_HOSTNAME:-${{ github.event.inputs.dns_hostname }}}"
 
           MSG="Created Minecraft stack '${STACK_NAME}'.
           Initial state: ${{ github.event.inputs.server_state_on_create }}
 
           Minecraft address:
-          ${DNS_NAME}:25565
+          ${DNS_NAME}
 
           Load balancer DNS:
           ${ELB_DNS:-not available}
-
-          AWS Console:
-          ${STACK_LINK}"
 
           PAYLOAD=$(MSG="$MSG" python3 -c 'import json, os; print(json.dumps({"content": os.environ["MSG"]}))')
 
@@ -346,7 +343,7 @@ jobs:
               --output text)
           fi
 
-          MSG="The Minecraft server has started. Please join the game at \"${DNS_NAME}:25565\"."
+          MSG="The Minecraft server has started. Please join the game at \"${DNS_NAME}\"."
 
           PAYLOAD=$(MSG="$MSG" python3 -c 'import json, os; print(json.dumps({"content": os.environ["MSG"]}))')
 

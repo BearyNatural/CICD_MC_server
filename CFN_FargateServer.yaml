@@ -20,7 +20,7 @@ Parameters:
 
   ECSClusterName:
     Type: String
-    Default: minecraft-cluster5
+    Default: minecraft-cluster1
 
   MinecraftImageTag:
     Type: String
@@ -37,7 +37,7 @@ Parameters:
   Seed:
     Type: String
     Description: The seed used to generate the world
-    Default: "5685761492797"
+    Default: "-6390551043122794700"
 
   Whitelist:
     Type: String
@@ -52,16 +52,16 @@ Parameters:
   LogGroupName:
     Type: String
     Description: (Optional - An empty value disables this feature)
-    Default: "/ecs/minecraft5"
+    Default: "/ecs/minecraft1"
 
-  FreeDnsHostname:
+  DnsHostname:
     Type: String
-    Description: Optional FreeDNS hostname players use (for example mc.yourdomain.example)
+    Description: Optional DNS hostname players use (for example mc.yourdomain.example)
     Default: ""
 
-  FreeDnsUpdateUrl:
+  DnsUpdateUrl:
     Type: String
-    Description: Optional FreeDNS direct update URL. Prefer passing from workflow/secrets instead of storing in stack params.
+    Description: Optional DNS direct update URL. Prefer passing from workflow/secrets instead of storing in stack params.
     NoEcho: true
     Default: ""
 
@@ -73,15 +73,15 @@ Mappings:
       DesiredCapacity: 0
 
 Conditions:
-  HasFreeDnsHostname:
+  HasDnsHostname:
     Fn::Not:
       - Fn::Equals:
-          - Ref: FreeDnsHostname
+          - Ref: DnsHostname
           - ""
-  HasFreeDnsUpdateUrl:
+  HasDnsUpdateUrl:
     Fn::Not:
       - Fn::Equals:
-          - Ref: FreeDnsUpdateUrl
+          - Ref: DnsUpdateUrl
           - ""
 
 Resources:
@@ -308,15 +308,15 @@ Outputs:
     Description: Subnet to use to access your Minecraft server (port 25565)
     Value: !Ref SubnetId
   MinecraftConnectionHost:
-    Description: Use FreeDNS hostname when provided; otherwise connect via current task public IP from ECS console.
+    Description: Use DNS hostname when provided; otherwise connect via current task public IP from ECS console.
     Value: !If
-      - HasFreeDnsHostname
-      - !Ref FreeDnsHostname
-      - "(No FreeDNS hostname configured)"
-  FreeDnsUpdateConfigured:
-    Description: Indicates whether FreeDNS update URL parameter was set.
+      - HasDnsHostname
+      - !Ref DnsHostname
+      - "(No DNS hostname configured)"
+  DnsUpdateConfigured:
+    Description: Indicates whether DNS update URL parameter was set.
     Value: !If
-      - HasFreeDnsUpdateUrl
+      - HasDnsUpdateUrl
       - "true"
       - "false"
   LoadBalancerDNS:

@@ -441,11 +441,16 @@ jobs:
             exit 1
           fi
 
+          BACKUP_KEY="world_$(date -u +%Y%m%d%H%M%S).zip"
+          echo "BACKUP_KEY=$BACKUP_KEY" >> "$GITHUB_ENV"
+          echo "Backup object key: $BACKUP_KEY"
+
           BACKUP_TASK_ARN=$(aws ecs run-task \
             --cluster "$CLUSTER_NAME" \
             --launch-type FARGATE \
             --task-definition "$TASK_DEF_ARN" \
             --network-configuration "awsvpcConfiguration={subnets=[$SUBNET_ID],securityGroups=[$SG_ID],assignPublicIp=ENABLED}" \
+            --overrides "{\"containerOverrides\":[{\"name\":\"minecraft-backup\",\"environment\":[{\"name\":\"BACKUP_KEY\",\"value\":\"$BACKUP_KEY\"}]}]}" \
             --query "tasks[0].taskArn" \
             --output text)
 
@@ -512,12 +517,18 @@ jobs:
             exit 0
           fi
 
-          LATEST_BACKUP_URI=$(aws s3 cp "s3://$BUCKET_NAME/latest-backup.txt" - --only-show-errors || true)
-          LATEST_BACKUP_URI=$(printf "%s" "$LATEST_BACKUP_URI" | tr -d '\r\n')
+          LATEST_KEY="${BACKUP_KEY:-}"
 
-          if [ -n "$LATEST_BACKUP_URI" ] && [ "$LATEST_BACKUP_URI" != "None" ]; then
-            LATEST_KEY="${LATEST_BACKUP_URI#s3://$BUCKET_NAME/}"
-          else
+          if [ -z "$LATEST_KEY" ]; then
+            LATEST_BACKUP_URI=$(aws s3 cp "s3://$BUCKET_NAME/latest-backup.txt" - --only-show-errors || true)
+            LATEST_BACKUP_URI=$(printf "%s" "$LATEST_BACKUP_URI" | tr -d '\r\n')
+
+            if [ -n "$LATEST_BACKUP_URI" ] && [ "$LATEST_BACKUP_URI" != "None" ]; then
+              LATEST_KEY="${LATEST_BACKUP_URI#s3://$BUCKET_NAME/}"
+            fi
+          fi
+
+          if [ -z "$LATEST_KEY" ]; then
             echo "Latest backup marker not found. Falling back to newest zip object in '$BUCKET_NAME'."
             LATEST_KEY=$(aws s3api list-objects-v2 \
               --bucket "$BUCKET_NAME" \

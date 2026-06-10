@@ -445,9 +445,9 @@ Resources:
                 ls -la /data; \
                 exit 1; \
               fi && \
-              BACKUP_FILE="/tmp/world_$(date +%Y%m%d%H%M%S).zip" && \
+              BACKUP_KEY="${BACKUP_KEY:-world_$(date +%Y%m%d%H%M%S).zip}" && \
+              BACKUP_FILE="/tmp/${BACKUP_KEY}" && \
               zip -r "$BACKUP_FILE" /data/world && \
-              BACKUP_KEY="$(basename "$BACKUP_FILE")" && \
               S3_URI="s3://${BACKUP_BUCKET_NAME}/${BACKUP_KEY}" && \
               echo "Uploading backup to ${S3_URI}" && \
               aws s3 cp "$BACKUP_FILE" "$S3_URI" && \

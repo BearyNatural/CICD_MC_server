@@ -671,6 +671,34 @@ jobs:
         run: |
           set -euo pipefail
           echo "Deleting stack permanently: $STACK_NAME"
+
+          BUCKET_NAME=$(aws cloudformation list-stack-resources \
+            --stack-name "$STACK_NAME" \
+            --query "StackResourceSummaries[?LogicalResourceId=='S3BackupBucket'].PhysicalResourceId | [0]" \
+            --output text || true)
+
+          if [ -z "$BUCKET_NAME" ] || [ "$BUCKET_NAME" = "None" ]; then
+            CLUSTER_PARAM=$(aws cloudformation describe-stacks \
+              --stack-name "$STACK_NAME" \
+              --query "Stacks[0].Parameters[?ParameterKey=='ECSClusterName'].ParameterValue | [0]" \
+              --output text)
+            SEED_PARAM=$(aws cloudformation describe-stacks \
+              --stack-name "$STACK_NAME" \
+              --query "Stacks[0].Parameters[?ParameterKey=='Seed'].ParameterValue | [0]" \
+              --output text)
+
+            if [ -n "$CLUSTER_PARAM" ] && [ "$CLUSTER_PARAM" != "None" ] && [ -n "$SEED_PARAM" ] && [ "$SEED_PARAM" != "None" ]; then
+              BUCKET_NAME="${CLUSTER_PARAM}-${SEED_PARAM}"
+            fi
+          fi
+
+          if [ -n "$BUCKET_NAME" ] && [ "$BUCKET_NAME" != "None" ]; then
+            echo "Emptying backup bucket before stack delete: $BUCKET_NAME"
+            aws s3 rm "s3://$BUCKET_NAME" --recursive || true
+          else
+            echo "No backup bucket resolved before stack delete."
+          fi
+
           aws cloudformation delete-stack --stack-name "$STACK_NAME"
           aws cloudformation wait stack-delete-complete --stack-name "$STACK_NAME"
 

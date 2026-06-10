@@ -447,7 +447,7 @@ Resources:
               fi && \
               BACKUP_KEY="${BACKUP_KEY:-world_$(date +%Y%m%d%H%M%S).zip}" && \
               BACKUP_FILE="/tmp/${BACKUP_KEY}" && \
-              zip -r "$BACKUP_FILE" /data/world && \
+              cd /data && zip -r "$BACKUP_FILE" world && \
               S3_URI="s3://${BACKUP_BUCKET_NAME}/${BACKUP_KEY}" && \
               echo "Uploading backup to ${S3_URI}" && \
               aws s3 cp "$BACKUP_FILE" "$S3_URI"

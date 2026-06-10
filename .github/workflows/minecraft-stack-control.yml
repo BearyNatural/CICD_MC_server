@@ -504,32 +504,40 @@ jobs:
           fi
 
       - name: Resolve latest backup object from S3
-        if: ${{ github.event.inputs.action == 'stop' && github.event.inputs.include_backup_link == 'yes' }}
+        if: ${{ github.event.inputs.action == 'stop' }}
         run: |
           set -euo pipefail
           BUCKET_NAME=$(aws cloudformation list-stack-resources \
             --stack-name "$STACK_NAME" \
             --query "StackResourceSummaries[?ResourceType=='AWS::S3::Bucket']|[0].PhysicalResourceId" \
-            --output text)
+            --output text || true)
+
+          if [ -z "$BUCKET_NAME" ] || [ "$BUCKET_NAME" = "None" ]; then
+            CLUSTER_PARAM=$(aws cloudformation describe-stacks \
+              --stack-name "$STACK_NAME" \
+              --query "Stacks[0].Parameters[?ParameterKey=='ECSClusterName'].ParameterValue | [0]" \
+              --output text)
+            SEED_PARAM=$(aws cloudformation describe-stacks \
+              --stack-name "$STACK_NAME" \
+              --query "Stacks[0].Parameters[?ParameterKey=='Seed'].ParameterValue | [0]" \
+              --output text)
+
+            if [ -n "$CLUSTER_PARAM" ] && [ "$CLUSTER_PARAM" != "None" ] && [ -n "$SEED_PARAM" ] && [ "$SEED_PARAM" != "None" ]; then
+              BUCKET_NAME="${CLUSTER_PARAM}-${SEED_PARAM}"
+            fi
+          fi
 
           if [ -z "$BUCKET_NAME" ] || [ "$BUCKET_NAME" = "None" ]; then
             echo "No S3 bucket found in stack resources."
             exit 0
           fi
 
+          echo "Backup bucket: $BUCKET_NAME"
+
           LATEST_KEY="${BACKUP_KEY:-}"
 
           if [ -z "$LATEST_KEY" ]; then
-            LATEST_BACKUP_URI=$(aws s3 cp "s3://$BUCKET_NAME/latest-backup.txt" - --only-show-errors || true)
-            LATEST_BACKUP_URI=$(printf "%s" "$LATEST_BACKUP_URI" | tr -d '\r\n')
-
-            if [ -n "$LATEST_BACKUP_URI" ] && [ "$LATEST_BACKUP_URI" != "None" ]; then
-              LATEST_KEY="${LATEST_BACKUP_URI#s3://$BUCKET_NAME/}"
-            fi
-          fi
-
-          if [ -z "$LATEST_KEY" ]; then
-            echo "Latest backup marker not found. Falling back to newest zip object in '$BUCKET_NAME'."
+            echo "Backup key not found in workflow environment. Falling back to newest zip object in '$BUCKET_NAME'."
             LATEST_KEY=$(aws s3api list-objects-v2 \
               --bucket "$BUCKET_NAME" \
               --query "sort_by(Contents[?ends_with(Key, '.zip')], &LastModified)[-1].Key" \
@@ -540,6 +548,8 @@ jobs:
             echo "No backup objects found in bucket '$BUCKET_NAME'."
             exit 0
           fi
+
+          echo "Backup object key for download URL: $LATEST_KEY"
 
           if ! BACKUP_URL=$(aws s3 presign "s3://$BUCKET_NAME/$LATEST_KEY" --expires-in 86400); then
             echo "Failed to generate pre-signed URL for s3://$BUCKET_NAME/$LATEST_KEY."
@@ -599,6 +609,34 @@ jobs:
           if [ -z "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
             echo "DISCORD_WEBHOOK_URL not set; skipping Discord notification."
             exit 0
+          fi
+
+          if [ -z "${LATEST_BACKUP_URL:-}" ]; then
+            BUCKET_NAME="${LATEST_BACKUP_BUCKET:-}"
+            LATEST_KEY="${LATEST_BACKUP_KEY:-${BACKUP_KEY:-}}"
+
+            if [ -z "$BUCKET_NAME" ]; then
+              CLUSTER_PARAM=$(aws cloudformation describe-stacks \
+                --stack-name "$STACK_NAME" \
+                --query "Stacks[0].Parameters[?ParameterKey=='ECSClusterName'].ParameterValue | [0]" \
+                --output text)
+              SEED_PARAM=$(aws cloudformation describe-stacks \
+                --stack-name "$STACK_NAME" \
+                --query "Stacks[0].Parameters[?ParameterKey=='Seed'].ParameterValue | [0]" \
+                --output text)
+
+              if [ -n "$CLUSTER_PARAM" ] && [ "$CLUSTER_PARAM" != "None" ] && [ -n "$SEED_PARAM" ] && [ "$SEED_PARAM" != "None" ]; then
+                BUCKET_NAME="${CLUSTER_PARAM}-${SEED_PARAM}"
+              fi
+            fi
+
+            if [ -n "$BUCKET_NAME" ] && [ "$BUCKET_NAME" != "None" ] && [ -n "$LATEST_KEY" ] && [ "$LATEST_KEY" != "None" ]; then
+              if BACKUP_URL=$(aws s3 presign "s3://$BUCKET_NAME/$LATEST_KEY" --expires-in 86400); then
+                LATEST_BACKUP_BUCKET="$BUCKET_NAME"
+                LATEST_BACKUP_KEY="$LATEST_KEY"
+                LATEST_BACKUP_URL="$BACKUP_URL"
+              fi
+            fi
           fi
 
           if [ -n "${LATEST_BACKUP_URL:-}" ]; then

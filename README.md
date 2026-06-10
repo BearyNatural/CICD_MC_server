@@ -87,6 +87,7 @@ template_path: CFN_FargateServer.yaml
 dns_hostname: mc-yourname.mooo.com
 vpc_id:
 subnet_id:
+seed:
 server_state_on_create: Running
 ```
 

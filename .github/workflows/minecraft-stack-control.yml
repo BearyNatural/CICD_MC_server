@@ -43,6 +43,11 @@ on:
         required: false
         default: ""
         type: string
+      seed:
+        description: "Optional Minecraft world seed override for create action"
+        required: false
+        default: ""
+        type: string
       server_state_on_create:
         description: "Initial server state when creating the stack"
         required: false
@@ -96,6 +101,7 @@ jobs:
           INPUT_DNS='${{ github.event.inputs.dns_hostname }}'
           INPUT_VPC='${{ github.event.inputs.vpc_id }}'
           INPUT_SUBNET='${{ github.event.inputs.subnet_id }}'
+          INPUT_SEED='${{ github.event.inputs.seed }}'
 
           RESOLVED_TEMPLATE="$INPUT_TEMPLATE"
           RESOLVED_DNS="$INPUT_DNS"
@@ -117,7 +123,7 @@ jobs:
             RESOLVED_MINECRAFT_IMAGE_TAG=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("minecraft_image_tag","") or ""))' "$PROFILE")
             RESOLVED_MEMORY=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("memory","") or ""))' "$PROFILE")
             RESOLVED_CPU=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("cpu","") or ""))' "$PROFILE")
-            RESOLVED_SEED=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("seed","") or ""))' "$PROFILE")
+            RESOLVED_SEED=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("seed","") or ""))' "$PROFILE" "$INPUT_SEED")
             RESOLVED_WHITELIST=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("whitelist","") or ""))' "$PROFILE")
             RESOLVED_ADMIN_PLAYERS=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("admin_player_names","") or ""))' "$PROFILE")
             RESOLVED_LOG_GROUP_NAME=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("log_group_name","") or ""))' "$PROFILE")

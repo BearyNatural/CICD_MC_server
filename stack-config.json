@@ -7,7 +7,7 @@
         "minecraft_image_tag": "latest",
         "memory": "2048",
         "cpu": "1024",
-        "seed": "-6390551043122794700",
+        "seed": "47849012232314",
         "whitelist": "kaylene,BenBenGold,GrammaSandra",
         "admin_player_names": "kaylene",
         "log_group_name": "/ecs/minecraft1"

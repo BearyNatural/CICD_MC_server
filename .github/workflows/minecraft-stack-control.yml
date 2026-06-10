@@ -512,21 +512,36 @@ jobs:
             exit 0
           fi
 
-          LATEST_KEY=$(aws s3api list-objects-v2 \
-            --bucket "$BUCKET_NAME" \
-            --query "reverse(sort_by(Contents,&LastModified))[0].Key" \
-            --output text 2>/dev/null || true)
+          LATEST_BACKUP_URI=$(aws s3 cp "s3://$BUCKET_NAME/latest-backup.txt" - --only-show-errors || true)
+          LATEST_BACKUP_URI=$(printf "%s" "$LATEST_BACKUP_URI" | tr -d '\r\n')
+
+          if [ -n "$LATEST_BACKUP_URI" ] && [ "$LATEST_BACKUP_URI" != "None" ]; then
+            LATEST_KEY="${LATEST_BACKUP_URI#s3://$BUCKET_NAME/}"
+          else
+            echo "Latest backup marker not found. Falling back to newest zip object in '$BUCKET_NAME'."
+            LATEST_KEY=$(aws s3api list-objects-v2 \
+              --bucket "$BUCKET_NAME" \
+              --query "sort_by(Contents[?ends_with(Key, '.zip')], &LastModified)[-1].Key" \
+              --output text || true)
+          fi
 
           if [ -z "$LATEST_KEY" ] || [ "$LATEST_KEY" = "None" ]; then
             echo "No backup objects found in bucket '$BUCKET_NAME'."
             exit 0
           fi
 
-          BACKUP_URL=$(aws s3 presign "s3://$BUCKET_NAME/$LATEST_KEY" --expires-in 86400)
+          if ! BACKUP_URL=$(aws s3 presign "s3://$BUCKET_NAME/$LATEST_KEY" --expires-in 86400); then
+            echo "Failed to generate pre-signed URL for s3://$BUCKET_NAME/$LATEST_KEY."
+            exit 0
+          fi
 
           echo "LATEST_BACKUP_BUCKET=$BUCKET_NAME" >> "$GITHUB_ENV"
           echo "LATEST_BACKUP_KEY=$LATEST_KEY" >> "$GITHUB_ENV"
-          echo "LATEST_BACKUP_URL=$BACKUP_URL" >> "$GITHUB_ENV"
+          {
+            echo "LATEST_BACKUP_URL<<EOF"
+            echo "$BACKUP_URL"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
 
       - name: Stop selected stack
         if: ${{ github.event.inputs.action == 'stop' }}
@@ -576,9 +591,23 @@ jobs:
           fi
 
           if [ -n "${LATEST_BACKUP_URL:-}" ]; then
-            MSG="Minecraft stack '${STACK_NAME}' stopped.\nLatest backup: s3://${LATEST_BACKUP_BUCKET}/${LATEST_BACKUP_KEY}\nDownload (24h): ${LATEST_BACKUP_URL}"
+            MSG=$(cat <<EOF
+          Minecraft stack '${STACK_NAME}' stopped.
+
+          Backup download link (expires in 24 hours):
+          ${LATEST_BACKUP_URL}
+
+          S3 object:
+          s3://${LATEST_BACKUP_BUCKET}/${LATEST_BACKUP_KEY}
+          EOF
+          )
           else
-            MSG="Minecraft stack '${STACK_NAME}' stopped. Backup task completed. No latest backup URL available."
+            MSG=$(cat <<EOF
+          Minecraft stack '${STACK_NAME}' stopped.
+
+          Backup task completed, but no download URL was generated.
+          EOF
+          )
           fi
 
           PAYLOAD=$(MSG="$MSG" python3 -c 'import json, os; print(json.dumps({"content": os.environ["MSG"]}))')

@@ -450,7 +450,9 @@ Resources:
               BACKUP_KEY="$(basename "$BACKUP_FILE")" && \
               S3_URI="s3://${BACKUP_BUCKET_NAME}/${BACKUP_KEY}" && \
               echo "Uploading backup to ${S3_URI}" && \
-              aws s3 cp "$BACKUP_FILE" "$S3_URI"
+              aws s3 cp "$BACKUP_FILE" "$S3_URI" && \
+              printf "%s\n" "$S3_URI" > /tmp/latest-backup.txt && \
+              aws s3 cp /tmp/latest-backup.txt "s3://${BACKUP_BUCKET_NAME}/latest-backup.txt"
           Essential: true
           Environment:
             - Name: ECSClusterName

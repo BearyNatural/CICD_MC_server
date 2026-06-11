@@ -80,10 +80,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE_NAME }}
           aws-region: ${{ env.AWS_REGION }}
@@ -196,40 +196,53 @@ jobs:
           echo "Using Subnet: $SUBNET_ID"
           echo "Using template path: $TEMPLATE_PATH"
 
-          PARAMS=(
-            "ParameterKey=ServerState,ParameterValue=${{ github.event.inputs.server_state_on_create }}"
-            "ParameterKey=DnsHostname,ParameterValue=$DNS_HOSTNAME_RESOLVED"
-            "ParameterKey=ECSClusterName,ParameterValue=$STACK_NAME"
-            "ParameterKey=VpcId,ParameterValue=$VPC_ID"
-            "ParameterKey=SubnetId,ParameterValue=$SUBNET_ID"
-          )
+          PARAMETERS_FILE="$RUNNER_TEMP/create-stack-parameters.json"
+          SERVER_STATE_ON_CREATE='${{ github.event.inputs.server_state_on_create }}'
+          export PARAMETERS_FILE SERVER_STATE_ON_CREATE DNS_HOSTNAME_RESOLVED STACK_NAME VPC_ID SUBNET_ID
+          export RESOLVED_MINECRAFT_IMAGE_TAG RESOLVED_MEMORY RESOLVED_CPU RESOLVED_SEED
+          export RESOLVED_WHITELIST RESOLVED_ADMIN_PLAYER_NAMES RESOLVED_LOG_GROUP_NAME
 
-          if [ -n "${RESOLVED_MINECRAFT_IMAGE_TAG:-}" ]; then
-            PARAMS+=("ParameterKey=MinecraftImageTag,ParameterValue=$RESOLVED_MINECRAFT_IMAGE_TAG")
-          fi
-          if [ -n "${RESOLVED_MEMORY:-}" ]; then
-            PARAMS+=("ParameterKey=Memory,ParameterValue=$RESOLVED_MEMORY")
-          fi
-          if [ -n "${RESOLVED_CPU:-}" ]; then
-            PARAMS+=("ParameterKey=Cpu,ParameterValue=$RESOLVED_CPU")
-          fi
-          if [ -n "${RESOLVED_SEED:-}" ]; then
-            PARAMS+=("ParameterKey=Seed,ParameterValue=$RESOLVED_SEED")
-          fi
-          if [ -n "${RESOLVED_WHITELIST:-}" ]; then
-            PARAMS+=("ParameterKey=Whitelist,ParameterValue=$RESOLVED_WHITELIST")
-          fi
-          if [ -n "${RESOLVED_ADMIN_PLAYER_NAMES:-}" ]; then
-            PARAMS+=("ParameterKey=AdminPlayerNames,ParameterValue=$RESOLVED_ADMIN_PLAYER_NAMES")
-          fi
-          if [ -n "${RESOLVED_LOG_GROUP_NAME:-}" ]; then
-            PARAMS+=("ParameterKey=LogGroupName,ParameterValue=$RESOLVED_LOG_GROUP_NAME")
-          fi
+          python3 - <<'PY'
+          import json
+          import os
+
+          def env(name):
+              return os.environ.get(name, "")
+
+          parameters = [
+              {"ParameterKey": "ServerState", "ParameterValue": env("SERVER_STATE_ON_CREATE")},
+              {"ParameterKey": "DnsHostname", "ParameterValue": env("DNS_HOSTNAME_RESOLVED")},
+              {"ParameterKey": "ECSClusterName", "ParameterValue": env("STACK_NAME")},
+              {"ParameterKey": "VpcId", "ParameterValue": env("VPC_ID")},
+              {"ParameterKey": "SubnetId", "ParameterValue": env("SUBNET_ID")},
+          ]
+
+          optional_parameters = [
+              ("MinecraftImageTag", "RESOLVED_MINECRAFT_IMAGE_TAG"),
+              ("Memory", "RESOLVED_MEMORY"),
+              ("Cpu", "RESOLVED_CPU"),
+              ("Seed", "RESOLVED_SEED"),
+              ("Whitelist", "RESOLVED_WHITELIST"),
+              ("AdminPlayerNames", "RESOLVED_ADMIN_PLAYER_NAMES"),
+              ("LogGroupName", "RESOLVED_LOG_GROUP_NAME"),
+          ]
+
+          for parameter_key, env_name in optional_parameters:
+              parameter_value = env(env_name)
+              if parameter_value:
+                  parameters.append({
+                      "ParameterKey": parameter_key,
+                      "ParameterValue": parameter_value,
+                  })
+
+          with open(env("PARAMETERS_FILE"), "w", encoding="utf-8") as parameters_file:
+              json.dump(parameters, parameters_file)
+          PY
 
           aws cloudformation create-stack \
             --stack-name "$STACK_NAME" \
             --template-body "file://$TEMPLATE_PATH" \
-            --parameters "${PARAMS[@]}" \
+            --parameters "file://$PARAMETERS_FILE" \
             --capabilities CAPABILITY_NAMED_IAM
 
           aws cloudformation wait stack-create-complete --stack-name "$STACK_NAME"

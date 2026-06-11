@@ -124,8 +124,8 @@ jobs:
             RESOLVED_MEMORY=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("memory","") or ""))' "$PROFILE")
             RESOLVED_CPU=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("cpu","") or ""))' "$PROFILE")
             RESOLVED_SEED=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("seed","") or ""))' "$PROFILE" "$INPUT_SEED")
-            RESOLVED_WHITELIST=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("whitelist","") or ""))' "$PROFILE")
-            RESOLVED_ADMIN_PLAYERS=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("admin_player_names","") or ""))' "$PROFILE")
+            RESOLVED_WHITELIST=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); v=d.get(p,{}).get("whitelist","") or ""; print(",".join(v) if isinstance(v, list) else str(v))' "$PROFILE")
+            RESOLVED_ADMIN_PLAYERS=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); v=d.get(p,{}).get("admin_player_names","") or ""; print(",".join(v) if isinstance(v, list) else str(v))' "$PROFILE")
             RESOLVED_LOG_GROUP_NAME=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("log_group_name","") or ""))' "$PROFILE")
           fi
 

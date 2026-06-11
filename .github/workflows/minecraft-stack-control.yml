@@ -317,11 +317,11 @@ jobs:
             exit 0
           fi
 
-          STACK_LINK="https://${{ env.AWS_REGION }}.console.aws.amazon.com/cloudformation/home?region=${{ env.AWS_REGION }}#/stacks"
-
           DNS_NAME="${RESOLVED_DNS_HOSTNAME:-${{ github.event.inputs.dns_hostname }}}"
+          DNS_NAME="${DNS_NAME:-not configured}"
 
-          MSG="Created Minecraft stack '${STACK_NAME}'.
+          MSG=$(cat <<EOF
+          Created Minecraft stack '${STACK_NAME}'.
           Initial state: ${{ github.event.inputs.server_state_on_create }}
 
           Minecraft address:
@@ -329,6 +329,8 @@ jobs:
 
           Load balancer DNS:
           ${ELB_DNS:-not available}
+          EOF
+          )
 
           PAYLOAD=$(MSG="$MSG" python3 -c 'import json, os; print(json.dumps({"content": os.environ["MSG"]}))')
 

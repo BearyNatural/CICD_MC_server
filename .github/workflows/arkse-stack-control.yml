@@ -392,6 +392,8 @@ jobs:
 
       - name: Start ArkSE stack
         if: ${{ github.event.inputs.action == 'start' }}
+        env:
+          DISCORD_WEBHOOK_URL_SECRET: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           set -euo pipefail
 
@@ -404,6 +406,7 @@ jobs:
           export RESOLVED_GAME_PORT RESOLVED_GAME_PORT_2 RESOLVED_QUERY_PORT
           export RESOLVED_EXCLUSIVE_JOIN RESOLVED_ALLOWED_PLAYER_STEAM_IDS
           export RESOLVED_AUTO_STOP_IDLE_SECONDS RESOLVED_LOG_GROUP_NAME
+          export DISCORD_WEBHOOK_URL_SECRET
 
           aws cloudformation describe-stacks \
             --stack-name "$STACK_NAME" \
@@ -426,8 +429,10 @@ jobs:
               "SubnetId",
               "AdminPassword",
               "ServerPassword",
-              "DiscordWebhookUrl",
           ]
+          if not env("DISCORD_WEBHOOK_URL_SECRET"):
+              previous_value_keys.append("DiscordWebhookUrl")
+
           missing = [key for key in previous_value_keys if key not in existing_keys]
           if missing:
               raise SystemExit(
@@ -456,8 +461,11 @@ jobs:
               {"ParameterKey": "AutoStopIdleSeconds", "ParameterValue": env("RESOLVED_AUTO_STOP_IDLE_SECONDS")},
               {"ParameterKey": "AdminPassword", "UsePreviousValue": True},
               {"ParameterKey": "ServerPassword", "UsePreviousValue": True},
-              {"ParameterKey": "DiscordWebhookUrl", "UsePreviousValue": True},
           ]
+          if env("DISCORD_WEBHOOK_URL_SECRET"):
+              parameters.append({"ParameterKey": "DiscordWebhookUrl", "ParameterValue": env("DISCORD_WEBHOOK_URL_SECRET")})
+          else:
+              parameters.append({"ParameterKey": "DiscordWebhookUrl", "UsePreviousValue": True})
 
           with open(env("PARAMETERS_FILE"), "w", encoding="utf-8") as parameters_file:
               json.dump(parameters, parameters_file)
@@ -487,6 +495,8 @@ jobs:
 
       - name: Stop ArkSE stack
         if: ${{ github.event.inputs.action == 'stop' }}
+        env:
+          DISCORD_WEBHOOK_URL_SECRET: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           set -euo pipefail
 
@@ -499,6 +509,7 @@ jobs:
           export RESOLVED_GAME_PORT RESOLVED_GAME_PORT_2 RESOLVED_QUERY_PORT
           export RESOLVED_EXCLUSIVE_JOIN RESOLVED_ALLOWED_PLAYER_STEAM_IDS
           export RESOLVED_AUTO_STOP_IDLE_SECONDS RESOLVED_LOG_GROUP_NAME
+          export DISCORD_WEBHOOK_URL_SECRET
 
           aws cloudformation describe-stacks \
             --stack-name "$STACK_NAME" \
@@ -521,8 +532,10 @@ jobs:
               "SubnetId",
               "AdminPassword",
               "ServerPassword",
-              "DiscordWebhookUrl",
           ]
+          if not env("DISCORD_WEBHOOK_URL_SECRET"):
+              previous_value_keys.append("DiscordWebhookUrl")
+
           missing = [key for key in previous_value_keys if key not in existing_keys]
           if missing:
               raise SystemExit(
@@ -551,8 +564,11 @@ jobs:
               {"ParameterKey": "AutoStopIdleSeconds", "ParameterValue": env("RESOLVED_AUTO_STOP_IDLE_SECONDS")},
               {"ParameterKey": "AdminPassword", "UsePreviousValue": True},
               {"ParameterKey": "ServerPassword", "UsePreviousValue": True},
-              {"ParameterKey": "DiscordWebhookUrl", "UsePreviousValue": True},
           ]
+          if env("DISCORD_WEBHOOK_URL_SECRET"):
+              parameters.append({"ParameterKey": "DiscordWebhookUrl", "ParameterValue": env("DISCORD_WEBHOOK_URL_SECRET")})
+          else:
+              parameters.append({"ParameterKey": "DiscordWebhookUrl", "UsePreviousValue": True})
 
           with open(env("PARAMETERS_FILE"), "w", encoding="utf-8") as parameters_file:
               json.dump(parameters, parameters_file)

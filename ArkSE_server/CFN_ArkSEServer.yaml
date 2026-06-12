@@ -254,9 +254,12 @@ Resources:
           DISCORD_WEBHOOK_URL: !Ref DiscordWebhookUrl
           DNS_HOSTNAME: !Ref DnsHostname
           NLB_DNS: !GetAtt ArkNLB.DNSName
+          SERVER_NAME: !Ref ServerName
+          GAME_PORT: !Ref GamePort
           QUERY_PORT: !Ref QueryPort
           IDLE_SECONDS: !Ref AutoStopIdleSeconds
           LAST_ACTIVE_PARAMETER: !Sub "/arkse/${AWS::StackName}/last-active"
+          READY_NOTIFIED_PARAMETER: !Sub "/arkse/${AWS::StackName}/ready-notified"
       Code:
         ZipFile: |
           import datetime
@@ -311,6 +314,9 @@ Resources:
               if parameter_value(stack, "ServerState") == state:
                   return {"status": "already", "state": state}
 
+              if state == "Running":
+                  clear_ready_notification()
+
               params = []
               saw_state = False
               for parameter in stack.get("Parameters", []):
@@ -337,6 +343,38 @@ Resources:
                   raise
               discord(f"ARK server {state.lower()} requested. Reason: {reason}")
               return {"status": "requested", "stack_id": response["StackId"]}
+
+
+          def clear_ready_notification():
+              try:
+                  ssm.delete_parameter(Name=os.environ["READY_NOTIFIED_PARAMETER"])
+              except Exception:
+                  pass
+
+
+          def connection_message(prefix):
+              host = os.environ.get("DNS_HOSTNAME") or os.environ["NLB_DNS"]
+              return (
+                  f"{prefix}\n"
+                  f"Server name: {os.environ.get('SERVER_NAME', 'ARK')}\n"
+                  f"Direct connect: {host}:{os.environ['GAME_PORT']}\n"
+                  f"Steam favorites/query: {host}:{os.environ['QUERY_PORT']}"
+              )
+
+
+          def notify_ready_once(info):
+              try:
+                  ssm.get_parameter(Name=os.environ["READY_NOTIFIED_PARAMETER"])
+                  return
+              except Exception:
+                  pass
+              discord(connection_message(f"ARK server is online. Players: {info['players']}/{info['max_players']}."))
+              ssm.put_parameter(
+                  Name=os.environ["READY_NOTIFIED_PARAMETER"],
+                  Value=str(now()),
+                  Type="String",
+                  Overwrite=True,
+              )
 
 
           def parse_a2s_info(data):
@@ -378,6 +416,8 @@ Resources:
 
               if info is None:
                   return {"status": "query-unparsed"}
+
+              notify_ready_once(info)
 
               current_time = now()
               if info["players"] > 0:
@@ -433,10 +473,11 @@ Resources:
                   return {"status": "notified-error", "stack_status": status}
               if status in ("CREATE_COMPLETE", "UPDATE_COMPLETE"):
                   state = parameter_value(current_stack(), "ServerState")
-                  host = os.environ.get("DNS_HOSTNAME") or os.environ["NLB_DNS"]
                   if state == "Running":
-                      discord(f"ARK server is starting/running at {host}. Query port: {os.environ['QUERY_PORT']}.")
+                      clear_ready_notification()
+                      discord(connection_message("ARK server start/update completed. Waiting for the ARK query port to answer."))
                   elif state == "Stopped":
+                      clear_ready_notification()
                       discord("ARK server is stopped.")
               return {"status": "handled", "stack_status": status}
 
@@ -464,6 +505,7 @@ Resources:
                       ssm.delete_parameter(Name=os.environ["LAST_ACTIVE_PARAMETER"])
                   except Exception:
                       pass
+                  clear_ready_notification()
               cfn_response(event, context, "SUCCESS")
               return {"status": "custom-resource-ok"}
 
@@ -542,10 +584,10 @@ Resources:
               update_ok=false
               for attempt in $(seq 1 "$max_retries"); do
                   printf "\n### Attempt %s to install/update ARK: Survival Evolved Server...\n" "$attempt"
-                  steam_output=$("$steam_bin" +runscript "$install_file" 2>&1)
-                  steam_status=$?
-                  printf "%s\n" "$steam_output"
-                  if [ "$steam_status" -eq 0 ] && printf "%s" "$steam_output" | grep -q "Success! App '376030' fully installed."; then
+                  steam_log="/tmp/steamcmd-attempt-${attempt}.log"
+                  "$steam_bin" +runscript "$install_file" 2>&1 | tee "$steam_log"
+                  steam_status="${PIPESTATUS[0]}"
+                  if [ "$steam_status" -eq 0 ] && grep -q "Success! App '376030' fully installed." "$steam_log"; then
                       update_ok=true
                       break
                   fi

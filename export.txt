@@ -1,0 +1,1197 @@
+Account: '154256404608'
+Arn: arn:aws:iam::154256404608:user/kaylene
+UserId: AIDASH2TF6CAANDQIFDAN
+{
+    "Status": "UPDATE_COMPLETE",
+    "Reason": null,
+    "Parameters": [
+        {
+            "ParameterKey": "ArkImage",
+            "ParameterValue": "renegademaster/ark-se-dedicated-server:1.0.0"
+        },
+        {
+            "ParameterKey": "ExclusiveJoin",
+            "ParameterValue": "true"
+        },
+        {
+            "ParameterKey": "Memory",
+            "ParameterValue": "8192"
+        },
+        {
+            "ParameterKey": "ServerState",
+            "ParameterValue": "Running"
+        },
+        {
+            "ParameterKey": "Cpu",
+            "ParameterValue": "4096"
+        },
+        {
+            "ParameterKey": "ServerPassword",
+            "ParameterValue": "****"
+        },
+        {
+            "ParameterKey": "SubnetId",
+            "ParameterValue": "subnet-075d6a2205fa4e5c0"
+        },
+        {
+            "ParameterKey": "AllowedPlayerSteamIds",
+            "ParameterValue": "****"
+        },
+        {
+            "ParameterKey": "AutoStopIdleSeconds",
+            "ParameterValue": "1200"
+        },
+        {
+            "ParameterKey": "MaxPlayers",
+            "ParameterValue": "8"
+        },
+        {
+            "ParameterKey": "MapName",
+            "ParameterValue": "TheIsland"
+        },
+        {
+            "ParameterKey": "VpcId",
+            "ParameterValue": "vpc-0f12cf267ab9bb7ab"
+        },
+        {
+            "ParameterKey": "QueryPort",
+            "ParameterValue": "27015"
+        },
+        {
+            "ParameterKey": "ECSClusterName",
+            "ParameterValue": "testingserver"
+        },
+        {
+            "ParameterKey": "GamePort",
+            "ParameterValue": "7777"
+        },
+        {
+            "ParameterKey": "GamePort2",
+            "ParameterValue": "7778"
+        },
+        {
+            "ParameterKey": "DiscordWebhookUrl",
+            "ParameterValue": "****"
+        },
+        {
+            "ParameterKey": "ServerName",
+            "ParameterValue": "BearyNaturalArkDev"
+        },
+        {
+            "ParameterKey": "DnsHostname",
+            "ParameterValue": "arkserver-dev.bearynatural.dev"
+        },
+        {
+            "ParameterKey": "LogGroupName",
+            "ParameterValue": "/ecs/arkse-dev"
+        },
+        {
+            "ParameterKey": "AdminPassword",
+            "ParameterValue": "****"
+        }
+    ],
+    "Outputs": [
+        {
+            "OutputKey": "ArkConnectionHost",
+            "OutputValue": "arkserver-dev.bearynatural.dev"
+        },
+        {
+            "OutputKey": "ECSClusterName",
+            "OutputValue": "testingserver"
+        },
+        {
+            "OutputKey": "ArkLoadBalancerDNS",
+            "OutputValue": "testingserver-ark-nlb-3cbaa7049e767ac6.elb.ap-southeast-2.amazonaws.com"
+        },
+        {
+            "OutputKey": "ArkDiscordFunctionName",
+            "OutputValue": "testingserver-arkse-automation"
+        },
+        {
+            "OutputKey": "ECSServiceName",
+            "OutputValue": "testingserver-ark"
+        },
+        {
+            "OutputKey": "ArkQueryPort",
+            "OutputValue": "27015"
+        }
+    ]
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                        DescribeStackEvents                                                                                        |
++----------------------------------+--------------------+-----------------------------------------------+-------------------------------------------------------------------------------------------+
+|  2026-06-12T23:03:21.931000+00:00|  testingserver     |  UPDATE_COMPLETE                              |  None                                                                                     |
+|  2026-06-12T23:03:21.638000+00:00|  ArkTaskDefinition |  DELETE_COMPLETE                              |  None                                                                                     |
+|  2026-06-12T23:03:20.629000+00:00|  ArkTaskDefinition |  DELETE_IN_PROGRESS                           |  None                                                                                     |
+|  2026-06-12T23:03:19.701000+00:00|  testingserver     |  UPDATE_COMPLETE_CLEANUP_IN_PROGRESS          |  None                                                                                     |
+|  2026-06-12T23:03:18.437000+00:00|  ArkService        |  UPDATE_COMPLETE                              |  None                                                                                     |
+|  2026-06-12T22:58:55.806000+00:00|  ArkService        |  UPDATE_IN_PROGRESS                           |  None                                                                                     |
+|  2026-06-12T22:58:54.730000+00:00|  ArkTaskDefinition |  UPDATE_COMPLETE                              |  None                                                                                     |
+|  2026-06-12T22:58:54.508000+00:00|  ArkTaskDefinition |  UPDATE_IN_PROGRESS                           |  Resource creation Initiated                                                              |
+|  2026-06-12T22:58:53.540000+00:00|  ArkTaskDefinition |  UPDATE_IN_PROGRESS                           |  Requested update requires the creation of a new physical resource; hence creating one.   |
+|  2026-06-12T22:58:48.851000+00:00|  testingserver     |  UPDATE_IN_PROGRESS                           |  User Initiated                                                                           |
+|  2026-06-12T22:57:19.830000+00:00|  testingserver     |  UPDATE_ROLLBACK_COMPLETE                     |  None                                                                                     |
+|  2026-06-12T22:57:19.540000+00:00|  ArkTaskDefinition |  DELETE_COMPLETE                              |  None                                                                                     |
+|  2026-06-12T22:57:18.367000+00:00|  ArkTaskDefinition |  DELETE_IN_PROGRESS                           |  None                                                                                     |
+|  2026-06-12T22:57:17.434000+00:00|  testingserver     |  UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS |  None                                                                                     |
+|  2026-06-12T22:57:17.095000+00:00|  ArkService        |  UPDATE_COMPLETE                              |  None                                                                                     |
+|  2026-06-12T22:55:14.300000+00:00|  ArkService        |  UPDATE_IN_PROGRESS                           |  None                                                                                     |
+|  2026-06-12T22:55:13.756000+00:00|  ArkTaskDefinition |  UPDATE_COMPLETE                              |  None                                                                                     |
+|  2026-06-12T22:55:07.510000+00:00|  ArkService        |  UPDATE_FAILED                                |  Resource update cancelled                                                                |
+|  2026-06-12T22:55:07.031000+00:00|  testingserver     |  UPDATE_ROLLBACK_IN_PROGRESS                  |  User Initiated                                                                           |
+|  2026-06-12T22:42:14.253000+00:00|  ArkService        |  UPDATE_IN_PROGRESS                           |  None                                                                                     |
++----------------------------------+--------------------+-----------------------------------------------+-------------------------------------------------------------------------------------------+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                                      DescribeStackResources                                                                                                       |
++--------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------+-------------------+
+|  ArkAccessPoint                |  AWS::EFS::AccessPoint                     |  fsap-05d6b92f51a9252bc                                                                                                         |  CREATE_COMPLETE  |
+|  ArkAutomationFunction         |  AWS::Lambda::Function                     |  testingserver-arkse-automation                                                                                                 |  CREATE_COMPLETE  |
+|  ArkAutomationRole             |  AWS::IAM::Role                            |  testingserver-ark-automation                                                                                                   |  CREATE_COMPLETE  |
+|  ArkCluster                    |  AWS::ECS::Cluster                         |  testingserver                                                                                                                  |  CREATE_COMPLETE  |
+|  ArkDeleteNotifier             |  Custom::ArkDeleteNotifier                 |  testingserver-delete-notifier                                                                                                  |  CREATE_COMPLETE  |
+|  ArkEfsSecurityGroup           |  AWS::EC2::SecurityGroup                   |  sg-0cd1ce77361611eb9                                                                                                           |  CREATE_COMPLETE  |
+|  ArkFileSystem                 |  AWS::EFS::FileSystem                      |  fs-076da6b135b0d225d                                                                                                           |  CREATE_COMPLETE  |
+|  ArkGame2Listener              |  AWS::ElasticLoadBalancingV2::Listener     |  arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:listener/net/testingserver-ark-nlb/3cbaa7049e767ac6/9a5944ba7445aeeb  |  CREATE_COMPLETE  |
+|  ArkGame2TargetGroup           |  AWS::ElasticLoadBalancingV2::TargetGroup  |  arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:targetgroup/testingserver-ark-game2/401f8ed196a6ec08                  |  CREATE_COMPLETE  |
+|  ArkGameListener               |  AWS::ElasticLoadBalancingV2::Listener     |  arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:listener/net/testingserver-ark-nlb/3cbaa7049e767ac6/1268afcf434b08de  |  CREATE_COMPLETE  |
+|  ArkGameTargetGroup            |  AWS::ElasticLoadBalancingV2::TargetGroup  |  arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:targetgroup/testingserver-ark-game/d55cc54dc987c22e                   |  CREATE_COMPLETE  |
+|  ArkIdleInvokePermission       |  AWS::Lambda::Permission                   |  testingserver-ArkIdleInvokePermission-xZnrVcrwmCzG                                                                             |  CREATE_COMPLETE  |
+|  ArkIdleSchedule               |  AWS::Events::Rule                         |  testingserver-ark-idle-check                                                                                                   |  CREATE_COMPLETE  |
+|  ArkLogGroup                   |  AWS::Logs::LogGroup                       |  /ecs/arkse-dev                                                                                                                 |  CREATE_COMPLETE  |
+|  ArkMountTarget                |  AWS::EFS::MountTarget                     |  fsmt-0aaba12d280574140                                                                                                         |  CREATE_COMPLETE  |
+|  ArkNLB                        |  AWS::ElasticLoadBalancingV2::LoadBalancer |  arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:loadbalancer/net/testingserver-ark-nlb/3cbaa7049e767ac6               |  CREATE_COMPLETE  |
+|  ArkQueryListener              |  AWS::ElasticLoadBalancingV2::Listener     |  arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:listener/net/testingserver-ark-nlb/3cbaa7049e767ac6/80f02ec30b5d2497  |  CREATE_COMPLETE  |
+|  ArkQueryTargetGroup           |  AWS::ElasticLoadBalancingV2::TargetGroup  |  arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:targetgroup/testingserver-ark-query/c93de41968a6a7b0                  |  CREATE_COMPLETE  |
+|  ArkService                    |  AWS::ECS::Service                         |  arn:aws:ecs:ap-southeast-2:154256404608:service/testingserver/testingserver-ark                                                |  UPDATE_COMPLETE  |
+|  ArkStackStatusInvokePermission|  AWS::Lambda::Permission                   |  testingserver-ArkStackStatusInvokePermission-QLNJCR8w3Mwl                                                                      |  CREATE_COMPLETE  |
+|  ArkStackStatusRule            |  AWS::Events::Rule                         |  testingserver-ark-stack-status                                                                                                 |  CREATE_COMPLETE  |
+|  ArkTaskDefinition             |  AWS::ECS::TaskDefinition                  |  arn:aws:ecs:ap-southeast-2:154256404608:task-definition/testingserver-arkse:3                                                  |  UPDATE_COMPLETE  |
+|  ArkTaskExecutionRole          |  AWS::IAM::Role                            |  testingserver-ark-task-execution                                                                                               |  CREATE_COMPLETE  |
+|  ArkTaskSecurityGroup          |  AWS::EC2::SecurityGroup                   |  sg-0404d75edd8516283                                                                                                           |  CREATE_COMPLETE  |
+|  ArkTaskStoppedInvokePermission|  AWS::Lambda::Permission                   |  testingserver-ArkTaskStoppedInvokePermission-6bSlbHYg3Kni                                                                      |  CREATE_COMPLETE  |
+|  ArkTaskStoppedRule            |  AWS::Events::Rule                         |  testingserver-ark-task-stopped                                                                                                 |  CREATE_COMPLETE  |
+|  ArkWakeAlarm                  |  AWS::CloudWatch::Alarm                    |  testingserver-ark-wake-on-traffic                                                                                              |  CREATE_COMPLETE  |
+|  ArkWakeInvokePermission       |  AWS::Lambda::Permission                   |  testingserver-ArkWakeInvokePermission-Epb0wD6L879A                                                                             |  CREATE_COMPLETE  |
+|  ArkWakeRule                   |  AWS::Events::Rule                         |  testingserver-ark-wake                                                                                                         |  CREATE_COMPLETE  |
++--------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------+-------------------+
+Cluster=testingserver
+Service=testingserver-ark
+Host=arkserver-dev.bearynatural.dev
+{
+    "Status": "ACTIVE",
+    "Desired": 1,
+    "Running": 1,
+    "Pending": 0,
+    "Deployments": [
+        {
+            "id": "ecs-svc/1385143474332238115",
+            "status": "PRIMARY",
+            "taskDefinition": "arn:aws:ecs:ap-southeast-2:154256404608:task-definition/testingserver-arkse:3",
+            "desiredCount": 1,
+            "pendingCount": 0,
+            "runningCount": 1,
+            "failedTasks": 0,
+            "createdAt": "2026-06-13T08:58:57.160000+10:00",
+            "updatedAt": "2026-06-13T09:02:56.381000+10:00",
+            "launchType": "FARGATE",
+            "platformVersion": "1.4.0",
+            "platformFamily": "Linux",
+            "networkConfiguration": {
+                "awsvpcConfiguration": {
+                    "subnets": [
+                        "subnet-075d6a2205fa4e5c0"
+                    ],
+                    "securityGroups": [
+                        "sg-0404d75edd8516283"
+                    ],
+                    "assignPublicIp": "ENABLED"
+                }
+            },
+            "rolloutState": "COMPLETED",
+            "rolloutStateReason": "ECS deployment ecs-svc/1385143474332238115 completed."
+        }
+    ],
+    "Events": [
+        {
+            "id": "15c9a2d4-6b87-4aae-adbd-875bcdeee077",
+            "createdAt": "2026-06-13T09:02:56.387000+10:00",
+            "message": "(service testingserver-ark) has reached a steady state."
+        },
+        {
+            "id": "8d10f2a4-bbf2-4e66-b8b3-812e3f0fdce4",
+            "createdAt": "2026-06-13T09:02:56.386000+10:00",
+            "message": "(service testingserver-ark) (deployment ecs-svc/1385143474332238115) deployment completed."
+        },
+        {
+            "id": "32aaa73f-d466-43b2-861d-9dfd07221569",
+            "createdAt": "2026-06-13T09:00:06.689000+10:00",
+            "message": "(service testingserver-ark) stopped 1 pending tasks."
+        },
+        {
+            "id": "06eb7d1e-d953-41c7-aa42-097666758195",
+            "createdAt": "2026-06-13T08:59:58.492000+10:00",
+            "message": "(service testingserver-ark) registered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:targetgroup/testingserver-ark-game/d55cc54dc987c22e)"
+        },
+        {
+            "id": "eed64395-6f66-4188-9026-607479a60435",
+            "createdAt": "2026-06-13T08:59:58.291000+10:00",
+            "message": "(service testingserver-ark) registered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:targetgroup/testingserver-ark-query/c93de41968a6a7b0)"
+        },
+        {
+            "id": "8d523833-b5e6-495e-aad9-cd7b6e0eb409",
+            "createdAt": "2026-06-13T08:59:58.100000+10:00",
+            "message": "(service testingserver-ark) registered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:targetgroup/testingserver-ark-game2/401f8ed196a6ec08)"
+        },
+        {
+            "id": "0d4b418a-920b-497a-b28f-144dea0b434a",
+            "createdAt": "2026-06-13T08:59:16.031000+10:00",
+            "message": "(service testingserver-ark) has started 1 tasks: (task 526e6b7a13774ccbb5aa86132ccf6bcb)."
+        },
+        {
+            "id": "bcbc3b6e-80e4-46c5-b104-2be2da579369",
+            "createdAt": "2026-06-13T08:59:06.405000+10:00",
+            "message": "(service testingserver-ark) has started 1 tasks: (task d8aca447c35844faaaf9813ad9c781c9)."
+        },
+        {
+            "id": "887804d9-dff8-49dd-8a01-98fb4a4e5c2c",
+            "createdAt": "2026-06-13T08:57:14.235000+10:00",
+            "message": "(service testingserver-ark) has reached a steady state."
+        },
+        {
+            "id": "d95a83f2-100c-43ab-b4fd-9a0aae4d50da",
+            "createdAt": "2026-06-13T08:57:14.234000+10:00",
+            "message": "(service testingserver-ark) (deployment ecs-svc/8151247114700996588) deployment completed."
+        }
+    ]
+}
+Task=arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/526e6b7a13774ccbb5aa86132ccf6bcb
+{
+    "LastStatus": "RUNNING",
+    "HealthStatus": "UNKNOWN",
+    "StoppedReason": null,
+    "Containers": [
+        {
+            "Name": "ark",
+            "LastStatus": "RUNNING",
+            "HealthStatus": "UNKNOWN",
+            "Reason": null,
+            "ExitCode": null,
+            "NetworkBindings": []
+        },
+        {
+            "Name": "healthcheck",
+            "LastStatus": "RUNNING",
+            "HealthStatus": "UNKNOWN",
+            "Reason": null,
+            "ExitCode": null,
+            "NetworkBindings": []
+        }
+    ]
+}
+[
+    {
+        "Name": "healthcheck",
+        "Image": "public.ecr.aws/docker/library/python:3.12-alpine",
+        "PortMappings": [
+            {
+                "containerPort": 8080,
+                "hostPort": 8080,
+                "protocol": "tcp"
+            }
+        ],
+        "Environment": []
+    },
+    {
+        "Name": "ark",
+        "Image": "renegademaster/ark-se-dedicated-server:1.0.0",
+        "PortMappings": [
+            {
+                "containerPort": 7778,
+                "hostPort": 7778,
+                "protocol": "udp"
+            },
+            {
+                "containerPort": 7777,
+                "hostPort": 7777,
+                "protocol": "udp"
+            },
+            {
+                "containerPort": 27015,
+                "hostPort": 27015,
+                "protocol": "udp"
+            }
+        ],
+        "Environment": [
+            {
+                "name": "MAX_PLAYERS",
+                "value": "8"
+            },
+            {
+                "name": "ADMIN_PASSWORD",
+                "value": "725841kmt"
+            },
+            {
+                "name": "GAME_VERSION",
+                "value": "public"
+            },
+            {
+                "name": "SERVER_PASSWORD",
+                "value": "8enny"
+            },
+            {
+                "name": "ALLOWED_PLAYER_STEAM_IDS",
+                "value": "76561198040778701"
+            },
+            {
+                "name": "EXCLUSIVE_JOIN",
+                "value": "true"
+            },
+            {
+                "name": "SERVER_NAME",
+                "value": "BearyNaturalArkDev"
+            },
+            {
+                "name": "GAME_PORT",
+                "value": "7777"
+            },
+            {
+                "name": "MAP_NAME",
+                "value": "TheIsland"
+            },
+            {
+                "name": "GAME_PORT_2",
+                "value": "7778"
+            },
+            {
+                "name": "QUERY_PORT",
+                "value": "27015"
+            }
+        ]
+    }
+]
+-------------------------------------------------------------------------------
+|                             DescribeLogStreams                              |
++------------------------------------------------------------+----------------+
+|  healthcheck/healthcheck/526e6b7a13774ccbb5aa86132ccf6bcb  |  1781306388019 |
+|  ark/ark/526e6b7a13774ccbb5aa86132ccf6bcb                  |  1781305192785 |
+|  ark/ark/e9f47aaeb97c4b1797d0610be72fe3ee                  |  None          |
+|  healthcheck/healthcheck/52f3e31e274d431fa621911f879c2b84  |  None          |
+|  healthcheck/healthcheck/d8aca447c35844faaaf9813ad9c781c9  |  None          |
+|  ark/ark/db91219607a742658fe15d40a975554e                  |  None          |
+|  ark/ark/d8aca447c35844faaaf9813ad9c781c9                  |  None          |
+|  healthcheck/healthcheck/e9f47aaeb97c4b1797d0610be72fe3ee  |  None          |
+|  ark/ark/5db354fcfe4849d2b54f6986746da59b                  |  None          |
+|  ark/ark/52f3e31e274d431fa621911f879c2b84                  |  None          |
++------------------------------------------------------------+----------------+
+2026-06-12T22:59:52 ### Attempt 1 to install/update ARK: Survival Evolved Server...
+2026-06-12T23:00:00 172.31.23.81 - - [12/Jun/2026 23:00:00] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:00 172.31.23.81 - - [12/Jun/2026 23:00:00] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:01 172.31.23.81 - - [12/Jun/2026 23:00:01] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:01 172.31.23.81 - - [12/Jun/2026 23:00:01] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:02 172.31.23.81 - - [12/Jun/2026 23:00:02] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:03 172.31.23.81 - - [12/Jun/2026 23:00:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:03 172.31.23.81 - - [12/Jun/2026 23:00:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:04 172.31.23.81 - - [12/Jun/2026 23:00:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:04 172.31.23.81 - - [12/Jun/2026 23:00:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:08 172.31.23.81 - - [12/Jun/2026 23:00:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:13 172.31.23.81 - - [12/Jun/2026 23:00:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:14 172.31.23.81 - - [12/Jun/2026 23:00:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:18 172.31.23.81 - - [12/Jun/2026 23:00:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:23 172.31.23.81 - - [12/Jun/2026 23:00:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:24 172.31.23.81 - - [12/Jun/2026 23:00:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:28 172.31.23.81 - - [12/Jun/2026 23:00:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:33 172.31.23.81 - - [12/Jun/2026 23:00:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:34 172.31.23.81 - - [12/Jun/2026 23:00:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:38 172.31.23.81 - - [12/Jun/2026 23:00:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:43 172.31.23.81 - - [12/Jun/2026 23:00:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:44 172.31.23.81 - - [12/Jun/2026 23:00:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:48 172.31.23.81 - - [12/Jun/2026 23:00:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:53 172.31.23.81 - - [12/Jun/2026 23:00:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:54 172.31.23.81 - - [12/Jun/2026 23:00:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:00:58 172.31.23.81 - - [12/Jun/2026 23:00:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:03 172.31.23.81 - - [12/Jun/2026 23:01:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:04 172.31.23.81 - - [12/Jun/2026 23:01:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:08 172.31.23.81 - - [12/Jun/2026 23:01:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:13 172.31.23.81 - - [12/Jun/2026 23:01:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:14 172.31.23.81 - - [12/Jun/2026 23:01:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:18 172.31.23.81 - - [12/Jun/2026 23:01:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:23 172.31.23.81 - - [12/Jun/2026 23:01:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:24 172.31.23.81 - - [12/Jun/2026 23:01:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:28 172.31.23.81 - - [12/Jun/2026 23:01:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:33 172.31.23.81 - - [12/Jun/2026 23:01:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:34 172.31.23.81 - - [12/Jun/2026 23:01:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:38 172.31.23.81 - - [12/Jun/2026 23:01:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:43 172.31.23.81 - - [12/Jun/2026 23:01:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:44 172.31.23.81 - - [12/Jun/2026 23:01:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:48 172.31.23.81 - - [12/Jun/2026 23:01:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:53 172.31.23.81 - - [12/Jun/2026 23:01:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:54 172.31.23.81 - - [12/Jun/2026 23:01:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:01:58 172.31.23.81 - - [12/Jun/2026 23:01:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:03 172.31.23.81 - - [12/Jun/2026 23:02:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:04 172.31.23.81 - - [12/Jun/2026 23:02:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:08 172.31.23.81 - - [12/Jun/2026 23:02:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:13 172.31.23.81 - - [12/Jun/2026 23:02:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:14 172.31.23.81 - - [12/Jun/2026 23:02:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:18 172.31.23.81 - - [12/Jun/2026 23:02:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:23 172.31.23.81 - - [12/Jun/2026 23:02:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:24 172.31.23.81 - - [12/Jun/2026 23:02:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:28 172.31.23.81 - - [12/Jun/2026 23:02:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:33 172.31.23.81 - - [12/Jun/2026 23:02:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:34 172.31.23.81 - - [12/Jun/2026 23:02:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:38 172.31.23.81 - - [12/Jun/2026 23:02:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:43 172.31.23.81 - - [12/Jun/2026 23:02:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:44 172.31.23.81 - - [12/Jun/2026 23:02:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:48 172.31.23.81 - - [12/Jun/2026 23:02:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:53 172.31.23.81 - - [12/Jun/2026 23:02:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:54 172.31.23.81 - - [12/Jun/2026 23:02:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:02:58 172.31.23.81 - - [12/Jun/2026 23:02:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:03 172.31.23.81 - - [12/Jun/2026 23:03:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:04 172.31.23.81 - - [12/Jun/2026 23:03:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:08 172.31.23.81 - - [12/Jun/2026 23:03:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:13 172.31.23.81 - - [12/Jun/2026 23:03:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:14 172.31.23.81 - - [12/Jun/2026 23:03:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:18 172.31.23.81 - - [12/Jun/2026 23:03:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:23 172.31.23.81 - - [12/Jun/2026 23:03:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:24 172.31.23.81 - - [12/Jun/2026 23:03:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:28 172.31.23.81 - - [12/Jun/2026 23:03:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:33 172.31.23.81 - - [12/Jun/2026 23:03:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:34 172.31.23.81 - - [12/Jun/2026 23:03:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:38 172.31.23.81 - - [12/Jun/2026 23:03:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:43 172.31.23.81 - - [12/Jun/2026 23:03:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:44 172.31.23.81 - - [12/Jun/2026 23:03:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:48 172.31.23.81 - - [12/Jun/2026 23:03:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:53 172.31.23.81 - - [12/Jun/2026 23:03:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:54 172.31.23.81 - - [12/Jun/2026 23:03:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:03:58 172.31.23.81 - - [12/Jun/2026 23:03:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:03 172.31.23.81 - - [12/Jun/2026 23:04:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:04 172.31.23.81 - - [12/Jun/2026 23:04:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:08 172.31.23.81 - - [12/Jun/2026 23:04:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:13 172.31.23.81 - - [12/Jun/2026 23:04:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:14 172.31.23.81 - - [12/Jun/2026 23:04:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:18 172.31.23.81 - - [12/Jun/2026 23:04:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:23 172.31.23.81 - - [12/Jun/2026 23:04:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:24 172.31.23.81 - - [12/Jun/2026 23:04:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:28 172.31.23.81 - - [12/Jun/2026 23:04:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:33 172.31.23.81 - - [12/Jun/2026 23:04:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:34 172.31.23.81 - - [12/Jun/2026 23:04:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:38 172.31.23.81 - - [12/Jun/2026 23:04:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:43 172.31.23.81 - - [12/Jun/2026 23:04:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:44 172.31.23.81 - - [12/Jun/2026 23:04:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:48 172.31.23.81 - - [12/Jun/2026 23:04:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:53 172.31.23.81 - - [12/Jun/2026 23:04:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:54 172.31.23.81 - - [12/Jun/2026 23:04:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:04:58 172.31.23.81 - - [12/Jun/2026 23:04:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:03 172.31.23.81 - - [12/Jun/2026 23:05:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:04 172.31.23.81 - - [12/Jun/2026 23:05:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:08 172.31.23.81 - - [12/Jun/2026 23:05:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:13 172.31.23.81 - - [12/Jun/2026 23:05:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:14 172.31.23.81 - - [12/Jun/2026 23:05:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:18 172.31.23.81 - - [12/Jun/2026 23:05:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:23 172.31.23.81 - - [12/Jun/2026 23:05:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:24 172.31.23.81 - - [12/Jun/2026 23:05:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:28 172.31.23.81 - - [12/Jun/2026 23:05:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:33 172.31.23.81 - - [12/Jun/2026 23:05:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:34 172.31.23.81 - - [12/Jun/2026 23:05:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:38 172.31.23.81 - - [12/Jun/2026 23:05:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:43 172.31.23.81 - - [12/Jun/2026 23:05:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:44 172.31.23.81 - - [12/Jun/2026 23:05:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:48 172.31.23.81 - - [12/Jun/2026 23:05:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:53 172.31.23.81 - - [12/Jun/2026 23:05:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:54 172.31.23.81 - - [12/Jun/2026 23:05:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:05:58 172.31.23.81 - - [12/Jun/2026 23:05:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:03 172.31.23.81 - - [12/Jun/2026 23:06:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:04 172.31.23.81 - - [12/Jun/2026 23:06:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:08 172.31.23.81 - - [12/Jun/2026 23:06:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:13 172.31.23.81 - - [12/Jun/2026 23:06:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:14 172.31.23.81 - - [12/Jun/2026 23:06:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:18 172.31.23.81 - - [12/Jun/2026 23:06:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:23 172.31.23.81 - - [12/Jun/2026 23:06:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:24 172.31.23.81 - - [12/Jun/2026 23:06:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:28 172.31.23.81 - - [12/Jun/2026 23:06:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:33 172.31.23.81 - - [12/Jun/2026 23:06:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:34 172.31.23.81 - - [12/Jun/2026 23:06:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:38 172.31.23.81 - - [12/Jun/2026 23:06:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:43 172.31.23.81 - - [12/Jun/2026 23:06:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:44 172.31.23.81 - - [12/Jun/2026 23:06:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:48 172.31.23.81 - - [12/Jun/2026 23:06:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:53 172.31.23.81 - - [12/Jun/2026 23:06:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:54 172.31.23.81 - - [12/Jun/2026 23:06:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:06:58 172.31.23.81 - - [12/Jun/2026 23:06:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:03 172.31.23.81 - - [12/Jun/2026 23:07:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:04 172.31.23.81 - - [12/Jun/2026 23:07:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:08 172.31.23.81 - - [12/Jun/2026 23:07:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:13 172.31.23.81 - - [12/Jun/2026 23:07:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:14 172.31.23.81 - - [12/Jun/2026 23:07:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:18 172.31.23.81 - - [12/Jun/2026 23:07:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:23 172.31.23.81 - - [12/Jun/2026 23:07:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:24 172.31.23.81 - - [12/Jun/2026 23:07:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:28 172.31.23.81 - - [12/Jun/2026 23:07:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:33 172.31.23.81 - - [12/Jun/2026 23:07:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:34 172.31.23.81 - - [12/Jun/2026 23:07:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:38 172.31.23.81 - - [12/Jun/2026 23:07:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:43 172.31.23.81 - - [12/Jun/2026 23:07:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:44 172.31.23.81 - - [12/Jun/2026 23:07:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:48 172.31.23.81 - - [12/Jun/2026 23:07:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:53 172.31.23.81 - - [12/Jun/2026 23:07:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:54 172.31.23.81 - - [12/Jun/2026 23:07:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:07:58 172.31.23.81 - - [12/Jun/2026 23:07:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:03 172.31.23.81 - - [12/Jun/2026 23:08:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:04 172.31.23.81 - - [12/Jun/2026 23:08:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:08 172.31.23.81 - - [12/Jun/2026 23:08:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:13 172.31.23.81 - - [12/Jun/2026 23:08:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:14 172.31.23.81 - - [12/Jun/2026 23:08:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:18 172.31.23.81 - - [12/Jun/2026 23:08:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:23 172.31.23.81 - - [12/Jun/2026 23:08:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:24 172.31.23.81 - - [12/Jun/2026 23:08:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:28 172.31.23.81 - - [12/Jun/2026 23:08:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:33 172.31.23.81 - - [12/Jun/2026 23:08:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:34 172.31.23.81 - - [12/Jun/2026 23:08:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:38 172.31.23.81 - - [12/Jun/2026 23:08:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:43 172.31.23.81 - - [12/Jun/2026 23:08:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:44 172.31.23.81 - - [12/Jun/2026 23:08:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:48 172.31.23.81 - - [12/Jun/2026 23:08:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:53 172.31.23.81 - - [12/Jun/2026 23:08:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:54 172.31.23.81 - - [12/Jun/2026 23:08:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:08:58 172.31.23.81 - - [12/Jun/2026 23:08:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:03 172.31.23.81 - - [12/Jun/2026 23:09:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:04 172.31.23.81 - - [12/Jun/2026 23:09:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:08 172.31.23.81 - - [12/Jun/2026 23:09:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:13 172.31.23.81 - - [12/Jun/2026 23:09:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:14 172.31.23.81 - - [12/Jun/2026 23:09:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:18 172.31.23.81 - - [12/Jun/2026 23:09:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:23 172.31.23.81 - - [12/Jun/2026 23:09:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:24 172.31.23.81 - - [12/Jun/2026 23:09:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:28 172.31.23.81 - - [12/Jun/2026 23:09:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:33 172.31.23.81 - - [12/Jun/2026 23:09:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:34 172.31.23.81 - - [12/Jun/2026 23:09:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:38 172.31.23.81 - - [12/Jun/2026 23:09:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:43 172.31.23.81 - - [12/Jun/2026 23:09:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:44 172.31.23.81 - - [12/Jun/2026 23:09:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:48 172.31.23.81 - - [12/Jun/2026 23:09:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:53 172.31.23.81 - - [12/Jun/2026 23:09:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:54 172.31.23.81 - - [12/Jun/2026 23:09:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:09:58 172.31.23.81 - - [12/Jun/2026 23:09:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:03 172.31.23.81 - - [12/Jun/2026 23:10:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:04 172.31.23.81 - - [12/Jun/2026 23:10:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:08 172.31.23.81 - - [12/Jun/2026 23:10:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:13 172.31.23.81 - - [12/Jun/2026 23:10:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:14 172.31.23.81 - - [12/Jun/2026 23:10:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:18 172.31.23.81 - - [12/Jun/2026 23:10:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:23 172.31.23.81 - - [12/Jun/2026 23:10:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:24 172.31.23.81 - - [12/Jun/2026 23:10:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:28 172.31.23.81 - - [12/Jun/2026 23:10:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:33 172.31.23.81 - - [12/Jun/2026 23:10:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:34 172.31.23.81 - - [12/Jun/2026 23:10:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:38 172.31.23.81 - - [12/Jun/2026 23:10:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:43 172.31.23.81 - - [12/Jun/2026 23:10:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:44 172.31.23.81 - - [12/Jun/2026 23:10:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:48 172.31.23.81 - - [12/Jun/2026 23:10:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:53 172.31.23.81 - - [12/Jun/2026 23:10:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:54 172.31.23.81 - - [12/Jun/2026 23:10:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:10:58 172.31.23.81 - - [12/Jun/2026 23:10:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:03 172.31.23.81 - - [12/Jun/2026 23:11:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:04 172.31.23.81 - - [12/Jun/2026 23:11:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:08 172.31.23.81 - - [12/Jun/2026 23:11:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:13 172.31.23.81 - - [12/Jun/2026 23:11:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:14 172.31.23.81 - - [12/Jun/2026 23:11:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:18 172.31.23.81 - - [12/Jun/2026 23:11:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:23 172.31.23.81 - - [12/Jun/2026 23:11:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:24 172.31.23.81 - - [12/Jun/2026 23:11:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:28 172.31.23.81 - - [12/Jun/2026 23:11:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:33 172.31.23.81 - - [12/Jun/2026 23:11:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:34 172.31.23.81 - - [12/Jun/2026 23:11:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:38 172.31.23.81 - - [12/Jun/2026 23:11:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:43 172.31.23.81 - - [12/Jun/2026 23:11:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:44 172.31.23.81 - - [12/Jun/2026 23:11:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:48 172.31.23.81 - - [12/Jun/2026 23:11:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:53 172.31.23.81 - - [12/Jun/2026 23:11:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:54 172.31.23.81 - - [12/Jun/2026 23:11:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:11:58 172.31.23.81 - - [12/Jun/2026 23:11:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:03 172.31.23.81 - - [12/Jun/2026 23:12:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:04 172.31.23.81 - - [12/Jun/2026 23:12:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:08 172.31.23.81 - - [12/Jun/2026 23:12:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:13 172.31.23.81 - - [12/Jun/2026 23:12:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:14 172.31.23.81 - - [12/Jun/2026 23:12:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:18 172.31.23.81 - - [12/Jun/2026 23:12:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:23 172.31.23.81 - - [12/Jun/2026 23:12:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:24 172.31.23.81 - - [12/Jun/2026 23:12:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:28 172.31.23.81 - - [12/Jun/2026 23:12:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:33 172.31.23.81 - - [12/Jun/2026 23:12:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:34 172.31.23.81 - - [12/Jun/2026 23:12:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:38 172.31.23.81 - - [12/Jun/2026 23:12:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:43 172.31.23.81 - - [12/Jun/2026 23:12:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:44 172.31.23.81 - - [12/Jun/2026 23:12:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:48 172.31.23.81 - - [12/Jun/2026 23:12:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:53 172.31.23.81 - - [12/Jun/2026 23:12:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:54 172.31.23.81 - - [12/Jun/2026 23:12:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:12:58 172.31.23.81 - - [12/Jun/2026 23:12:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:03 172.31.23.81 - - [12/Jun/2026 23:13:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:04 172.31.23.81 - - [12/Jun/2026 23:13:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:08 172.31.23.81 - - [12/Jun/2026 23:13:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:13 172.31.23.81 - - [12/Jun/2026 23:13:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:14 172.31.23.81 - - [12/Jun/2026 23:13:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:18 172.31.23.81 - - [12/Jun/2026 23:13:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:23 172.31.23.81 - - [12/Jun/2026 23:13:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:24 172.31.23.81 - - [12/Jun/2026 23:13:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:28 172.31.23.81 - - [12/Jun/2026 23:13:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:33 172.31.23.81 - - [12/Jun/2026 23:13:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:34 172.31.23.81 - - [12/Jun/2026 23:13:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:38 172.31.23.81 - - [12/Jun/2026 23:13:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:43 172.31.23.81 - - [12/Jun/2026 23:13:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:44 172.31.23.81 - - [12/Jun/2026 23:13:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:48 172.31.23.81 - - [12/Jun/2026 23:13:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:53 172.31.23.81 - - [12/Jun/2026 23:13:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:54 172.31.23.81 - - [12/Jun/2026 23:13:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:13:58 172.31.23.81 - - [12/Jun/2026 23:13:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:03 172.31.23.81 - - [12/Jun/2026 23:14:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:04 172.31.23.81 - - [12/Jun/2026 23:14:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:08 172.31.23.81 - - [12/Jun/2026 23:14:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:13 172.31.23.81 - - [12/Jun/2026 23:14:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:14 172.31.23.81 - - [12/Jun/2026 23:14:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:18 172.31.23.81 - - [12/Jun/2026 23:14:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:23 172.31.23.81 - - [12/Jun/2026 23:14:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:24 172.31.23.81 - - [12/Jun/2026 23:14:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:28 172.31.23.81 - - [12/Jun/2026 23:14:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:33 172.31.23.81 - - [12/Jun/2026 23:14:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:34 172.31.23.81 - - [12/Jun/2026 23:14:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:38 172.31.23.81 - - [12/Jun/2026 23:14:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:43 172.31.23.81 - - [12/Jun/2026 23:14:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:44 172.31.23.81 - - [12/Jun/2026 23:14:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:48 172.31.23.81 - - [12/Jun/2026 23:14:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:53 172.31.23.81 - - [12/Jun/2026 23:14:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:54 172.31.23.81 - - [12/Jun/2026 23:14:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:14:58 172.31.23.81 - - [12/Jun/2026 23:14:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:03 172.31.23.81 - - [12/Jun/2026 23:15:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:04 172.31.23.81 - - [12/Jun/2026 23:15:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:08 172.31.23.81 - - [12/Jun/2026 23:15:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:13 172.31.23.81 - - [12/Jun/2026 23:15:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:14 172.31.23.81 - - [12/Jun/2026 23:15:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:18 172.31.23.81 - - [12/Jun/2026 23:15:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:23 172.31.23.81 - - [12/Jun/2026 23:15:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:24 172.31.23.81 - - [12/Jun/2026 23:15:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:28 172.31.23.81 - - [12/Jun/2026 23:15:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:33 172.31.23.81 - - [12/Jun/2026 23:15:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:34 172.31.23.81 - - [12/Jun/2026 23:15:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:38 172.31.23.81 - - [12/Jun/2026 23:15:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:43 172.31.23.81 - - [12/Jun/2026 23:15:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:44 172.31.23.81 - - [12/Jun/2026 23:15:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:48 172.31.23.81 - - [12/Jun/2026 23:15:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:53 172.31.23.81 - - [12/Jun/2026 23:15:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:54 172.31.23.81 - - [12/Jun/2026 23:15:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:15:58 172.31.23.81 - - [12/Jun/2026 23:15:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:03 172.31.23.81 - - [12/Jun/2026 23:16:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:04 172.31.23.81 - - [12/Jun/2026 23:16:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:08 172.31.23.81 - - [12/Jun/2026 23:16:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:13 172.31.23.81 - - [12/Jun/2026 23:16:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:14 172.31.23.81 - - [12/Jun/2026 23:16:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:18 172.31.23.81 - - [12/Jun/2026 23:16:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:23 172.31.23.81 - - [12/Jun/2026 23:16:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:24 172.31.23.81 - - [12/Jun/2026 23:16:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:28 172.31.23.81 - - [12/Jun/2026 23:16:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:33 172.31.23.81 - - [12/Jun/2026 23:16:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:34 172.31.23.81 - - [12/Jun/2026 23:16:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:38 172.31.23.81 - - [12/Jun/2026 23:16:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:43 172.31.23.81 - - [12/Jun/2026 23:16:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:44 172.31.23.81 - - [12/Jun/2026 23:16:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:48 172.31.23.81 - - [12/Jun/2026 23:16:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:53 172.31.23.81 - - [12/Jun/2026 23:16:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:54 172.31.23.81 - - [12/Jun/2026 23:16:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:16:58 172.31.23.81 - - [12/Jun/2026 23:16:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:03 172.31.23.81 - - [12/Jun/2026 23:17:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:04 172.31.23.81 - - [12/Jun/2026 23:17:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:08 172.31.23.81 - - [12/Jun/2026 23:17:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:13 172.31.23.81 - - [12/Jun/2026 23:17:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:14 172.31.23.81 - - [12/Jun/2026 23:17:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:18 172.31.23.81 - - [12/Jun/2026 23:17:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:23 172.31.23.81 - - [12/Jun/2026 23:17:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:24 172.31.23.81 - - [12/Jun/2026 23:17:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:28 172.31.23.81 - - [12/Jun/2026 23:17:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:33 172.31.23.81 - - [12/Jun/2026 23:17:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:34 172.31.23.81 - - [12/Jun/2026 23:17:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:38 172.31.23.81 - - [12/Jun/2026 23:17:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:43 172.31.23.81 - - [12/Jun/2026 23:17:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:44 172.31.23.81 - - [12/Jun/2026 23:17:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:48 172.31.23.81 - - [12/Jun/2026 23:17:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:53 172.31.23.81 - - [12/Jun/2026 23:17:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:54 172.31.23.81 - - [12/Jun/2026 23:17:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:17:58 172.31.23.81 - - [12/Jun/2026 23:17:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:03 172.31.23.81 - - [12/Jun/2026 23:18:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:04 172.31.23.81 - - [12/Jun/2026 23:18:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:08 172.31.23.81 - - [12/Jun/2026 23:18:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:13 172.31.23.81 - - [12/Jun/2026 23:18:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:14 172.31.23.81 - - [12/Jun/2026 23:18:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:18 172.31.23.81 - - [12/Jun/2026 23:18:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:23 172.31.23.81 - - [12/Jun/2026 23:18:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:24 172.31.23.81 - - [12/Jun/2026 23:18:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:28 172.31.23.81 - - [12/Jun/2026 23:18:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:33 172.31.23.81 - - [12/Jun/2026 23:18:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:34 172.31.23.81 - - [12/Jun/2026 23:18:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:38 172.31.23.81 - - [12/Jun/2026 23:18:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:43 172.31.23.81 - - [12/Jun/2026 23:18:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:44 172.31.23.81 - - [12/Jun/2026 23:18:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:48 172.31.23.81 - - [12/Jun/2026 23:18:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:53 172.31.23.81 - - [12/Jun/2026 23:18:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:54 172.31.23.81 - - [12/Jun/2026 23:18:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:18:58 172.31.23.81 - - [12/Jun/2026 23:18:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:03 172.31.23.81 - - [12/Jun/2026 23:19:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:04 172.31.23.81 - - [12/Jun/2026 23:19:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:08 172.31.23.81 - - [12/Jun/2026 23:19:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:13 172.31.23.81 - - [12/Jun/2026 23:19:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:14 172.31.23.81 - - [12/Jun/2026 23:19:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:18 172.31.23.81 - - [12/Jun/2026 23:19:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:23 172.31.23.81 - - [12/Jun/2026 23:19:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:24 172.31.23.81 - - [12/Jun/2026 23:19:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:28 172.31.23.81 - - [12/Jun/2026 23:19:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:33 172.31.23.81 - - [12/Jun/2026 23:19:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:34 172.31.23.81 - - [12/Jun/2026 23:19:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:38 172.31.23.81 - - [12/Jun/2026 23:19:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:43 172.31.23.81 - - [12/Jun/2026 23:19:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:44 172.31.23.81 - - [12/Jun/2026 23:19:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:48 172.31.23.81 - - [12/Jun/2026 23:19:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:53 172.31.23.81 - - [12/Jun/2026 23:19:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:54 172.31.23.81 - - [12/Jun/2026 23:19:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:19:58 172.31.23.81 - - [12/Jun/2026 23:19:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:03 172.31.23.81 - - [12/Jun/2026 23:20:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:04 172.31.23.81 - - [12/Jun/2026 23:20:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:08 172.31.23.81 - - [12/Jun/2026 23:20:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:13 172.31.23.81 - - [12/Jun/2026 23:20:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:14 172.31.23.81 - - [12/Jun/2026 23:20:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:18 172.31.23.81 - - [12/Jun/2026 23:20:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:23 172.31.23.81 - - [12/Jun/2026 23:20:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:24 172.31.23.81 - - [12/Jun/2026 23:20:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:28 172.31.23.81 - - [12/Jun/2026 23:20:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:33 172.31.23.81 - - [12/Jun/2026 23:20:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:34 172.31.23.81 - - [12/Jun/2026 23:20:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:38 172.31.23.81 - - [12/Jun/2026 23:20:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:43 172.31.23.81 - - [12/Jun/2026 23:20:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:44 172.31.23.81 - - [12/Jun/2026 23:20:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:48 172.31.23.81 - - [12/Jun/2026 23:20:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:53 172.31.23.81 - - [12/Jun/2026 23:20:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:54 172.31.23.81 - - [12/Jun/2026 23:20:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:20:58 172.31.23.81 - - [12/Jun/2026 23:20:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:03 172.31.23.81 - - [12/Jun/2026 23:21:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:04 172.31.23.81 - - [12/Jun/2026 23:21:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:08 172.31.23.81 - - [12/Jun/2026 23:21:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:13 172.31.23.81 - - [12/Jun/2026 23:21:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:14 172.31.23.81 - - [12/Jun/2026 23:21:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:18 172.31.23.81 - - [12/Jun/2026 23:21:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:23 172.31.23.81 - - [12/Jun/2026 23:21:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:24 172.31.23.81 - - [12/Jun/2026 23:21:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:28 172.31.23.81 - - [12/Jun/2026 23:21:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:33 172.31.23.81 - - [12/Jun/2026 23:21:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:34 172.31.23.81 - - [12/Jun/2026 23:21:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:38 172.31.23.81 - - [12/Jun/2026 23:21:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:43 172.31.23.81 - - [12/Jun/2026 23:21:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:44 172.31.23.81 - - [12/Jun/2026 23:21:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:48 172.31.23.81 - - [12/Jun/2026 23:21:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:53 172.31.23.81 - - [12/Jun/2026 23:21:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:54 172.31.23.81 - - [12/Jun/2026 23:21:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:21:58 172.31.23.81 - - [12/Jun/2026 23:21:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:03 172.31.23.81 - - [12/Jun/2026 23:22:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:04 172.31.23.81 - - [12/Jun/2026 23:22:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:08 172.31.23.81 - - [12/Jun/2026 23:22:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:13 172.31.23.81 - - [12/Jun/2026 23:22:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:14 172.31.23.81 - - [12/Jun/2026 23:22:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:18 172.31.23.81 - - [12/Jun/2026 23:22:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:23 172.31.23.81 - - [12/Jun/2026 23:22:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:24 172.31.23.81 - - [12/Jun/2026 23:22:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:28 172.31.23.81 - - [12/Jun/2026 23:22:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:33 172.31.23.81 - - [12/Jun/2026 23:22:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:34 172.31.23.81 - - [12/Jun/2026 23:22:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:38 172.31.23.81 - - [12/Jun/2026 23:22:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:43 172.31.23.81 - - [12/Jun/2026 23:22:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:44 172.31.23.81 - - [12/Jun/2026 23:22:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:48 172.31.23.81 - - [12/Jun/2026 23:22:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:53 172.31.23.81 - - [12/Jun/2026 23:22:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:54 172.31.23.81 - - [12/Jun/2026 23:22:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:22:58 172.31.23.81 - - [12/Jun/2026 23:22:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:03 172.31.23.81 - - [12/Jun/2026 23:23:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:04 172.31.23.81 - - [12/Jun/2026 23:23:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:08 172.31.23.81 - - [12/Jun/2026 23:23:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:13 172.31.23.81 - - [12/Jun/2026 23:23:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:14 172.31.23.81 - - [12/Jun/2026 23:23:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:18 172.31.23.81 - - [12/Jun/2026 23:23:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:23 172.31.23.81 - - [12/Jun/2026 23:23:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:24 172.31.23.81 - - [12/Jun/2026 23:23:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:28 172.31.23.81 - - [12/Jun/2026 23:23:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:33 172.31.23.81 - - [12/Jun/2026 23:23:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:34 172.31.23.81 - - [12/Jun/2026 23:23:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:38 172.31.23.81 - - [12/Jun/2026 23:23:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:43 172.31.23.81 - - [12/Jun/2026 23:23:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:44 172.31.23.81 - - [12/Jun/2026 23:23:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:48 172.31.23.81 - - [12/Jun/2026 23:23:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:53 172.31.23.81 - - [12/Jun/2026 23:23:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:54 172.31.23.81 - - [12/Jun/2026 23:23:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:23:58 172.31.23.81 - - [12/Jun/2026 23:23:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:03 172.31.23.81 - - [12/Jun/2026 23:24:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:04 172.31.23.81 - - [12/Jun/2026 23:24:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:08 172.31.23.81 - - [12/Jun/2026 23:24:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:13 172.31.23.81 - - [12/Jun/2026 23:24:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:14 172.31.23.81 - - [12/Jun/2026 23:24:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:18 172.31.23.81 - - [12/Jun/2026 23:24:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:23 172.31.23.81 - - [12/Jun/2026 23:24:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:24 172.31.23.81 - - [12/Jun/2026 23:24:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:28 172.31.23.81 - - [12/Jun/2026 23:24:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:33 172.31.23.81 - - [12/Jun/2026 23:24:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:34 172.31.23.81 - - [12/Jun/2026 23:24:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:38 172.31.23.81 - - [12/Jun/2026 23:24:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:43 172.31.23.81 - - [12/Jun/2026 23:24:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:44 172.31.23.81 - - [12/Jun/2026 23:24:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:48 172.31.23.81 - - [12/Jun/2026 23:24:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:53 172.31.23.81 - - [12/Jun/2026 23:24:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:54 172.31.23.81 - - [12/Jun/2026 23:24:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:24:58 172.31.23.81 - - [12/Jun/2026 23:24:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:03 172.31.23.81 - - [12/Jun/2026 23:25:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:04 172.31.23.81 - - [12/Jun/2026 23:25:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:08 172.31.23.81 - - [12/Jun/2026 23:25:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:13 172.31.23.81 - - [12/Jun/2026 23:25:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:14 172.31.23.81 - - [12/Jun/2026 23:25:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:18 172.31.23.81 - - [12/Jun/2026 23:25:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:23 172.31.23.81 - - [12/Jun/2026 23:25:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:24 172.31.23.81 - - [12/Jun/2026 23:25:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:28 172.31.23.81 - - [12/Jun/2026 23:25:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:33 172.31.23.81 - - [12/Jun/2026 23:25:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:34 172.31.23.81 - - [12/Jun/2026 23:25:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:38 172.31.23.81 - - [12/Jun/2026 23:25:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:43 172.31.23.81 - - [12/Jun/2026 23:25:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:44 172.31.23.81 - - [12/Jun/2026 23:25:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:48 172.31.23.81 - - [12/Jun/2026 23:25:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:53 172.31.23.81 - - [12/Jun/2026 23:25:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:54 172.31.23.81 - - [12/Jun/2026 23:25:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:25:58 172.31.23.81 - - [12/Jun/2026 23:25:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:03 172.31.23.81 - - [12/Jun/2026 23:26:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:04 172.31.23.81 - - [12/Jun/2026 23:26:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:08 172.31.23.81 - - [12/Jun/2026 23:26:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:13 172.31.23.81 - - [12/Jun/2026 23:26:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:14 172.31.23.81 - - [12/Jun/2026 23:26:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:18 172.31.23.81 - - [12/Jun/2026 23:26:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:23 172.31.23.81 - - [12/Jun/2026 23:26:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:24 172.31.23.81 - - [12/Jun/2026 23:26:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:28 172.31.23.81 - - [12/Jun/2026 23:26:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:33 172.31.23.81 - - [12/Jun/2026 23:26:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:34 172.31.23.81 - - [12/Jun/2026 23:26:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:38 172.31.23.81 - - [12/Jun/2026 23:26:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:43 172.31.23.81 - - [12/Jun/2026 23:26:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:44 172.31.23.81 - - [12/Jun/2026 23:26:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:48 172.31.23.81 - - [12/Jun/2026 23:26:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:53 172.31.23.81 - - [12/Jun/2026 23:26:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:54 172.31.23.81 - - [12/Jun/2026 23:26:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:26:58 172.31.23.81 - - [12/Jun/2026 23:26:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:03 172.31.23.81 - - [12/Jun/2026 23:27:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:04 172.31.23.81 - - [12/Jun/2026 23:27:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:08 172.31.23.81 - - [12/Jun/2026 23:27:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:13 172.31.23.81 - - [12/Jun/2026 23:27:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:14 172.31.23.81 - - [12/Jun/2026 23:27:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:18 172.31.23.81 - - [12/Jun/2026 23:27:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:23 172.31.23.81 - - [12/Jun/2026 23:27:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:24 172.31.23.81 - - [12/Jun/2026 23:27:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:28 172.31.23.81 - - [12/Jun/2026 23:27:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:33 172.31.23.81 - - [12/Jun/2026 23:27:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:34 172.31.23.81 - - [12/Jun/2026 23:27:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:38 172.31.23.81 - - [12/Jun/2026 23:27:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:43 172.31.23.81 - - [12/Jun/2026 23:27:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:44 172.31.23.81 - - [12/Jun/2026 23:27:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:48 172.31.23.81 - - [12/Jun/2026 23:27:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:53 172.31.23.81 - - [12/Jun/2026 23:27:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:54 172.31.23.81 - - [12/Jun/2026 23:27:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:27:58 172.31.23.81 - - [12/Jun/2026 23:27:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:03 172.31.23.81 - - [12/Jun/2026 23:28:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:04 172.31.23.81 - - [12/Jun/2026 23:28:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:08 172.31.23.81 - - [12/Jun/2026 23:28:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:13 172.31.23.81 - - [12/Jun/2026 23:28:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:14 172.31.23.81 - - [12/Jun/2026 23:28:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:18 172.31.23.81 - - [12/Jun/2026 23:28:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:23 172.31.23.81 - - [12/Jun/2026 23:28:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:24 172.31.23.81 - - [12/Jun/2026 23:28:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:28 172.31.23.81 - - [12/Jun/2026 23:28:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:33 172.31.23.81 - - [12/Jun/2026 23:28:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:34 172.31.23.81 - - [12/Jun/2026 23:28:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:38 172.31.23.81 - - [12/Jun/2026 23:28:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:43 172.31.23.81 - - [12/Jun/2026 23:28:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:44 172.31.23.81 - - [12/Jun/2026 23:28:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:48 172.31.23.81 - - [12/Jun/2026 23:28:48] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:53 172.31.23.81 - - [12/Jun/2026 23:28:53] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:54 172.31.23.81 - - [12/Jun/2026 23:28:54] "GET / HTTP/1.1" 200 -
+2026-06-12T23:28:58 172.31.23.81 - - [12/Jun/2026 23:28:58] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:03 172.31.23.81 - - [12/Jun/2026 23:29:03] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:04 172.31.23.81 - - [12/Jun/2026 23:29:04] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:08 172.31.23.81 - - [12/Jun/2026 23:29:08] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:13 172.31.23.81 - - [12/Jun/2026 23:29:13] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:14 172.31.23.81 - - [12/Jun/2026 23:29:14] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:18 172.31.23.81 - - [12/Jun/2026 23:29:18] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:23 172.31.23.81 - - [12/Jun/2026 23:29:23] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:24 172.31.23.81 - - [12/Jun/2026 23:29:24] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:28 172.31.23.81 - - [12/Jun/2026 23:29:28] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:33 172.31.23.81 - - [12/Jun/2026 23:29:33] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:34 172.31.23.81 - - [12/Jun/2026 23:29:34] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:38 172.31.23.81 - - [12/Jun/2026 23:29:38] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:43 172.31.23.81 - - [12/Jun/2026 23:29:43] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:44 172.31.23.81 - - [12/Jun/2026 23:29:44] "GET / HTTP/1.1" 200 -
+2026-06-12T23:29:48 172.31.23.81 - - [12/Jun/2026 23:29:48] "GET / HTTP/1.1" 200 -
+{
+    "DNSName": "testingserver-ark-nlb-3cbaa7049e767ac6.elb.ap-southeast-2.amazonaws.com",
+    "State": {
+        "Code": "active"
+    },
+    "Scheme": "internet-facing",
+    "AvailabilityZones": [
+        {
+            "ZoneName": "ap-southeast-2c",
+            "SubnetId": "subnet-075d6a2205fa4e5c0",
+            "LoadBalancerAddresses": []
+        }
+    ]
+}
+[
+    {
+        "Name": "testingserver-ark-game",
+        "Arn": "arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:targetgroup/testingserver-ark-game/d55cc54dc987c22e",
+        "Port": 7777,
+        "Protocol": "UDP",
+        "HealthCheckPort": "8080",
+        "HealthCheckProtocol": "HTTP"
+    },
+    {
+        "Name": "testingserver-ark-game2",
+        "Arn": "arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:targetgroup/testingserver-ark-game2/401f8ed196a6ec08",
+        "Port": 7778,
+        "Protocol": "UDP",
+        "HealthCheckPort": "8080",
+        "HealthCheckProtocol": "HTTP"
+    },
+    {
+        "Name": "testingserver-ark-query",
+        "Arn": "arn:aws:elasticloadbalancing:ap-southeast-2:154256404608:targetgroup/testingserver-ark-query/c93de41968a6a7b0",
+        "Port": 27015,
+        "Protocol": "UDP",
+        "HealthCheckPort": "8080",
+        "HealthCheckProtocol": "HTTP"
+    }
+]
+=== testingserver-ark-game ===
+{
+    "TargetHealthDescriptions": [
+        {
+            "Target": {
+                "Id": "172.31.19.151",
+                "Port": 7777,
+                "AvailabilityZone": "ap-southeast-2c"
+            },
+            "HealthCheckPort": "8080",
+            "TargetHealth": {
+                "State": "healthy"
+            },
+            "AdministrativeOverride": {
+                "State": "no_override",
+                "Reason": "AdministrativeOverride.NoOverride",
+                "Description": "No override is currently active on target"
+            }
+        }
+    ]
+}
+=== testingserver-ark-game2 ===
+{
+    "TargetHealthDescriptions": [
+        {
+            "Target": {
+                "Id": "172.31.19.151",
+                "Port": 7778,
+                "AvailabilityZone": "ap-southeast-2c"
+            },
+            "HealthCheckPort": "8080",
+            "TargetHealth": {
+                "State": "healthy"
+            },
+            "AdministrativeOverride": {
+                "State": "no_override",
+                "Reason": "AdministrativeOverride.NoOverride",
+                "Description": "No override is currently active on target"
+            }
+        }
+    ]
+}
+=== testingserver-ark-query ===
+{
+    "TargetHealthDescriptions": [
+        {
+            "Target": {
+                "Id": "172.31.19.151",
+                "Port": 27015,
+                "AvailabilityZone": "ap-southeast-2c"
+            },
+            "HealthCheckPort": "8080",
+            "TargetHealth": {
+                "State": "healthy"
+            },
+            "AdministrativeOverride": {
+                "State": "no_override",
+                "Reason": "AdministrativeOverride.NoOverride",
+                "Description": "No override is currently active on target"
+            }
+        }
+    ]
+}
+Server:		127.0.0.53
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+arkserver-dev.bearynatural.dev	canonical name = testingserver-ark-nlb-3cbaa7049e767ac6.elb.ap-southeast-2.amazonaws.com.
+Name:	testingserver-ark-nlb-3cbaa7049e767ac6.elb.ap-southeast-2.amazonaws.com
+Address: 54.252.96.21
+
+----------------------------------------------------------------------------------
+|                                  ListFunctions                                 |
++---------------------------------+-------------+--------------------------------+
+|  arkse-discord-notifier         |  python3.12 |  2026-06-12T10:38:31.405+0000  |
+|  testingserver-arkse-automation |  python3.12 |  2026-06-12T21:44:51.777+0000  |
++---------------------------------+-------------+--------------------------------+
+Lambda=testingserver-arkse-automation
+2026-06-12T22:30:41 START RequestId: 195697f6-afee-4338-913a-fcbf5a9e88ad Version: $LATEST
+2026-06-12T22:30:41 {"action": "idle-check"}
+2026-06-12T22:30:41 END RequestId: 195697f6-afee-4338-913a-fcbf5a9e88ad
+2026-06-12T22:30:41 REPORT RequestId: 195697f6-afee-4338-913a-fcbf5a9e88ad	Duration: 284.91 ms	Billed Duration: 285 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:35:41 START RequestId: 92a5a7a0-5a3c-40f1-ac1b-824921520e36 Version: $LATEST
+2026-06-12T22:35:41 {"action": "idle-check"}
+2026-06-12T22:35:41 END RequestId: 92a5a7a0-5a3c-40f1-ac1b-824921520e36
+2026-06-12T22:35:41 REPORT RequestId: 92a5a7a0-5a3c-40f1-ac1b-824921520e36	Duration: 282.59 ms	Billed Duration: 283 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:40:41 START RequestId: 10fb5e40-eaea-4fa1-a143-919bf844391d Version: $LATEST
+2026-06-12T22:40:41 {"action": "idle-check"}
+2026-06-12T22:40:41 END RequestId: 10fb5e40-eaea-4fa1-a143-919bf844391d
+2026-06-12T22:40:41 REPORT RequestId: 10fb5e40-eaea-4fa1-a143-919bf844391d	Duration: 301.63 ms	Billed Duration: 302 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:42:07 START RequestId: 05050411-079a-4f65-be00-2b2f9c19cbd0 Version: $LATEST
+2026-06-12T22:42:07 {"version": "0", "id": "f21842e0-1925-8acf-f058-1ade6f618e63", "detail-type": "CloudFormation Stack Status Change", "source": "aws.cloudformation", "account": "154256404608", "time": "2026-06-12T22:42:07Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9"], "detail": {"stack-id": "arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9", "status-details": {"status": "UPDATE_IN_PROGRESS", "detailed-status": "", "status-reason": "User Initiated"}}}
+2026-06-12T22:42:07 END RequestId: 05050411-079a-4f65-be00-2b2f9c19cbd0
+2026-06-12T22:42:07 REPORT RequestId: 05050411-079a-4f65-be00-2b2f9c19cbd0	Duration: 24.47 ms	Billed Duration: 25 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:44:26 START RequestId: b96a29b6-d84c-4f59-9422-c84061387d3a Version: $LATEST
+2026-06-12T22:44:26 {"version": "0", "id": "7ac7a751-3dd8-659c-87a0-71f5fa016b3e", "detail-type": "ECS Task State Change", "source": "aws.ecs", "account": "154256404608", "time": "2026-06-12T22:44:26Z", "region": "ap-southeast-2", "resources": ["arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/5db354fcfe4849d2b54f6986746da59b"], "detail": {"attachments": [{"id": "0e13e228-5c51-4f28-a8e3-3e7db95a1406", "type": "eni", "status": "DELETED", "details": [{"name": "subnetId", "value": "subnet-075d6a2205fa4e5c0"}, {"name": "networkInterfaceId", "value": "eni-095d4180e6f4e3221"}, {"name": "macAddress", "value": "0a:22:4d:1d:81:4d"}, {"name": "privateDnsName", "value": "ip-172-31-18-142.ap-southeast-2.compute.internal"}, {"name": "privateIPv4Address", "value": "172.31.18.142"}]}, {"id": "33561294-512a-4b23-b036-f40a640b420c", "type": "elb", "status": "DELETED", "details": []}, {"id": "512f33b3-8fac-4e1e-b2e6-1fc8c98bd92e", "type": "elb", "status": "DELETED", "details": []}, {"id": "6226b4aa-d93d-40a5-abee-dbec7d808ab2", "type": "elb", "status": "DELETED", "details": []}], "attributes": [{"name": "ecs.cpu-architecture", "value": "x86_64"}], "availabilityZone": "ap-southeast-2c", "clusterArn": "arn:aws:ecs:ap-southeast-2:154256404608:cluster/testingserver", "connectivity": "CONNECTED", "connectivityAt": "2026-06-12T22:42:26.602Z", "containers": [{"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/5db354fcfe4849d2b54f6986746da59b/1629a3a4-cc8a-4822-8a95-1bc840c9b219", "lastStatus": "STOPPED", "name": "ark", "image": "renegademaster/ark-se-dedicated-server:latest", "runtimeId": "5db354fcfe4849d2b54f6986746da59b-0846143043", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/5db354fcfe4849d2b54f6986746da59b", "networkInterfaces": [{"attachmentId": "0e13e228-5c51-4f28-a8e3-3e7db95a1406", "privateIpv4Address": "172.31.18.142"}], "cpu": "0"}, {"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/5db354fcfe4849d2b54f6986746da59b/55c470ee-cc2c-4084-a76e-43c05fcfe9c0", "lastStatus": "STOPPED", "name": "healthcheck", "image": "public.ecr.aws/docker/library/python:3.12-alpine", "imageDigest": "sha256:dbb1970cc04ce7d381c65efe8309c0c03d463e5b35c88f14d721796ad24cfbfd", "runtimeId": "5db354fcfe4849d2b54f6986746da59b-2172504065", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/5db354fcfe4849d2b54f6986746da59b", "networkInterfaces": [{"attachmentId": "0e13e228-5c51-4f28-a8e3-3e7db95a1406", "privateIpv4Address": "172.31.18.142"}], "cpu": "0"}], "cpu": "4096", "createdAt": "2026-06-12T22:42:22.885Z", "desiredStatus": "STOPPED", "enableExecuteCommand": false, "ephemeralStorage": {"sizeInGiB": 50}, "executionStoppedAt": "2026-06-12T22:43:41.578Z", "group": "service:testingserver-ark", "launchType": "FARGATE", "lastStatus": "STOPPED", "memory": "8192", "overrides": {"containerOverrides": [{"name": "ark"}, {"name": "healthcheck"}]}, "platformVersion": "1.4.0", "pullStartedAt": "2026-06-12T22:42:34.655Z", "pullStoppedAt": "2026-06-12T22:42:42.224Z", "startedBy": "ecs-svc/8146604678923525300", "stoppingAt": "2026-06-12T22:43:51.612Z", "stoppedAt": "2026-06-12T22:44:26.033Z", "stoppedReason": "CannotPullContainerError: pull image manifest has been retried 7 time(s): failed to resolve ref docker.io/renegademaster/ark-se-dedicated-server:latest: docker.io/renegademaster/ark-se-dedicated-server:latest: not found", "stopCode": "TaskFailedToStart", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/5db354fcfe4849d2b54f6986746da59b", "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:154256404608:task-definition/testingserver-arkse:1", "updatedAt": "2026-06-12T22:44:26.033Z", "version": 4}}
+2026-06-12T22:44:26 END RequestId: b96a29b6-d84c-4f59-9422-c84061387d3a
+2026-06-12T22:44:26 REPORT RequestId: b96a29b6-d84c-4f59-9422-c84061387d3a	Duration: 22.48 ms	Billed Duration: 23 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:44:42 START RequestId: 4676de60-3cd9-46f0-bfa4-d211fdbc3c5c Version: $LATEST
+2026-06-12T22:44:42 {"version": "0", "id": "0bf86287-ae85-18e0-f43c-011d440078f0", "detail-type": "ECS Task State Change", "source": "aws.ecs", "account": "154256404608", "time": "2026-06-12T22:44:41Z", "region": "ap-southeast-2", "resources": ["arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/52f3e31e274d431fa621911f879c2b84"], "detail": {"attachments": [{"id": "0a567b3f-b830-4a79-a7dc-32a09e4e333b", "type": "eni", "status": "DELETED", "details": [{"name": "subnetId", "value": "subnet-075d6a2205fa4e5c0"}, {"name": "networkInterfaceId", "value": "eni-0958eb7de529713f9"}, {"name": "macAddress", "value": "0a:cc:91:16:dd:43"}, {"name": "privateDnsName", "value": "ip-172-31-21-61.ap-southeast-2.compute.internal"}, {"name": "privateIPv4Address", "value": "172.31.21.61"}]}, {"id": "0ee5079c-bb70-452f-8e2f-aec9299e8505", "type": "elb", "status": "DELETED", "details": []}, {"id": "37200a3f-a6e9-4ed4-bfc9-f460a6ecf233", "type": "elb", "status": "DELETED", "details": []}, {"id": "bcda991e-4871-4ced-babb-253c7411d822", "type": "elb", "status": "DELETED", "details": []}], "attributes": [{"name": "ecs.cpu-architecture", "value": "x86_64"}], "availabilityZone": "ap-southeast-2c", "clusterArn": "arn:aws:ecs:ap-southeast-2:154256404608:cluster/testingserver", "connectivity": "CONNECTED", "connectivityAt": "2026-06-12T22:42:35.953Z", "containers": [{"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/52f3e31e274d431fa621911f879c2b84/2a4d0625-bdc3-46f7-b3f6-f9ae24d7b36a", "lastStatus": "STOPPED", "name": "ark", "image": "renegademaster/ark-se-dedicated-server:latest", "runtimeId": "52f3e31e274d431fa621911f879c2b84-0846143043", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/52f3e31e274d431fa621911f879c2b84", "networkInterfaces": [{"attachmentId": "0a567b3f-b830-4a79-a7dc-32a09e4e333b", "privateIpv4Address": "172.31.21.61"}], "cpu": "0"}, {"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/52f3e31e274d431fa621911f879c2b84/f048dd62-0d08-48ce-a8e2-97948880e199", "lastStatus": "STOPPED", "name": "healthcheck", "image": "public.ecr.aws/docker/library/python:3.12-alpine", "imageDigest": "sha256:dbb1970cc04ce7d381c65efe8309c0c03d463e5b35c88f14d721796ad24cfbfd", "runtimeId": "52f3e31e274d431fa621911f879c2b84-2172504065", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/52f3e31e274d431fa621911f879c2b84", "networkInterfaces": [{"attachmentId": "0a567b3f-b830-4a79-a7dc-32a09e4e333b", "privateIpv4Address": "172.31.21.61"}], "cpu": "0"}], "cpu": "4096", "createdAt": "2026-06-12T22:42:32.566Z", "desiredStatus": "STOPPED", "enableExecuteCommand": false, "ephemeralStorage": {"sizeInGiB": 50}, "executionStoppedAt": "2026-06-12T22:43:57.695Z", "group": "service:testingserver-ark", "launchType": "FARGATE", "lastStatus": "STOPPED", "memory": "8192", "overrides": {"containerOverrides": [{"name": "ark"}, {"name": "healthcheck"}]}, "platformVersion": "1.4.0", "pullStartedAt": "2026-06-12T22:42:51.219Z", "pullStoppedAt": "2026-06-12T22:42:58.746Z", "startedBy": "ecs-svc/3923250991514324958", "stoppingAt": "2026-06-12T22:44:07.735Z", "stoppedAt": "2026-06-12T22:44:41.762Z", "stoppedReason": "CannotPullContainerError: pull image manifest has been retried 7 time(s): failed to resolve ref docker.io/renegademaster/ark-se-dedicated-server:latest: docker.io/renegademaster/ark-se-dedicated-server:latest: not found", "stopCode": "TaskFailedToStart", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/52f3e31e274d431fa621911f879c2b84", "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:154256404608:task-definition/testingserver-arkse:2", "updatedAt": "2026-06-12T22:44:41.762Z", "version": 4}}
+2026-06-12T22:44:42 END RequestId: 4676de60-3cd9-46f0-bfa4-d211fdbc3c5c
+2026-06-12T22:44:42 REPORT RequestId: 4676de60-3cd9-46f0-bfa4-d211fdbc3c5c	Duration: 1.61 ms	Billed Duration: 2 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:45:41 START RequestId: 8d812ef4-14fc-4d82-a6d1-af71178a0cf6 Version: $LATEST
+2026-06-12T22:45:41 {"action": "idle-check"}
+2026-06-12T22:45:46 ARK query failed: timed out
+2026-06-12T22:45:46 END RequestId: 8d812ef4-14fc-4d82-a6d1-af71178a0cf6
+2026-06-12T22:45:46 REPORT RequestId: 8d812ef4-14fc-4d82-a6d1-af71178a0cf6	Duration: 5230.77 ms	Billed Duration: 5231 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:46:55 START RequestId: 83a74d84-1f87-444e-ab72-93c68d4db95e Version: $LATEST
+2026-06-12T22:46:55 {"version": "0", "id": "2eb8c600-45a5-faa0-1dd4-9b0f112d425d", "detail-type": "ECS Task State Change", "source": "aws.ecs", "account": "154256404608", "time": "2026-06-12T22:46:54Z", "region": "ap-southeast-2", "resources": ["arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/ee3a64327abe41caba95c8a5bb70e775"], "detail": {"attachments": [{"id": "0915dd74-609e-43fb-9125-c13c294ed4e5", "type": "elb", "status": "DELETED", "details": []}, {"id": "46409e47-d265-48e6-8f7a-55b26848f5fb", "type": "elb", "status": "DELETED", "details": []}, {"id": "7b1200dd-caf9-4d76-92c0-b7d7d41a7aed", "type": "elb", "status": "DELETED", "details": []}, {"id": "ab7c5b8a-8f88-4b3b-8c4b-fb66c8707184", "type": "eni", "status": "DELETED", "details": [{"name": "subnetId", "value": "subnet-075d6a2205fa4e5c0"}, {"name": "networkInterfaceId", "value": "eni-01361c5b1c25fee2c"}, {"name": "macAddress", "value": "0a:ea:85:ab:a2:11"}, {"name": "privateDnsName", "value": "ip-172-31-22-238.ap-southeast-2.compute.internal"}, {"name": "privateIPv4Address", "value": "172.31.22.238"}]}], "attributes": [{"name": "ecs.cpu-architecture", "value": "x86_64"}], "availabilityZone": "ap-southeast-2c", "clusterArn": "arn:aws:ecs:ap-southeast-2:154256404608:cluster/testingserver", "connectivity": "CONNECTED", "connectivityAt": "2026-06-12T22:44:53.271Z", "containers": [{"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/ee3a64327abe41caba95c8a5bb70e775/230d85c7-1a83-4f8c-bf36-943edbedd1b4", "lastStatus": "STOPPED", "name": "healthcheck", "image": "public.ecr.aws/docker/library/python:3.12-alpine", "imageDigest": "sha256:dbb1970cc04ce7d381c65efe8309c0c03d463e5b35c88f14d721796ad24cfbfd", "runtimeId": "ee3a64327abe41caba95c8a5bb70e775-2172504065", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/ee3a64327abe41caba95c8a5bb70e775", "networkInterfaces": [{"attachmentId": "ab7c5b8a-8f88-4b3b-8c4b-fb66c8707184", "privateIpv4Address": "172.31.22.238"}], "cpu": "0"}, {"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/ee3a64327abe41caba95c8a5bb70e775/4d7119ae-fcb4-46da-b935-0de8dd2b91be", "lastStatus": "STOPPED", "name": "ark", "image": "renegademaster/ark-se-dedicated-server:latest", "runtimeId": "ee3a64327abe41caba95c8a5bb70e775-0846143043", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/ee3a64327abe41caba95c8a5bb70e775", "networkInterfaces": [{"attachmentId": "ab7c5b8a-8f88-4b3b-8c4b-fb66c8707184", "privateIpv4Address": "172.31.22.238"}], "cpu": "0"}], "cpu": "4096", "createdAt": "2026-06-12T22:44:48.771Z", "desiredStatus": "STOPPED", "enableExecuteCommand": false, "ephemeralStorage": {"sizeInGiB": 50}, "executionStoppedAt": "2026-06-12T22:46:10.18Z", "group": "service:testingserver-ark", "launchType": "FARGATE", "lastStatus": "STOPPED", "memory": "8192", "overrides": {"containerOverrides": [{"name": "healthcheck"}, {"name": "ark"}]}, "platformVersion": "1.4.0", "pullStartedAt": "2026-06-12T22:45:01.471Z", "pullStoppedAt": "2026-06-12T22:45:09.059Z", "startedBy": "ecs-svc/3923250991514324958", "stoppingAt": "2026-06-12T22:46:20.219Z", "stoppedAt": "2026-06-12T22:46:54.988Z", "stoppedReason": "CannotPullContainerError: pull image manifest has been retried 7 time(s): failed to resolve ref docker.io/renegademaster/ark-se-dedicated-server:latest: docker.io/renegademaster/ark-se-dedicated-server:latest: not found", "stopCode": "TaskFailedToStart", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/ee3a64327abe41caba95c8a5bb70e775", "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:154256404608:task-definition/testingserver-arkse:2", "updatedAt": "2026-06-12T22:46:54.988Z", "version": 4}}
+2026-06-12T22:46:55 END RequestId: 83a74d84-1f87-444e-ab72-93c68d4db95e
+2026-06-12T22:46:55 REPORT RequestId: 83a74d84-1f87-444e-ab72-93c68d4db95e	Duration: 15.23 ms	Billed Duration: 16 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:46:56 START RequestId: 489e5fab-310e-408c-a76e-8b0518e2e0d7 Version: $LATEST
+2026-06-12T22:46:56 {"version": "0", "id": "7dfb83f0-feb2-8a54-4639-a4fb7407b6e8", "detail-type": "ECS Task State Change", "source": "aws.ecs", "account": "154256404608", "time": "2026-06-12T22:46:56Z", "region": "ap-southeast-2", "resources": ["arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/db91219607a742658fe15d40a975554e"], "detail": {"attachments": [{"id": "1bf32301-7f9b-455c-8f0a-5f269e868773", "type": "elb", "status": "DELETED", "details": []}, {"id": "2977381d-4a90-489e-a5c9-121b6fa2408b", "type": "eni", "status": "DELETED", "details": [{"name": "subnetId", "value": "subnet-075d6a2205fa4e5c0"}, {"name": "networkInterfaceId", "value": "eni-040dc1c849ca874f9"}, {"name": "macAddress", "value": "0a:e7:8c:bd:a8:7b"}, {"name": "privateDnsName", "value": "ip-172-31-22-105.ap-southeast-2.compute.internal"}, {"name": "privateIPv4Address", "value": "172.31.22.105"}]}, {"id": "3cfeb520-4435-4f98-b2aa-7122a5fb6cb2", "type": "elb", "status": "DELETED", "details": []}, {"id": "6626befd-7025-438b-a63c-d7c675094274", "type": "elb", "status": "DELETED", "details": []}], "attributes": [{"name": "ecs.cpu-architecture", "value": "x86_64"}], "availabilityZone": "ap-southeast-2c", "clusterArn": "arn:aws:ecs:ap-southeast-2:154256404608:cluster/testingserver", "connectivity": "CONNECTED", "connectivityAt": "2026-06-12T22:44:53.679Z", "containers": [{"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/db91219607a742658fe15d40a975554e/0fa4067f-7b4e-4cf3-9952-8ad51c39b7ea", "lastStatus": "STOPPED", "name": "healthcheck", "image": "public.ecr.aws/docker/library/python:3.12-alpine", "imageDigest": "sha256:dbb1970cc04ce7d381c65efe8309c0c03d463e5b35c88f14d721796ad24cfbfd", "runtimeId": "db91219607a742658fe15d40a975554e-2172504065", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/db91219607a742658fe15d40a975554e", "networkInterfaces": [{"attachmentId": "2977381d-4a90-489e-a5c9-121b6fa2408b", "privateIpv4Address": "172.31.22.105"}], "cpu": "0"}, {"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/db91219607a742658fe15d40a975554e/21ace2fe-4c26-4494-a2a4-5a09cfd71823", "lastStatus": "STOPPED", "name": "ark", "image": "renegademaster/ark-se-dedicated-server:latest", "runtimeId": "db91219607a742658fe15d40a975554e-0846143043", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/db91219607a742658fe15d40a975554e", "networkInterfaces": [{"attachmentId": "2977381d-4a90-489e-a5c9-121b6fa2408b", "privateIpv4Address": "172.31.22.105"}], "cpu": "0"}], "cpu": "4096", "createdAt": "2026-06-12T22:44:48.031Z", "desiredStatus": "STOPPED", "enableExecuteCommand": false, "ephemeralStorage": {"sizeInGiB": 50}, "executionStoppedAt": "2026-06-12T22:46:09.449Z", "group": "service:testingserver-ark", "launchType": "FARGATE", "lastStatus": "STOPPED", "memory": "8192", "overrides": {"containerOverrides": [{"name": "healthcheck"}, {"name": "ark"}]}, "platformVersion": "1.4.0", "pullStartedAt": "2026-06-12T22:45:01.18Z", "pullStoppedAt": "2026-06-12T22:45:08.547Z", "startedBy": "ecs-svc/8146604678923525300", "stoppingAt": "2026-06-12T22:46:19.49Z", "stoppedAt": "2026-06-12T22:46:56.11Z", "stoppedReason": "CannotPullContainerError: pull image manifest has been retried 7 time(s): failed to resolve ref docker.io/renegademaster/ark-se-dedicated-server:latest: docker.io/renegademaster/ark-se-dedicated-server:latest: not found", "stopCode": "TaskFailedToStart", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/db91219607a742658fe15d40a975554e", "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:154256404608:task-definition/testingserver-arkse:1", "updatedAt": "2026-06-12T22:46:56.11Z", "version": 4}}
+2026-06-12T22:46:56 END RequestId: 489e5fab-310e-408c-a76e-8b0518e2e0d7
+2026-06-12T22:46:56 REPORT RequestId: 489e5fab-310e-408c-a76e-8b0518e2e0d7	Duration: 1.61 ms	Billed Duration: 2 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:47:36 INIT_START Runtime Version: python:3.12.mainlinev2.v11	Runtime Version ARN: arn:aws:lambda:ap-southeast-2::runtime:0eb6fb00a97c1a17d2e3014b04c79bfc9bea4301466439e3458f985dc75cadcc
+2026-06-12T22:50:41 START RequestId: b7c674c8-478a-4aea-8651-e2469acd0a1d Version: $LATEST
+2026-06-12T22:50:41 {"action": "idle-check"}
+2026-06-12T22:50:46 ARK query failed: timed out
+2026-06-12T22:50:46 END RequestId: b7c674c8-478a-4aea-8651-e2469acd0a1d
+2026-06-12T22:50:46 REPORT RequestId: b7c674c8-478a-4aea-8651-e2469acd0a1d	Duration: 5377.90 ms	Billed Duration: 5939 ms	Memory Size: 128 MB	Max Memory Used: 98 MB	Init Duration: 560.92 ms
+2026-06-12T22:53:27 START RequestId: 74244f39-933c-4191-a166-32092ba0f67b Version: $LATEST
+2026-06-12T22:53:27 {"version": "0", "id": "a706acd9-3e57-f355-b539-bed8c413fd7f", "detail-type": "ECS Task State Change", "source": "aws.ecs", "account": "154256404608", "time": "2026-06-12T22:53:26Z", "region": "ap-southeast-2", "resources": ["arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/e9f47aaeb97c4b1797d0610be72fe3ee"], "detail": {"attachments": [{"id": "1d623060-5eb0-4ef6-878b-dded3664ce97", "type": "eni", "status": "DELETED", "details": [{"name": "subnetId", "value": "subnet-075d6a2205fa4e5c0"}, {"name": "networkInterfaceId", "value": "eni-02b84685607356bd8"}, {"name": "macAddress", "value": "0a:58:4b:24:e5:45"}, {"name": "privateDnsName", "value": "ip-172-31-24-168.ap-southeast-2.compute.internal"}, {"name": "privateIPv4Address", "value": "172.31.24.168"}]}, {"id": "20223e53-399b-4f09-a00b-49b695ad0ad0", "type": "elb", "status": "DELETED", "details": []}, {"id": "7ffc746a-b30b-48b7-80a2-13670b3b0f2e", "type": "elb", "status": "DELETED", "details": []}, {"id": "903680db-15b8-438b-89f7-c6d63bda3099", "type": "elb", "status": "DELETED", "details": []}], "attributes": [{"name": "ecs.cpu-architecture", "value": "x86_64"}], "availabilityZone": "ap-southeast-2c", "clusterArn": "arn:aws:ecs:ap-southeast-2:154256404608:cluster/testingserver", "connectivity": "CONNECTED", "connectivityAt": "2026-06-12T22:51:24.105Z", "containers": [{"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/e9f47aaeb97c4b1797d0610be72fe3ee/325f2636-ffeb-416e-a01a-edd243bdf7b4", "lastStatus": "STOPPED", "name": "ark", "image": "renegademaster/ark-se-dedicated-server:latest", "runtimeId": "e9f47aaeb97c4b1797d0610be72fe3ee-0846143043", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/e9f47aaeb97c4b1797d0610be72fe3ee", "networkInterfaces": [{"attachmentId": "1d623060-5eb0-4ef6-878b-dded3664ce97", "privateIpv4Address": "172.31.24.168"}], "cpu": "0"}, {"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/e9f47aaeb97c4b1797d0610be72fe3ee/c8971085-c75f-4af8-ab73-75c5eedd58fc", "lastStatus": "STOPPED", "name": "healthcheck", "image": "public.ecr.aws/docker/library/python:3.12-alpine", "imageDigest": "sha256:dbb1970cc04ce7d381c65efe8309c0c03d463e5b35c88f14d721796ad24cfbfd", "runtimeId": "e9f47aaeb97c4b1797d0610be72fe3ee-2172504065", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/e9f47aaeb97c4b1797d0610be72fe3ee", "networkInterfaces": [{"attachmentId": "1d623060-5eb0-4ef6-878b-dded3664ce97", "privateIpv4Address": "172.31.24.168"}], "cpu": "0"}], "cpu": "4096", "createdAt": "2026-06-12T22:51:18.429Z", "desiredStatus": "STOPPED", "enableExecuteCommand": false, "ephemeralStorage": {"sizeInGiB": 50}, "executionStoppedAt": "2026-06-12T22:52:42.211Z", "group": "service:testingserver-ark", "launchType": "FARGATE", "lastStatus": "STOPPED", "memory": "8192", "overrides": {"containerOverrides": [{"name": "ark"}, {"name": "healthcheck"}]}, "platformVersion": "1.4.0", "pullStartedAt": "2026-06-12T22:51:31.193Z", "pullStoppedAt": "2026-06-12T22:51:38.699Z", "startedBy": "ecs-svc/8146604678923525300", "stoppingAt": "2026-06-12T22:52:52.253Z", "stoppedAt": "2026-06-12T22:53:26.987Z", "stoppedReason": "CannotPullContainerError: pull image manifest has been retried 7 time(s): failed to resolve ref docker.io/renegademaster/ark-se-dedicated-server:latest: docker.io/renegademaster/ark-se-dedicated-server:latest: not found", "stopCode": "TaskFailedToStart", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/e9f47aaeb97c4b1797d0610be72fe3ee", "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:154256404608:task-definition/testingserver-arkse:1", "updatedAt": "2026-06-12T22:53:26.987Z", "version": 4}}
+2026-06-12T22:53:27 END RequestId: 74244f39-933c-4191-a166-32092ba0f67b
+2026-06-12T22:53:27 REPORT RequestId: 74244f39-933c-4191-a166-32092ba0f67b	Duration: 20.41 ms	Billed Duration: 21 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:53:27 START RequestId: 132db558-bd4e-4cc0-95f2-dac87993dfb6 Version: $LATEST
+2026-06-12T22:53:27 {"version": "0", "id": "614550d1-db97-8aa5-aaee-0a9a5cd67c61", "detail-type": "ECS Task State Change", "source": "aws.ecs", "account": "154256404608", "time": "2026-06-12T22:53:27Z", "region": "ap-southeast-2", "resources": ["arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/062b3625b86e4b4bbb8ac6683906e5bb"], "detail": {"attachments": [{"id": "104aff27-2028-4b9b-a62e-b88f2632112a", "type": "eni", "status": "DELETED", "details": [{"name": "subnetId", "value": "subnet-075d6a2205fa4e5c0"}, {"name": "networkInterfaceId", "value": "eni-016910b6a52159777"}, {"name": "macAddress", "value": "0a:a4:f2:07:22:c1"}, {"name": "privateDnsName", "value": "ip-172-31-24-38.ap-southeast-2.compute.internal"}, {"name": "privateIPv4Address", "value": "172.31.24.38"}]}, {"id": "539035d2-8333-486d-9145-7058cae81c38", "type": "elb", "status": "DELETED", "details": []}, {"id": "a0eb059b-a860-455e-95da-39884f5f1f3f", "type": "elb", "status": "DELETED", "details": []}, {"id": "fffe006c-323b-4c89-be29-881dae16e9ba", "type": "elb", "status": "DELETED", "details": []}], "attributes": [{"name": "ecs.cpu-architecture", "value": "x86_64"}], "availabilityZone": "ap-southeast-2c", "clusterArn": "arn:aws:ecs:ap-southeast-2:154256404608:cluster/testingserver", "connectivity": "CONNECTED", "connectivityAt": "2026-06-12T22:51:22.702Z", "containers": [{"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/062b3625b86e4b4bbb8ac6683906e5bb/d00ab6eb-02cb-4ee8-ad6e-863a615ed593", "lastStatus": "STOPPED", "name": "ark", "image": "renegademaster/ark-se-dedicated-server:latest", "runtimeId": "062b3625b86e4b4bbb8ac6683906e5bb-0846143043", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/062b3625b86e4b4bbb8ac6683906e5bb", "networkInterfaces": [{"attachmentId": "104aff27-2028-4b9b-a62e-b88f2632112a", "privateIpv4Address": "172.31.24.38"}], "cpu": "0"}, {"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/062b3625b86e4b4bbb8ac6683906e5bb/d0e070e4-2e42-4d22-93ee-cd57763d173e", "lastStatus": "STOPPED", "name": "healthcheck", "image": "public.ecr.aws/docker/library/python:3.12-alpine", "imageDigest": "sha256:dbb1970cc04ce7d381c65efe8309c0c03d463e5b35c88f14d721796ad24cfbfd", "runtimeId": "062b3625b86e4b4bbb8ac6683906e5bb-2172504065", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/062b3625b86e4b4bbb8ac6683906e5bb", "networkInterfaces": [{"attachmentId": "104aff27-2028-4b9b-a62e-b88f2632112a", "privateIpv4Address": "172.31.24.38"}], "cpu": "0"}], "cpu": "4096", "createdAt": "2026-06-12T22:51:19.142Z", "desiredStatus": "STOPPED", "enableExecuteCommand": false, "ephemeralStorage": {"sizeInGiB": 50}, "executionStoppedAt": "2026-06-12T22:52:42.69Z", "group": "service:testingserver-ark", "launchType": "FARGATE", "lastStatus": "STOPPED", "memory": "8192", "overrides": {"containerOverrides": [{"name": "ark"}, {"name": "healthcheck"}]}, "platformVersion": "1.4.0", "pullStartedAt": "2026-06-12T22:51:33.687Z", "pullStoppedAt": "2026-06-12T22:51:41.04Z", "startedBy": "ecs-svc/3923250991514324958", "stoppingAt": "2026-06-12T22:52:52.732Z", "stoppedAt": "2026-06-12T22:53:27.418Z", "stoppedReason": "CannotPullContainerError: pull image manifest has been retried 7 time(s): failed to resolve ref docker.io/renegademaster/ark-se-dedicated-server:latest: docker.io/renegademaster/ark-se-dedicated-server:latest: not found", "stopCode": "TaskFailedToStart", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/062b3625b86e4b4bbb8ac6683906e5bb", "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:154256404608:task-definition/testingserver-arkse:2", "updatedAt": "2026-06-12T22:53:27.418Z", "version": 4}}
+2026-06-12T22:53:27 END RequestId: 132db558-bd4e-4cc0-95f2-dac87993dfb6
+2026-06-12T22:53:27 REPORT RequestId: 132db558-bd4e-4cc0-95f2-dac87993dfb6	Duration: 12.37 ms	Billed Duration: 13 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:55:07 START RequestId: 811680f9-62f3-43f2-bc29-095e9eb22c57 Version: $LATEST
+2026-06-12T22:55:07 {"version": "0", "id": "41856c42-4390-db7d-6d7b-4435659ab569", "detail-type": "CloudFormation Stack Status Change", "source": "aws.cloudformation", "account": "154256404608", "time": "2026-06-12T22:55:07Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9"], "detail": {"stack-id": "arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9", "client-request-token": "Console-CancelUpdateStack-0992dd4b-68f8-0064-fb8f-71aed17c342c", "status-details": {"status": "UPDATE_ROLLBACK_IN_PROGRESS", "detailed-status": "", "status-reason": "User Initiated"}}}
+2026-06-12T22:55:08 Discord notification failed: HTTP Error 403: Forbidden
+2026-06-12T22:55:08 END RequestId: 811680f9-62f3-43f2-bc29-095e9eb22c57
+2026-06-12T22:55:08 REPORT RequestId: 811680f9-62f3-43f2-bc29-095e9eb22c57	Duration: 790.00 ms	Billed Duration: 791 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:55:41 START RequestId: a0ca3e8b-6b09-4aea-a64e-2a8a24d6ee4f Version: $LATEST
+2026-06-12T22:55:41 {"action": "idle-check"}
+2026-06-12T22:55:41 END RequestId: a0ca3e8b-6b09-4aea-a64e-2a8a24d6ee4f
+2026-06-12T22:55:41 REPORT RequestId: a0ca3e8b-6b09-4aea-a64e-2a8a24d6ee4f	Duration: 225.04 ms	Billed Duration: 226 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:57:17 START RequestId: 878d9d93-a138-4754-9c1d-431d21d3d9c9 Version: $LATEST
+2026-06-12T22:57:17 {"version": "0", "id": "5c925217-af65-238c-ddeb-b3220567f64b", "detail-type": "CloudFormation Stack Status Change", "source": "aws.cloudformation", "account": "154256404608", "time": "2026-06-12T22:57:17Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9"], "detail": {"stack-id": "arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9", "client-request-token": "Console-CancelUpdateStack-0992dd4b-68f8-0064-fb8f-71aed17c342c", "status-details": {"status": "UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS", "detailed-status": "", "status-reason": ""}}}
+2026-06-12T22:57:18 Discord notification failed: HTTP Error 403: Forbidden
+2026-06-12T22:57:18 END RequestId: 878d9d93-a138-4754-9c1d-431d21d3d9c9
+2026-06-12T22:57:18 REPORT RequestId: 878d9d93-a138-4754-9c1d-431d21d3d9c9	Duration: 539.48 ms	Billed Duration: 540 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:57:20 START RequestId: a010a762-1c89-483e-9d00-4b68b907fd5b Version: $LATEST
+2026-06-12T22:57:20 {"version": "0", "id": "eeef88cf-f97f-1b95-d233-ac7a2961d3e3", "detail-type": "CloudFormation Stack Status Change", "source": "aws.cloudformation", "account": "154256404608", "time": "2026-06-12T22:57:19Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9"], "detail": {"stack-id": "arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9", "client-request-token": "Console-CancelUpdateStack-0992dd4b-68f8-0064-fb8f-71aed17c342c", "status-details": {"status": "UPDATE_ROLLBACK_COMPLETE", "detailed-status": "", "status-reason": ""}}}
+2026-06-12T22:57:20 Discord notification failed: HTTP Error 403: Forbidden
+2026-06-12T22:57:20 END RequestId: a010a762-1c89-483e-9d00-4b68b907fd5b
+2026-06-12T22:57:20 REPORT RequestId: a010a762-1c89-483e-9d00-4b68b907fd5b	Duration: 432.48 ms	Billed Duration: 433 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T22:58:49 START RequestId: 84561240-dbe9-4551-b73e-054bedf1f136 Version: $LATEST
+2026-06-12T22:58:49 {"version": "0", "id": "de4e5ea3-f3e1-5b5d-4be3-74a064e93a66", "detail-type": "CloudFormation Stack Status Change", "source": "aws.cloudformation", "account": "154256404608", "time": "2026-06-12T22:58:48Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9"], "detail": {"stack-id": "arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9", "status-details": {"status": "UPDATE_IN_PROGRESS", "detailed-status": "", "status-reason": "User Initiated"}}}
+2026-06-12T22:58:49 END RequestId: 84561240-dbe9-4551-b73e-054bedf1f136
+2026-06-12T22:58:49 REPORT RequestId: 84561240-dbe9-4551-b73e-054bedf1f136	Duration: 38.91 ms	Billed Duration: 39 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:00:41 START RequestId: a9e37198-9cb8-4c83-8a48-5387b31d047c Version: $LATEST
+2026-06-12T23:00:41 {"action": "idle-check"}
+2026-06-12T23:00:46 ARK query failed: timed out
+2026-06-12T23:00:46 END RequestId: a9e37198-9cb8-4c83-8a48-5387b31d047c
+2026-06-12T23:00:46 REPORT RequestId: a9e37198-9cb8-4c83-8a48-5387b31d047c	Duration: 5275.25 ms	Billed Duration: 5276 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:00:52 START RequestId: 6f4f7990-d1bb-4d3b-a521-f66fba6bd19c Version: $LATEST
+2026-06-12T23:00:52 {"version": "0", "id": "14444f4c-712c-ea11-5a4c-3d81c8f24edb", "detail-type": "ECS Task State Change", "source": "aws.ecs", "account": "154256404608", "time": "2026-06-12T23:00:51Z", "region": "ap-southeast-2", "resources": ["arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/d8aca447c35844faaaf9813ad9c781c9"], "detail": {"attachments": [{"id": "027b4639-5dcd-4533-8792-f70af0d05b7e", "type": "elb", "status": "DELETED", "details": []}, {"id": "1b83ae17-4689-445f-a776-6451bb04f263", "type": "elb", "status": "DELETED", "details": []}, {"id": "4909ada9-e33a-4a92-87f4-87540def8707", "type": "elb", "status": "DELETED", "details": []}, {"id": "ea7c3617-382d-4892-923c-30c081976a43", "type": "eni", "status": "DELETED", "details": [{"name": "subnetId", "value": "subnet-075d6a2205fa4e5c0"}, {"name": "networkInterfaceId", "value": "eni-0422e1a7e527de70a"}, {"name": "macAddress", "value": "0a:c1:90:34:b2:b3"}, {"name": "privateDnsName", "value": "ip-172-31-23-255.ap-southeast-2.compute.internal"}, {"name": "privateIPv4Address", "value": "172.31.23.255"}]}], "attributes": [{"name": "ecs.cpu-architecture", "value": "x86_64"}], "availabilityZone": "ap-southeast-2c", "clusterArn": "arn:aws:ecs:ap-southeast-2:154256404608:cluster/testingserver", "connectivity": "CONNECTED", "connectivityAt": "2026-06-12T22:59:10.21Z", "containers": [{"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/d8aca447c35844faaaf9813ad9c781c9/b969b2cc-9fa7-4180-b680-b9de3e0449a1", "lastStatus": "STOPPED", "name": "healthcheck", "image": "public.ecr.aws/docker/library/python:3.12-alpine", "imageDigest": "sha256:dbb1970cc04ce7d381c65efe8309c0c03d463e5b35c88f14d721796ad24cfbfd", "runtimeId": "d8aca447c35844faaaf9813ad9c781c9-2172504065", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/d8aca447c35844faaaf9813ad9c781c9", "networkInterfaces": [{"attachmentId": "ea7c3617-382d-4892-923c-30c081976a43", "privateIpv4Address": "172.31.23.255"}], "cpu": "0"}, {"containerArn": "arn:aws:ecs:ap-southeast-2:154256404608:container/testingserver/d8aca447c35844faaaf9813ad9c781c9/e9086ebb-a190-4181-a25a-730e13b55dce", "lastStatus": "STOPPED", "name": "ark", "image": "renegademaster/ark-se-dedicated-server:latest", "runtimeId": "d8aca447c35844faaaf9813ad9c781c9-0846143043", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/d8aca447c35844faaaf9813ad9c781c9", "networkInterfaces": [{"attachmentId": "ea7c3617-382d-4892-923c-30c081976a43", "privateIpv4Address": "172.31.23.255"}], "cpu": "0"}], "cpu": "4096", "createdAt": "2026-06-12T22:59:06.343Z", "desiredStatus": "STOPPED", "enableExecuteCommand": false, "ephemeralStorage": {"sizeInGiB": 50}, "executionStoppedAt": "2026-06-12T23:00:07.878Z", "group": "service:testingserver-ark", "launchType": "FARGATE", "lastStatus": "STOPPED", "memory": "8192", "overrides": {"containerOverrides": [{"name": "healthcheck"}, {"name": "ark"}]}, "platformVersion": "1.4.0", "pullStartedAt": "2026-06-12T22:59:18.293Z", "pullStoppedAt": "2026-06-12T22:59:25.783Z", "startedBy": "ecs-svc/8151247114700996588", "stoppingAt": "2026-06-12T23:00:06.67Z", "stoppedAt": "2026-06-12T23:00:51.842Z", "stoppedReason": "Scaling activity initiated by (deployment ecs-svc/8151247114700996588)", "stopCode": "ServiceSchedulerInitiated", "taskArn": "arn:aws:ecs:ap-southeast-2:154256404608:task/testingserver/d8aca447c35844faaaf9813ad9c781c9", "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:154256404608:task-definition/testingserver-arkse:1", "updatedAt": "2026-06-12T23:00:51.842Z", "version": 5}}
+2026-06-12T23:00:52 END RequestId: 6f4f7990-d1bb-4d3b-a521-f66fba6bd19c
+2026-06-12T23:00:52 REPORT RequestId: 6f4f7990-d1bb-4d3b-a521-f66fba6bd19c	Duration: 1.61 ms	Billed Duration: 2 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:03:20 START RequestId: 267c7610-d154-442a-ac43-7b1e3c9547cc Version: $LATEST
+2026-06-12T23:03:20 {"version": "0", "id": "72804b50-5070-bc44-c43f-772240062e79", "detail-type": "CloudFormation Stack Status Change", "source": "aws.cloudformation", "account": "154256404608", "time": "2026-06-12T23:03:19Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9"], "detail": {"stack-id": "arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9", "status-details": {"status": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS", "detailed-status": "", "status-reason": ""}}}
+2026-06-12T23:03:20 END RequestId: 267c7610-d154-442a-ac43-7b1e3c9547cc
+2026-06-12T23:03:20 REPORT RequestId: 267c7610-d154-442a-ac43-7b1e3c9547cc	Duration: 16.57 ms	Billed Duration: 17 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:03:22 START RequestId: f07f4130-46d3-4120-bdc5-7dde303e5eff Version: $LATEST
+2026-06-12T23:03:22 {"version": "0", "id": "0551e4f2-67ba-ffb5-4e68-2444a4011a56", "detail-type": "CloudFormation Stack Status Change", "source": "aws.cloudformation", "account": "154256404608", "time": "2026-06-12T23:03:21Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9"], "detail": {"stack-id": "arn:aws:cloudformation:ap-southeast-2:154256404608:stack/testingserver/f55382e0-664a-11f1-849e-0a7c0bd6f1d9", "status-details": {"status": "UPDATE_COMPLETE", "detailed-status": "", "status-reason": ""}}}
+2026-06-12T23:03:22 Discord notification failed: HTTP Error 403: Forbidden
+2026-06-12T23:03:22 END RequestId: f07f4130-46d3-4120-bdc5-7dde303e5eff
+2026-06-12T23:03:22 REPORT RequestId: f07f4130-46d3-4120-bdc5-7dde303e5eff	Duration: 292.72 ms	Billed Duration: 293 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:05:41 START RequestId: 1142104b-bd69-49f0-8319-6934dbb2494d Version: $LATEST
+2026-06-12T23:05:41 {"action": "idle-check"}
+2026-06-12T23:05:46 ARK query failed: timed out
+2026-06-12T23:05:46 END RequestId: 1142104b-bd69-49f0-8319-6934dbb2494d
+2026-06-12T23:05:46 REPORT RequestId: 1142104b-bd69-49f0-8319-6934dbb2494d	Duration: 5277.03 ms	Billed Duration: 5278 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:06:43 START RequestId: 67fe2288-fbad-45fe-ae8c-2ab68f6ad7fe Version: $LATEST
+2026-06-12T23:06:43 {"version": "0", "id": "45a68f16-84e1-fa67-afb6-861971a375ba", "detail-type": "CloudWatch Alarm State Change", "source": "aws.cloudwatch", "account": "154256404608", "time": "2026-06-12T23:06:43Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudwatch:ap-southeast-2:154256404608:alarm:testingserver-ark-wake-on-traffic"], "detail": {"alarmName": "testingserver-ark-wake-on-traffic", "state": {"value": "ALARM", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [1.0 (12/06/26 23:01:00)] was greater than the threshold (0.0) (minimum 1 datapoint for OK -> ALARM transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:06:43.267+0000\",\"startDate\":\"2026-06-12T23:01:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[1.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:01:00.000+0000\",\"sampleCount\":1.0,\"value\":1.0}]}", "timestamp": "2026-06-12T23:06:43.268+0000"}, "previousState": {"value": "OK", "reason": "Threshold Crossed: no datapoints were received for 1 period and 1 missing datapoint was treated as [NonBreaching].", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T21:46:15.202+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T21:41:00.000+0000\"}]}", "timestamp": "2026-06-12T21:46:15.205+0000"}, "configuration": {"metrics": [{"id": "eecf5ee5-be49-b44c-303b-02c0723cde3c", "metricStat": {"metric": {"namespace": "AWS/NetworkELB", "name": "NewFlowCount", "dimensions": {"LoadBalancer": "net/testingserver-ark-nlb/3cbaa7049e767ac6"}}, "period": 60, "stat": "Sum"}, "returnData": true}]}}}
+2026-06-12T23:06:43 END RequestId: 67fe2288-fbad-45fe-ae8c-2ab68f6ad7fe
+2026-06-12T23:06:43 REPORT RequestId: 67fe2288-fbad-45fe-ae8c-2ab68f6ad7fe	Duration: 229.72 ms	Billed Duration: 230 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:10:41 START RequestId: e4129668-0e8b-4020-a6c8-6e054f4dfe83 Version: $LATEST
+2026-06-12T23:10:41 {"action": "idle-check"}
+2026-06-12T23:10:46 ARK query failed: timed out
+2026-06-12T23:10:46 END RequestId: e4129668-0e8b-4020-a6c8-6e054f4dfe83
+2026-06-12T23:10:46 REPORT RequestId: e4129668-0e8b-4020-a6c8-6e054f4dfe83	Duration: 5371.18 ms	Billed Duration: 5372 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:11:43 START RequestId: 68650d78-f8d7-4554-8680-b57a7191d970 Version: $LATEST
+2026-06-12T23:11:43 {"version": "0", "id": "c9fb5544-9a91-80df-0e77-e2b18b354b2c", "detail-type": "CloudWatch Alarm State Change", "source": "aws.cloudwatch", "account": "154256404608", "time": "2026-06-12T23:11:43Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudwatch:ap-southeast-2:154256404608:alarm:testingserver-ark-wake-on-traffic"], "detail": {"alarmName": "testingserver-ark-wake-on-traffic", "state": {"value": "ALARM", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [1.0 (12/06/26 23:06:00)] was greater than the threshold (0.0) (minimum 1 datapoint for OK -> ALARM transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:11:43.265+0000\",\"startDate\":\"2026-06-12T23:06:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[1.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:06:00.000+0000\",\"sampleCount\":1.0,\"value\":1.0}]}", "timestamp": "2026-06-12T23:11:43.267+0000"}, "previousState": {"value": "OK", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [0.0 (12/06/26 23:02:00)] was not greater than the threshold (0.0) (minimum 1 datapoint for ALARM -> OK transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:07:43.264+0000\",\"startDate\":\"2026-06-12T23:02:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[0.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:02:00.000+0000\",\"sampleCount\":1.0,\"value\":0.0}]}", "timestamp": "2026-06-12T23:07:43.265+0000"}, "configuration": {"metrics": [{"id": "eecf5ee5-be49-b44c-303b-02c0723cde3c", "metricStat": {"metric": {"namespace": "AWS/NetworkELB", "name": "NewFlowCount", "dimensions": {"LoadBalancer": "net/testingserver-ark-nlb/3cbaa7049e767ac6"}}, "period": 60, "stat": "Sum"}, "returnData": true}]}}}
+2026-06-12T23:11:43 END RequestId: 68650d78-f8d7-4554-8680-b57a7191d970
+2026-06-12T23:11:43 REPORT RequestId: 68650d78-f8d7-4554-8680-b57a7191d970	Duration: 221.71 ms	Billed Duration: 222 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:13:43 START RequestId: 010a6111-7863-4d37-b860-edd6f4d0c99c Version: $LATEST
+2026-06-12T23:13:43 {"version": "0", "id": "14237db6-6c0d-5222-a5f1-46c58df87140", "detail-type": "CloudWatch Alarm State Change", "source": "aws.cloudwatch", "account": "154256404608", "time": "2026-06-12T23:13:43Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudwatch:ap-southeast-2:154256404608:alarm:testingserver-ark-wake-on-traffic"], "detail": {"alarmName": "testingserver-ark-wake-on-traffic", "state": {"value": "ALARM", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [1.0 (12/06/26 23:08:00)] was greater than the threshold (0.0) (minimum 1 datapoint for OK -> ALARM transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:13:43.264+0000\",\"startDate\":\"2026-06-12T23:08:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[1.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:08:00.000+0000\",\"sampleCount\":1.0,\"value\":1.0}]}", "timestamp": "2026-06-12T23:13:43.267+0000"}, "previousState": {"value": "OK", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [0.0 (12/06/26 23:07:00)] was not greater than the threshold (0.0) (minimum 1 datapoint for ALARM -> OK transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:12:43.264+0000\",\"startDate\":\"2026-06-12T23:07:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[0.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:07:00.000+0000\",\"sampleCount\":1.0,\"value\":0.0}]}", "timestamp": "2026-06-12T23:12:43.267+0000"}, "configuration": {"metrics": [{"id": "eecf5ee5-be49-b44c-303b-02c0723cde3c", "metricStat": {"metric": {"namespace": "AWS/NetworkELB", "name": "NewFlowCount", "dimensions": {"LoadBalancer": "net/testingserver-ark-nlb/3cbaa7049e767ac6"}}, "period": 60, "stat": "Sum"}, "returnData": true}]}}}
+2026-06-12T23:13:43 END RequestId: 010a6111-7863-4d37-b860-edd6f4d0c99c
+2026-06-12T23:13:43 REPORT RequestId: 010a6111-7863-4d37-b860-edd6f4d0c99c	Duration: 240.97 ms	Billed Duration: 241 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:15:41 START RequestId: 023b286b-31ac-425a-bc71-05a0a462d3af Version: $LATEST
+2026-06-12T23:15:41 {"action": "idle-check"}
+2026-06-12T23:15:46 ARK query failed: timed out
+2026-06-12T23:15:46 END RequestId: 023b286b-31ac-425a-bc71-05a0a462d3af
+2026-06-12T23:15:46 REPORT RequestId: 023b286b-31ac-425a-bc71-05a0a462d3af	Duration: 5237.57 ms	Billed Duration: 5238 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:16:43 START RequestId: 8038d4cc-0f17-4b0f-b3aa-bd8a6748d4f4 Version: $LATEST
+2026-06-12T23:16:43 {"version": "0", "id": "b1517c9d-3473-d3be-9fae-396ed33aca67", "detail-type": "CloudWatch Alarm State Change", "source": "aws.cloudwatch", "account": "154256404608", "time": "2026-06-12T23:16:43Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudwatch:ap-southeast-2:154256404608:alarm:testingserver-ark-wake-on-traffic"], "detail": {"alarmName": "testingserver-ark-wake-on-traffic", "state": {"value": "ALARM", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [1.0 (12/06/26 23:11:00)] was greater than the threshold (0.0) (minimum 1 datapoint for OK -> ALARM transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:16:43.265+0000\",\"startDate\":\"2026-06-12T23:11:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[1.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:11:00.000+0000\",\"sampleCount\":1.0,\"value\":1.0}]}", "timestamp": "2026-06-12T23:16:43.268+0000"}, "previousState": {"value": "OK", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [0.0 (12/06/26 23:09:00)] was not greater than the threshold (0.0) (minimum 1 datapoint for ALARM -> OK transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:14:43.264+0000\",\"startDate\":\"2026-06-12T23:09:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[0.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:09:00.000+0000\",\"sampleCount\":1.0,\"value\":0.0}]}", "timestamp": "2026-06-12T23:14:43.265+0000"}, "configuration": {"metrics": [{"id": "eecf5ee5-be49-b44c-303b-02c0723cde3c", "metricStat": {"metric": {"namespace": "AWS/NetworkELB", "name": "NewFlowCount", "dimensions": {"LoadBalancer": "net/testingserver-ark-nlb/3cbaa7049e767ac6"}}, "period": 60, "stat": "Sum"}, "returnData": true}]}}}
+2026-06-12T23:16:43 END RequestId: 8038d4cc-0f17-4b0f-b3aa-bd8a6748d4f4
+2026-06-12T23:16:43 REPORT RequestId: 8038d4cc-0f17-4b0f-b3aa-bd8a6748d4f4	Duration: 207.34 ms	Billed Duration: 208 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:20:41 START RequestId: d816c4ff-430d-491b-9dee-51e6f863c0c9 Version: $LATEST
+2026-06-12T23:20:41 {"action": "idle-check"}
+2026-06-12T23:20:46 ARK query failed: timed out
+2026-06-12T23:20:46 END RequestId: d816c4ff-430d-491b-9dee-51e6f863c0c9
+2026-06-12T23:20:46 REPORT RequestId: d816c4ff-430d-491b-9dee-51e6f863c0c9	Duration: 5267.22 ms	Billed Duration: 5268 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:21:43 START RequestId: d5ab2c56-d18c-45a0-8565-240be74daf20 Version: $LATEST
+2026-06-12T23:21:43 {"version": "0", "id": "78380e24-721e-3088-f9cd-018556103572", "detail-type": "CloudWatch Alarm State Change", "source": "aws.cloudwatch", "account": "154256404608", "time": "2026-06-12T23:21:43Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudwatch:ap-southeast-2:154256404608:alarm:testingserver-ark-wake-on-traffic"], "detail": {"alarmName": "testingserver-ark-wake-on-traffic", "state": {"value": "ALARM", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [1.0 (12/06/26 23:16:00)] was greater than the threshold (0.0) (minimum 1 datapoint for OK -> ALARM transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:21:43.264+0000\",\"startDate\":\"2026-06-12T23:16:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[1.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:16:00.000+0000\",\"sampleCount\":1.0,\"value\":1.0}]}", "timestamp": "2026-06-12T23:21:43.267+0000"}, "previousState": {"value": "OK", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [0.0 (12/06/26 23:12:00)] was not greater than the threshold (0.0) (minimum 1 datapoint for ALARM -> OK transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:17:43.264+0000\",\"startDate\":\"2026-06-12T23:12:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[0.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:12:00.000+0000\",\"sampleCount\":1.0,\"value\":0.0}]}", "timestamp": "2026-06-12T23:17:43.265+0000"}, "configuration": {"metrics": [{"id": "eecf5ee5-be49-b44c-303b-02c0723cde3c", "metricStat": {"metric": {"namespace": "AWS/NetworkELB", "name": "NewFlowCount", "dimensions": {"LoadBalancer": "net/testingserver-ark-nlb/3cbaa7049e767ac6"}}, "period": 60, "stat": "Sum"}, "returnData": true}]}}}
+2026-06-12T23:21:43 END RequestId: d5ab2c56-d18c-45a0-8565-240be74daf20
+2026-06-12T23:21:43 REPORT RequestId: d5ab2c56-d18c-45a0-8565-240be74daf20	Duration: 250.05 ms	Billed Duration: 251 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:24:43 START RequestId: 0e448f78-f4ac-4f9c-955c-e4bb54ffcb57 Version: $LATEST
+2026-06-12T23:24:43 {"version": "0", "id": "a8b98ab6-85f2-1043-2a49-2f479a2f4c93", "detail-type": "CloudWatch Alarm State Change", "source": "aws.cloudwatch", "account": "154256404608", "time": "2026-06-12T23:24:43Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudwatch:ap-southeast-2:154256404608:alarm:testingserver-ark-wake-on-traffic"], "detail": {"alarmName": "testingserver-ark-wake-on-traffic", "state": {"value": "ALARM", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [1.0 (12/06/26 23:19:00)] was greater than the threshold (0.0) (minimum 1 datapoint for OK -> ALARM transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:24:43.266+0000\",\"startDate\":\"2026-06-12T23:19:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[1.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:19:00.000+0000\",\"sampleCount\":1.0,\"value\":1.0}]}", "timestamp": "2026-06-12T23:24:43.267+0000"}, "previousState": {"value": "OK", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [0.0 (12/06/26 23:17:00)] was not greater than the threshold (0.0) (minimum 1 datapoint for ALARM -> OK transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:22:43.265+0000\",\"startDate\":\"2026-06-12T23:17:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[0.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:17:00.000+0000\",\"sampleCount\":1.0,\"value\":0.0}]}", "timestamp": "2026-06-12T23:22:43.267+0000"}, "configuration": {"metrics": [{"id": "eecf5ee5-be49-b44c-303b-02c0723cde3c", "metricStat": {"metric": {"namespace": "AWS/NetworkELB", "name": "NewFlowCount", "dimensions": {"LoadBalancer": "net/testingserver-ark-nlb/3cbaa7049e767ac6"}}, "period": 60, "stat": "Sum"}, "returnData": true}]}}}
+2026-06-12T23:24:43 END RequestId: 0e448f78-f4ac-4f9c-955c-e4bb54ffcb57
+2026-06-12T23:24:43 REPORT RequestId: 0e448f78-f4ac-4f9c-955c-e4bb54ffcb57	Duration: 254.60 ms	Billed Duration: 255 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:25:41 START RequestId: 3be173f3-eea3-46d1-8a61-19ea5df36700 Version: $LATEST
+2026-06-12T23:25:41 {"action": "idle-check"}
+2026-06-12T23:25:46 ARK query failed: timed out
+2026-06-12T23:25:46 END RequestId: 3be173f3-eea3-46d1-8a61-19ea5df36700
+2026-06-12T23:25:46 REPORT RequestId: 3be173f3-eea3-46d1-8a61-19ea5df36700	Duration: 5245.99 ms	Billed Duration: 5246 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:26:43 START RequestId: e33e9636-6448-4710-8c66-2c126ad35914 Version: $LATEST
+2026-06-12T23:26:43 {"version": "0", "id": "b9ceab6a-557b-2e1b-62b3-eb08b96e4b2e", "detail-type": "CloudWatch Alarm State Change", "source": "aws.cloudwatch", "account": "154256404608", "time": "2026-06-12T23:26:43Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudwatch:ap-southeast-2:154256404608:alarm:testingserver-ark-wake-on-traffic"], "detail": {"alarmName": "testingserver-ark-wake-on-traffic", "state": {"value": "ALARM", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [1.0 (12/06/26 23:21:00)] was greater than the threshold (0.0) (minimum 1 datapoint for OK -> ALARM transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:26:43.263+0000\",\"startDate\":\"2026-06-12T23:21:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[1.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:21:00.000+0000\",\"sampleCount\":1.0,\"value\":1.0}]}", "timestamp": "2026-06-12T23:26:43.267+0000"}, "previousState": {"value": "OK", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [0.0 (12/06/26 23:20:00)] was not greater than the threshold (0.0) (minimum 1 datapoint for ALARM -> OK transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:25:43.264+0000\",\"startDate\":\"2026-06-12T23:20:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[0.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:20:00.000+0000\",\"sampleCount\":1.0,\"value\":0.0}]}", "timestamp": "2026-06-12T23:25:43.265+0000"}, "configuration": {"metrics": [{"id": "eecf5ee5-be49-b44c-303b-02c0723cde3c", "metricStat": {"metric": {"namespace": "AWS/NetworkELB", "name": "NewFlowCount", "dimensions": {"LoadBalancer": "net/testingserver-ark-nlb/3cbaa7049e767ac6"}}, "period": 60, "stat": "Sum"}, "returnData": true}]}}}
+2026-06-12T23:26:43 END RequestId: e33e9636-6448-4710-8c66-2c126ad35914
+2026-06-12T23:26:43 REPORT RequestId: e33e9636-6448-4710-8c66-2c126ad35914	Duration: 234.06 ms	Billed Duration: 235 ms	Memory Size: 128 MB	Max Memory Used: 98 MB
+2026-06-12T23:28:43 START RequestId: a383047a-4801-47a3-a048-50ade768b61e Version: $LATEST
+2026-06-12T23:28:43 {"version": "0", "id": "04973bb0-bbf8-858e-868c-279392f02b1f", "detail-type": "CloudWatch Alarm State Change", "source": "aws.cloudwatch", "account": "154256404608", "time": "2026-06-12T23:28:43Z", "region": "ap-southeast-2", "resources": ["arn:aws:cloudwatch:ap-southeast-2:154256404608:alarm:testingserver-ark-wake-on-traffic"], "detail": {"alarmName": "testingserver-ark-wake-on-traffic", "state": {"value": "ALARM", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [1.0 (12/06/26 23:23:00)] was greater than the threshold (0.0) (minimum 1 datapoint for OK -> ALARM transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:28:43.263+0000\",\"startDate\":\"2026-06-12T23:23:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[1.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:23:00.000+0000\",\"sampleCount\":1.0,\"value\":1.0}]}", "timestamp": "2026-06-12T23:28:43.267+0000"}, "previousState": {"value": "OK", "reason": "Threshold Crossed: 1 out of the last 1 datapoints [0.0 (12/06/26 23:22:00)] was not greater than the threshold (0.0) (minimum 1 datapoint for ALARM -> OK transition).", "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2026-06-12T23:27:43.263+0000\",\"startDate\":\"2026-06-12T23:22:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[0.0],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2026-06-12T23:22:00.000+0000\",\"sampleCount\":1.0,\"value\":0.0}]}", "timestamp": "2026-06-12T23:27:43.265+0000"}, "configuration": {"metrics": [{"id": "eecf5ee5-be49-b44c-303b-02c0723cde3c", "metricStat": {"metric": {"namespace": "AWS/NetworkELB", "name": "NewFlowCount", "dimensions": {"LoadBalancer": "net/testingserver-ark-nlb/3cbaa7049e767ac6"}}, "period": 60, "stat": "Sum"}, "returnData": true}]}}}
+2026-06-12T23:28:43 END RequestId: a383047a-4801-47a3-a048-50ade768b61e
+2026-06-12T23:28:43 REPORT RequestId: a383047a-4801-47a3-a048-50ade768b61e	Duration: 238.28 ms	Billed Duration: 239 ms	Memory Size: 128 MB	Max Memory Used: 98 MB

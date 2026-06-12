@@ -70,6 +70,9 @@
                 "elasticfilesystem:DescribeMountTargetSecurityGroups",
                 "elasticfilesystem:DescribeReplicationConfigurations",
                 "elasticfilesystem:DescribeTags",
+                "elasticfilesystem:CreateAccessPoint",
+                "elasticfilesystem:DeleteAccessPoint",
+                "elasticfilesystem:DescribeAccessPoints",
                 "elasticfilesystem:PutFileSystemPolicy",
                 "elasticfilesystem:PutLifecycleConfiguration",
                 "elasticfilesystem:CreateMountTarget",
@@ -118,6 +121,8 @@
             ],
             "Resource": [
                 "arn:aws:iam::*:role/minecraft*",
+                "arn:aws:iam::*:role/*-ark-*",
+                "arn:aws:iam::*:role/arkse-ark-discord-notifier-role",
                 "arn:aws:iam::*:role/*-idle-shutdown-role",
                 "arn:aws:iam::*:role/*-ExecutionRole-*",
                 "arn:aws:iam::*:role/*-ecs-*",
@@ -137,8 +142,22 @@
             ],
             "Resource": [
                 "arn:aws:logs:*:*:log-group:/ecs/minecraft*",
-                "arn:aws:logs:*:*:log-group:/ecs/minecraft*:log-stream:*"
+                "arn:aws:logs:*:*:log-group:/ecs/minecraft*:log-stream:*",
+                "arn:aws:logs:*:*:log-group:/ecs/arkse*",
+                "arn:aws:logs:*:*:log-group:/ecs/arkse*:log-stream:*"
             ]
+        },
+        {
+            "Sid": "CloudWatchAlarmAccess",
+            "Effect": "Allow",
+            "Action": [
+                "cloudwatch:DeleteAlarms",
+                "cloudwatch:DescribeAlarms",
+                "cloudwatch:DisableAlarmActions",
+                "cloudwatch:EnableAlarmActions",
+                "cloudwatch:PutMetricAlarm"
+            ],
+            "Resource": "*"
         },
         {
             "Sid": "ElasticLoadBalancingAccess",
@@ -162,6 +181,22 @@
             "Resource": "*"
         },
         {
+            "Sid": "SNSNotifierAccess",
+            "Effect": "Allow",
+            "Action": [
+                "sns:CreateTopic",
+                "sns:DeleteTopic",
+                "sns:GetTopicAttributes",
+                "sns:SetTopicAttributes",
+                "sns:Subscribe",
+                "sns:Unsubscribe",
+                "sns:ListSubscriptionsByTopic",
+                "sns:TagResource",
+                "sns:UntagResource"
+            ],
+            "Resource": "arn:aws:sns:*:*:arkse-cloudformation-notifications"
+        },
+        {
             "Sid": "LambdaIdleShutdownAccess",
             "Effect": "Allow",
             "Action": [
@@ -175,9 +210,14 @@
                 "lambda:RemovePermission",
                 "lambda:GetPolicy",
                 "lambda:TagResource",
-                "lambda:UntagResource"
+                "lambda:UntagResource",
+                "lambda:InvokeFunction"
             ],
-            "Resource": "arn:aws:lambda:*:*:function:*-idle-shutdown"
+            "Resource": [
+                "arn:aws:lambda:*:*:function:*-idle-shutdown",
+                "arn:aws:lambda:*:*:function:*-arkse-automation",
+                "arn:aws:lambda:*:*:function:arkse-discord-notifier"
+            ]
         },
         {
             "Sid": "EventBridgeIdleShutdownAccess",
@@ -192,7 +232,10 @@
                 "events:RemoveTargets",
                 "events:ListTargetsByRule"
             ],
-            "Resource": "arn:aws:events:*:*:rule/*-idle-shutdown"
+            "Resource": [
+                "arn:aws:events:*:*:rule/*-idle-shutdown",
+                "arn:aws:events:*:*:rule/*-ark-*"
+            ]
         }
     ]
 }

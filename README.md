@@ -1,13 +1,14 @@
-# CICD Minecraft Server - WIP
+# CICD Game Servers - WIP
 
-Automated CloudFormation stack management for Minecraft servers on AWS ECS Fargate, controlled via GitHub Actions with Discord notifications.
+Automated CloudFormation stack management for containerised game servers on AWS ECS Fargate, controlled via GitHub Actions with Discord notifications.
 
 ## Features
 
 - **Create/Start/Stop/Delete** CloudFormation stacks via workflow dispatch
-- **Automatic world backups** to S3 before server shutdown
+- **Minecraft and ARK: Survival Evolved** stack definitions
+- **Minecraft automatic world backups** to S3 before server shutdown
 - **Idle auto-shutdown** after 20 minutes with no players online
-- **Discord notifications** for all stack operations with login details & backup links
+- **Discord notifications** for stack operations, with Minecraft backup links where enabled
 - **OIDC authentication** - no long-lived AWS credentials stored in GitHub
 
 ## Quick Start
@@ -76,6 +77,16 @@ aws iam put-role-policy \
 7. Discord notification will arrive with server IP & login details
 
 ## Workflow Actions
+
+### ArkSE Stack
+
+The repo also includes a separate ARK: Survival Evolved setup under `ArkSE_server/`.
+
+- Template: `ArkSE_server/CFN_ArkSEServer.yaml`
+- Config profiles: `ArkSE_server/arkse-stack-config.json`
+- Workflow: `.github/workflows/arkse-stack-control.yml`
+
+The ArkSE stack runs the dedicated server container on ECS Fargate, persists server data on EFS, wakes on UDP/game-query traffic to `arkserver.bearynatural.dev`, shuts down after 20 minutes with no players, and sends Discord notifications from AWS Lambda. It does not create an S3 backup bucket or send backup URLs.
 
 ### Create Stack
 
@@ -274,10 +285,16 @@ CICD_MC_server/
 ├── README.md                          # This file
 ├── oidc-iam-setup.yaml               # CloudFormation for OIDC + IAM
 ├── github-actions-policy.json        # IAM permissions policy
+├── ArkSE_server/
+│   ├── README.md                     # ARK: Survival Evolved stack notes
+│   ├── arkse-stack-config.json       # ArkSE non-secret profile defaults
+│   ├── CFN_ArkSENotifier.yaml        # Persistent AWS-side Discord error notifier
+│   └── CFN_ArkSEServer.yaml          # ArkSE stack template
 ├── Minecraft_server/
 │   ├── stack-config.json             # Non-secret profile defaults for workflow
 │   └── CFN_FargateServer.yaml        # Minecraft stack template
 ├── .github/workflows/
+│   ├── arkse-stack-control.yml       # ArkSE GitHub Actions workflow
 │   └── minecraft-stack-control.yml   # GitHub Actions workflow
 └── .gitignore
 ```

@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Persistent AWS-side Discord notifier for ARK CloudFormation stack errors.
+
+Parameters:
+  DiscordWebhookUrl:
+    Type: String
+    NoEcho: true
+    Description: Discord webhook URL used by the notifier Lambda.
+
+Resources:
+  ArkSECloudFormationNotifications:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: arkse-cloudformation-notifications
+
+  ArkSENotifierRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: arkse-ark-discord-notifier-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  ArkSENotifierFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: arkse-discord-notifier
+      Runtime: python3.12
+      Handler: index.handler
+      Role: !GetAtt ArkSENotifierRole.Arn
+      Timeout: 30
+      Environment:
+        Variables:
+          DISCORD_WEBHOOK_URL: !Ref DiscordWebhookUrl
+      Code:
+        ZipFile: |
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+
+          def discord(message):
+              url = os.environ.get("DISCORD_WEBHOOK_URL", "")
+              if not url:
+                  return
+              payload = json.dumps({"content": message[:1900]}).encode("utf-8")
+              request = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+              try:
+                  urllib.request.urlopen(request, timeout=10).read()
+              except urllib.error.URLError as error:
+                  print(f"Discord notification failed: {error}")
+
+
+          def handler(event, context):
+              for record in event.get("Records", []):
+                  message = record.get("Sns", {}).get("Message", "")
+                  if not message:
+                      continue
+                  if "FAILED" not in message and "ROLLBACK" not in message:
+                      continue
+                  discord("ARK CloudFormation error from AWS:\n" + message)
+              return {"status": "ok"}
+
+  ArkSENotifierSubscription:
+    Type: AWS::SNS::Subscription
+    DependsOn: ArkSENotifierInvokePermission
+    Properties:
+      TopicArn: !Ref ArkSECloudFormationNotifications
+      Protocol: lambda
+      Endpoint: !GetAtt ArkSENotifierFunction.Arn
+
+  ArkSENotifierInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ArkSENotifierFunction
+      Action: lambda:InvokeFunction
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref ArkSECloudFormationNotifications
+
+Outputs:
+  NotificationTopicArn:
+    Value: !Ref ArkSECloudFormationNotifications
+  NotifierFunctionName:
+    Value: !Ref ArkSENotifierFunction

@@ -48,7 +48,7 @@ Resources:
                 "token.actions.githubusercontent.com:sub": !Sub "repo:${GitHubOrg}/${GitHubRepo}:*"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AdministratorAccess
-      Description: "Role for GitHub Actions OIDC authentication (Minecraft stack management)"
+      Description: "Role for GitHub Actions OIDC authentication (game server stack management)"
 
 Outputs:
   OIDCProviderArn:

@@ -1,0 +1,798 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ARK Survival Evolved dedicated server on ECS Fargate with on-demand wake, idle shutdown, and AWS-side Discord notifications.
+
+Parameters:
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Public subnet for the Fargate task and network load balancer.
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC that contains the public subnet.
+
+  ServerState:
+    Type: String
+    Default: Stopped
+    AllowedValues:
+      - Running
+      - Stopped
+
+  ECSClusterName:
+    Type: String
+
+  ArkImage:
+    Type: String
+    Default: renegademaster/ark-se-dedicated-server:latest
+
+  Cpu:
+    Type: String
+    Default: "4096"
+
+  Memory:
+    Type: String
+    Default: "8192"
+
+  DnsHostname:
+    Type: String
+    Default: arkserver.bearynatural.dev
+
+  LogGroupName:
+    Type: String
+    Default: /ecs/arkse
+
+  ServerName:
+    Type: String
+    Default: BearyNaturalArk
+
+  MapName:
+    Type: String
+    Default: TheIsland
+
+  MaxPlayers:
+    Type: String
+    Default: "16"
+
+  GamePort:
+    Type: String
+    Default: "7777"
+
+  GamePort2:
+    Type: String
+    Default: "7778"
+
+  QueryPort:
+    Type: String
+    Default: "27015"
+
+  AdminPassword:
+    Type: String
+    NoEcho: true
+    Description: ARK server admin password. Prefer passing from GitHub Secrets.
+
+  ServerPassword:
+    Type: String
+    NoEcho: true
+    Default: ""
+    Description: Optional join password. Leave blank for a public server.
+
+  DiscordWebhookUrl:
+    Type: String
+    NoEcho: true
+    Description: Discord webhook used by AWS Lambda notifications.
+
+  AutoStopIdleSeconds:
+    Type: String
+    Default: "1200"
+    AllowedPattern: "^[0-9]+$"
+
+Mappings:
+  ServerState:
+    Running:
+      DesiredCapacity: 1
+    Stopped:
+      DesiredCapacity: 0
+
+Conditions:
+  HasDnsHostname: !Not [!Equals [!Ref DnsHostname, ""]]
+
+Resources:
+  ArkLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref LogGroupName
+      RetentionInDays: 7
+
+  ArkFileSystem:
+    Type: AWS::EFS::FileSystem
+    Properties:
+      PerformanceMode: generalPurpose
+      ThroughputMode: bursting
+
+  ArkAccessPoint:
+    Type: AWS::EFS::AccessPoint
+    Properties:
+      FileSystemId: !Ref ArkFileSystem
+      PosixUser:
+        Uid: "1000"
+        Gid: "1000"
+      RootDirectory:
+        Path: /arkse
+        CreationInfo:
+          OwnerUid: "1000"
+          OwnerGid: "1000"
+          Permissions: "0755"
+
+  ArkTaskSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ARK ECS task access
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: udp
+          FromPort: !Ref GamePort
+          ToPort: !Ref GamePort
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: udp
+          FromPort: !Ref GamePort2
+          ToPort: !Ref GamePort2
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: udp
+          FromPort: !Ref QueryPort
+          ToPort: !Ref QueryPort
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+
+  ArkEfsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow NFS access from ARK ECS task
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 2049
+          ToPort: 2049
+          SourceSecurityGroupId: !Ref ArkTaskSecurityGroup
+
+  ArkMountTarget:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref ArkFileSystem
+      SubnetId: !Ref SubnetId
+      SecurityGroups:
+        - !Ref ArkEfsSecurityGroup
+
+  ArkCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ECSClusterName
+
+  ArkTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-ark-task-execution"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - arn:aws:iam::aws:policy/AmazonElasticFileSystemClientReadWriteAccess
+
+  ArkAutomationRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-ark-automation"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: ark-automation
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:DescribeStackEvents
+                  - cloudformation:DescribeStacks
+                  - cloudformation:UpdateStack
+                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*"
+              - Effect: Allow
+                Action:
+                  - ecs:DescribeServices
+                  - ecs:UpdateService
+                Resource: !Sub "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:service/${ECSClusterName}/${AWS::StackName}-ark"
+              - Effect: Allow
+                Action:
+                  - ecs:DescribeClusters
+                Resource: !GetAtt ArkCluster.Arn
+              - Effect: Allow
+                Action:
+                  - ssm:DeleteParameter
+                  - ssm:GetParameter
+                  - ssm:PutParameter
+                Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/arkse/${AWS::StackName}/*"
+
+  ArkAutomationFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-arkse-automation"
+      Runtime: python3.12
+      Handler: index.handler
+      Role: !GetAtt ArkAutomationRole.Arn
+      Timeout: 60
+      Environment:
+        Variables:
+          STACK_NAME: !Ref AWS::StackName
+          CLUSTER_NAME: !Ref ECSClusterName
+          SERVICE_NAME: !Sub "${AWS::StackName}-ark"
+          DISCORD_WEBHOOK_URL: !Ref DiscordWebhookUrl
+          DNS_HOSTNAME: !Ref DnsHostname
+          NLB_DNS: !GetAtt ArkNLB.DNSName
+          QUERY_PORT: !Ref QueryPort
+          IDLE_SECONDS: !Ref AutoStopIdleSeconds
+          LAST_ACTIVE_PARAMETER: !Sub "/arkse/${AWS::StackName}/last-active"
+      Code:
+        ZipFile: |
+          import datetime
+          import json
+          import os
+          import socket
+          import urllib.error
+          import urllib.request
+
+          import boto3
+          from botocore.exceptions import ClientError
+
+          cfn = boto3.client("cloudformation")
+          ecs = boto3.client("ecs")
+          ssm = boto3.client("ssm")
+
+
+          def discord(message):
+              url = os.environ.get("DISCORD_WEBHOOK_URL", "")
+              if not url:
+                  return
+              payload = json.dumps({"content": message[:1900]}).encode("utf-8")
+              request = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+              try:
+                  urllib.request.urlopen(request, timeout=10).read()
+              except urllib.error.URLError as error:
+                  print(f"Discord notification failed: {error}")
+
+
+          def now():
+              return int(datetime.datetime.now(datetime.UTC).timestamp())
+
+
+          def current_stack():
+              return cfn.describe_stacks(StackName=os.environ["STACK_NAME"])["Stacks"][0]
+
+
+          def parameter_value(stack, key):
+              for parameter in stack.get("Parameters", []):
+                  if parameter.get("ParameterKey") == key:
+                      return parameter.get("ParameterValue", "")
+              return ""
+
+
+          def set_server_state(state, reason):
+              stack = current_stack()
+              status = stack.get("StackStatus", "")
+              if status.endswith("_IN_PROGRESS"):
+                  discord(f"ARK server {state.lower()} request delayed because CloudFormation is busy: {status}. Reason: {reason}")
+                  return {"status": "busy", "stack_status": status}
+
+              if parameter_value(stack, "ServerState") == state:
+                  return {"status": "already", "state": state}
+
+              params = []
+              saw_state = False
+              for parameter in stack.get("Parameters", []):
+                  key = parameter["ParameterKey"]
+                  if key == "ServerState":
+                      params.append({"ParameterKey": key, "ParameterValue": state})
+                      saw_state = True
+                  else:
+                      params.append({"ParameterKey": key, "UsePreviousValue": True})
+              if not saw_state:
+                  params.append({"ParameterKey": "ServerState", "ParameterValue": state})
+
+              try:
+                  response = cfn.update_stack(
+                      StackName=os.environ["STACK_NAME"],
+                      UsePreviousTemplate=True,
+                      Parameters=params,
+                      Capabilities=["CAPABILITY_NAMED_IAM"],
+                  )
+              except ClientError as error:
+                  if "No updates are to be performed" in str(error):
+                      return {"status": "no-update"}
+                  discord(f"ARK server {state.lower()} request failed: {error}")
+                  raise
+              discord(f"ARK server {state.lower()} requested. Reason: {reason}")
+              return {"status": "requested", "stack_id": response["StackId"]}
+
+
+          def parse_a2s_info(data):
+              if len(data) < 7 or data[:4] != b"\xff\xff\xff\xff" or data[4] != 0x49:
+                  return None
+              index = 6
+              for _ in range(4):
+                  end = data.find(b"\x00", index)
+                  if end == -1:
+                      return None
+                  index = end + 1
+              index += 2
+              if len(data) <= index + 1:
+                  return None
+              return {"players": data[index], "max_players": data[index + 1]}
+
+
+          def query_players():
+              host = os.environ.get("DNS_HOSTNAME") or os.environ["NLB_DNS"]
+              port = int(os.environ["QUERY_PORT"])
+              packet = b"\xff\xff\xff\xffTSource Engine Query\x00"
+              with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+                  sock.settimeout(5)
+                  sock.sendto(packet, (host, port))
+                  data, _ = sock.recvfrom(4096)
+              return parse_a2s_info(data)
+
+
+          def idle_check():
+              stack = current_stack()
+              if parameter_value(stack, "ServerState") != "Running":
+                  return {"status": "ignored", "reason": "stack not running"}
+
+              try:
+                  info = query_players()
+              except Exception as error:
+                  print(f"ARK query failed: {error}")
+                  return {"status": "query-failed", "error": str(error)}
+
+              if info is None:
+                  return {"status": "query-unparsed"}
+
+              current_time = now()
+              if info["players"] > 0:
+                  ssm.put_parameter(
+                      Name=os.environ["LAST_ACTIVE_PARAMETER"],
+                      Value=str(current_time),
+                      Type="String",
+                      Overwrite=True,
+                  )
+                  return {"status": "active", "players": info["players"]}
+
+              try:
+                  last_active = int(ssm.get_parameter(Name=os.environ["LAST_ACTIVE_PARAMETER"])["Parameter"]["Value"])
+              except Exception:
+                  last_active = current_time
+                  ssm.put_parameter(
+                      Name=os.environ["LAST_ACTIVE_PARAMETER"],
+                      Value=str(last_active),
+                      Type="String",
+                      Overwrite=True,
+                  )
+
+              idle_for = current_time - last_active
+              if idle_for >= int(os.environ["IDLE_SECONDS"]):
+                  result = set_server_state("Stopped", f"no players online for {idle_for} seconds")
+                  return {"status": "stopping", "idle_for": idle_for, "result": result}
+              return {"status": "idle", "idle_for": idle_for, "players": 0}
+
+
+          def failed_events():
+              try:
+                  events = cfn.describe_stack_events(StackName=os.environ["STACK_NAME"])["StackEvents"]
+              except Exception as error:
+                  return [f"Could not read stack events: {error}"]
+              lines = []
+              for event in events:
+                  status = event.get("ResourceStatus", "")
+                  if "FAILED" in status or "ROLLBACK" in status:
+                      reason = event.get("ResourceStatusReason", "no reason")
+                      lines.append(f"{event.get('LogicalResourceId')}: {status} - {reason}")
+                  if len(lines) == 5:
+                      break
+              return lines or ["No failed resource event found yet."]
+
+
+          def stack_status(event):
+              detail = event.get("detail", {})
+              status = detail.get("status-details", {}).get("status") or detail.get("status")
+              if not status:
+                  return {"status": "ignored", "reason": "no stack status"}
+              if "FAILED" in status or "ROLLBACK" in status:
+                  discord("ARK CloudFormation error: " + status + "\n" + "\n".join(failed_events()))
+                  return {"status": "notified-error", "stack_status": status}
+              if status in ("CREATE_COMPLETE", "UPDATE_COMPLETE"):
+                  state = parameter_value(current_stack(), "ServerState")
+                  host = os.environ.get("DNS_HOSTNAME") or os.environ["NLB_DNS"]
+                  if state == "Running":
+                      discord(f"ARK server is starting/running at {host}. Query port: {os.environ['QUERY_PORT']}.")
+                  elif state == "Stopped":
+                      discord("ARK server is stopped.")
+              return {"status": "handled", "stack_status": status}
+
+
+          def cfn_response(event, context, status, data=None, reason=None):
+              body = json.dumps({
+                  "Status": status,
+                  "Reason": reason or f"See CloudWatch Logs: {context.log_stream_name}",
+                  "PhysicalResourceId": event.get("PhysicalResourceId") or os.environ["STACK_NAME"] + "-delete-notifier",
+                  "StackId": event["StackId"],
+                  "RequestId": event["RequestId"],
+                  "LogicalResourceId": event["LogicalResourceId"],
+                  "Data": data or {},
+              }).encode("utf-8")
+              request = urllib.request.Request(event["ResponseURL"], data=body, method="PUT")
+              request.add_header("content-type", "")
+              request.add_header("content-length", str(len(body)))
+              urllib.request.urlopen(request, timeout=10).read()
+
+
+          def custom_resource(event, context):
+              if event.get("RequestType") == "Delete":
+                  discord(f"ARK stack '{os.environ['STACK_NAME']}' delete requested.")
+                  try:
+                      ssm.delete_parameter(Name=os.environ["LAST_ACTIVE_PARAMETER"])
+                  except Exception:
+                      pass
+              cfn_response(event, context, "SUCCESS")
+              return {"status": "custom-resource-ok"}
+
+
+          def handler(event, context):
+              print(json.dumps(event))
+              if "RequestType" in event and "ResponseURL" in event:
+                  return custom_resource(event, context)
+              if event.get("manualAction") == "notify":
+                  discord(event.get("message", "ARK workflow notification"))
+                  return {"status": "manual-notified"}
+              if event.get("action") == "idle-check":
+                  return idle_check()
+              if event.get("source") == "aws.cloudwatch":
+                  return set_server_state("Running", "connection attempt received at the ARK endpoint")
+              if event.get("source") == "aws.cloudformation":
+                  return stack_status(event)
+              if event.get("source") == "aws.ecs":
+                  detail = event.get("detail", {})
+                  containers = detail.get("containers", [])
+                  ark = next((c for c in containers if c.get("name") == "ark"), None)
+                  if ark and str(ark.get("exitCode")) not in ("0", "None"):
+                      discord(f"ARK ECS task stopped unexpectedly. Exit code: {ark.get('exitCode')}. Reason: {ark.get('reason') or detail.get('stoppedReason', 'unknown')}")
+                  return {"status": "ecs-event-handled"}
+              return {"status": "ignored"}
+
+  ArkDeleteNotifier:
+    Type: Custom::ArkDeleteNotifier
+    Properties:
+      ServiceToken: !GetAtt ArkAutomationFunction.Arn
+
+  ArkTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${AWS::StackName}-arkse"
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      ExecutionRoleArn: !GetAtt ArkTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ArkTaskExecutionRole.Arn
+      EphemeralStorage:
+        SizeInGiB: 50
+      ContainerDefinitions:
+        - Name: ark
+          Image: !Ref ArkImage
+          Essential: true
+          Ulimits:
+            - Name: nofile
+              SoftLimit: 1000000
+              HardLimit: 1000000
+          PortMappings:
+            - ContainerPort: !Ref GamePort
+              Protocol: udp
+            - ContainerPort: !Ref GamePort2
+              Protocol: udp
+            - ContainerPort: !Ref QueryPort
+              Protocol: udp
+          Environment:
+            - Name: ADMIN_PASSWORD
+              Value: !Ref AdminPassword
+            - Name: GAME_PORT
+              Value: !Ref GamePort
+            - Name: GAME_PORT_2
+              Value: !Ref GamePort2
+            - Name: GAME_VERSION
+              Value: public
+            - Name: MAP_NAME
+              Value: !Ref MapName
+            - Name: MAX_PLAYERS
+              Value: !Ref MaxPlayers
+            - Name: QUERY_PORT
+              Value: !Ref QueryPort
+            - Name: SERVER_NAME
+              Value: !Ref ServerName
+            - Name: SERVER_PASSWORD
+              Value: !Ref ServerPassword
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroupName
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ark
+          MountPoints:
+            - ContainerPath: /home/steam/ArkSE_Install
+              SourceVolume: arkdata
+        - Name: healthcheck
+          Image: public.ecr.aws/docker/library/python:3.12-alpine
+          Essential: false
+          Command:
+            - sh
+            - -c
+            - python -m http.server 8080
+          PortMappings:
+            - ContainerPort: 8080
+              Protocol: tcp
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroupName
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: healthcheck
+      Volumes:
+        - Name: arkdata
+          EFSVolumeConfiguration:
+            FilesystemId: !Ref ArkFileSystem
+            TransitEncryption: ENABLED
+            AuthorizationConfig:
+              AccessPointId: !Ref ArkAccessPoint
+              IAM: ENABLED
+
+  ArkNLB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${AWS::StackName}-ark-nlb"
+      Type: network
+      Scheme: internet-facing
+      Subnets:
+        - !Ref SubnetId
+
+  ArkGameTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${AWS::StackName}-ark-game"
+      Port: !Ref GamePort
+      Protocol: UDP
+      TargetType: ip
+      VpcId: !Ref VpcId
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: "8080"
+      HealthCheckPath: /
+
+  ArkGame2TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${AWS::StackName}-ark-game2"
+      Port: !Ref GamePort2
+      Protocol: UDP
+      TargetType: ip
+      VpcId: !Ref VpcId
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: "8080"
+      HealthCheckPath: /
+
+  ArkQueryTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${AWS::StackName}-ark-query"
+      Port: !Ref QueryPort
+      Protocol: UDP
+      TargetType: ip
+      VpcId: !Ref VpcId
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: "8080"
+      HealthCheckPath: /
+
+  ArkGameListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ArkNLB
+      Port: !Ref GamePort
+      Protocol: UDP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ArkGameTargetGroup
+
+  ArkGame2Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ArkNLB
+      Port: !Ref GamePort2
+      Protocol: UDP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ArkGame2TargetGroup
+
+  ArkQueryListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ArkNLB
+      Port: !Ref QueryPort
+      Protocol: UDP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ArkQueryTargetGroup
+
+  ArkService:
+    Type: AWS::ECS::Service
+    DependsOn:
+      - ArkGameListener
+      - ArkGame2Listener
+      - ArkQueryListener
+      - ArkMountTarget
+    Properties:
+      ServiceName: !Sub "${AWS::StackName}-ark"
+      Cluster: !Ref ArkCluster
+      DesiredCount: !FindInMap [ServerState, !Ref ServerState, DesiredCapacity]
+      LaunchType: FARGATE
+      TaskDefinition: !Ref ArkTaskDefinition
+      HealthCheckGracePeriodSeconds: 600
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+            - !Ref SubnetId
+          SecurityGroups:
+            - !Ref ArkTaskSecurityGroup
+      LoadBalancers:
+        - TargetGroupArn: !Ref ArkGameTargetGroup
+          ContainerName: ark
+          ContainerPort: !Ref GamePort
+        - TargetGroupArn: !Ref ArkGame2TargetGroup
+          ContainerName: ark
+          ContainerPort: !Ref GamePort2
+        - TargetGroupArn: !Ref ArkQueryTargetGroup
+          ContainerName: ark
+          ContainerPort: !Ref QueryPort
+
+  ArkWakeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${AWS::StackName}-ark-wake-on-traffic"
+      Namespace: AWS/NetworkELB
+      MetricName: NewFlowCount
+      Dimensions:
+        - Name: LoadBalancer
+          Value: !GetAtt ArkNLB.LoadBalancerFullName
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+
+  ArkWakeRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${AWS::StackName}-ark-wake"
+      EventPattern:
+        source:
+          - aws.cloudwatch
+        detail-type:
+          - CloudWatch Alarm State Change
+        detail:
+          alarmName:
+            - !Ref ArkWakeAlarm
+          state:
+            value:
+              - ALARM
+      Targets:
+        - Arn: !GetAtt ArkAutomationFunction.Arn
+          Id: ArkWakeTarget
+
+  ArkIdleSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${AWS::StackName}-ark-idle-check"
+      ScheduleExpression: rate(5 minutes)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt ArkAutomationFunction.Arn
+          Id: ArkIdleTarget
+          Input: '{"action":"idle-check"}'
+
+  ArkStackStatusRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${AWS::StackName}-ark-stack-status"
+      EventPattern:
+        source:
+          - aws.cloudformation
+        detail-type:
+          - CloudFormation Stack Status Change
+        resources:
+          - !Ref AWS::StackId
+      Targets:
+        - Arn: !GetAtt ArkAutomationFunction.Arn
+          Id: ArkStackStatusTarget
+
+  ArkTaskStoppedRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${AWS::StackName}-ark-task-stopped"
+      EventPattern:
+        source:
+          - aws.ecs
+        detail-type:
+          - ECS Task State Change
+        detail:
+          clusterArn:
+            - !GetAtt ArkCluster.Arn
+          lastStatus:
+            - STOPPED
+          containers:
+            name:
+              - ark
+      Targets:
+        - Arn: !GetAtt ArkAutomationFunction.Arn
+          Id: ArkTaskStoppedTarget
+
+  ArkWakeInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ArkAutomationFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ArkWakeRule.Arn
+
+  ArkIdleInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ArkAutomationFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ArkIdleSchedule.Arn
+
+  ArkStackStatusInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ArkAutomationFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ArkStackStatusRule.Arn
+
+  ArkTaskStoppedInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ArkAutomationFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ArkTaskStoppedRule.Arn
+
+Outputs:
+  ECSClusterName:
+    Value: !Ref ECSClusterName
+  ECSServiceName:
+    Value: !Sub "${AWS::StackName}-ark"
+  ArkConnectionHost:
+    Value: !If [HasDnsHostname, !Ref DnsHostname, !GetAtt ArkNLB.DNSName]
+  ArkLoadBalancerDNS:
+    Value: !GetAtt ArkNLB.DNSName
+  ArkQueryPort:
+    Value: !Ref QueryPort
+  ArkDiscordFunctionName:
+    Value: !Ref ArkAutomationFunction

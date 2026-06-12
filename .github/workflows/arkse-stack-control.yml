@@ -1,0 +1,446 @@
+# This GitHub Actions workflow creates, starts, stops, and deletes an ARK: Survival Evolved server stack.
+# Discord notifications are sent by AWS Lambda resources inside the stack, not by GitHub Actions.
+
+name: ArkSE Stack Control
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "What do you want to do?"
+        required: true
+        type: choice
+        options:
+          - create
+          - start
+          - stop
+          - delete
+      stack_name:
+        description: "CloudFormation stack name"
+        required: true
+        type: string
+      stack_config_profile:
+        description: "Configuration profile from ArkSE_server/arkse-stack-config.json"
+        required: false
+        default: "default"
+        type: string
+      template_path:
+        description: "Template path for create action"
+        required: false
+        default: "ArkSE_server/CFN_ArkSEServer.yaml"
+        type: string
+      dns_hostname:
+        description: "Optional hostname players use for the ARK server"
+        required: false
+        default: ""
+        type: string
+      vpc_id:
+        description: "Optional VPC ID override for create action"
+        required: false
+        default: ""
+        type: string
+      subnet_id:
+        description: "Optional subnet ID override for create action"
+        required: false
+        default: ""
+        type: string
+      server_state_on_create:
+        description: "Initial server state when creating the stack"
+        required: false
+        default: "Stopped"
+        type: choice
+        options:
+          - Running
+          - Stopped
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-southeast-2
+  ROLE_NAME: GitHubActionsOIDCRole
+  ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  ARKSE_NOTIFIER_STACK_NAME: arkse-discord-notifier
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  control-arkse-stack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Resolve ArkSE stack config profile
+        run: |
+          set -euo pipefail
+
+          PROFILE='${{ github.event.inputs.stack_config_profile }}'
+          INPUT_TEMPLATE='${{ github.event.inputs.template_path }}'
+          INPUT_DNS='${{ github.event.inputs.dns_hostname }}'
+          INPUT_VPC='${{ github.event.inputs.vpc_id }}'
+          INPUT_SUBNET='${{ github.event.inputs.subnet_id }}'
+
+          export PROFILE INPUT_TEMPLATE INPUT_DNS INPUT_VPC INPUT_SUBNET
+
+          python3 - <<'PY' >> "$GITHUB_ENV"
+          import json
+          import os
+
+          config_path = "ArkSE_server/arkse-stack-config.json"
+          profile = os.environ["PROFILE"]
+
+          config = {}
+          if os.path.exists(config_path):
+              with open(config_path, "r", encoding="utf-8") as config_file:
+                  config = json.load(config_file).get(profile, {})
+
+          def pick(input_env, key, default=""):
+              value = os.environ.get(input_env, "")
+              if value:
+                  return value
+              return str(config.get(key, default) or "")
+
+          values = {
+              "RESOLVED_TEMPLATE_PATH": pick("INPUT_TEMPLATE", "template_path", "ArkSE_server/CFN_ArkSEServer.yaml"),
+              "RESOLVED_DNS_HOSTNAME": pick("INPUT_DNS", "dns_hostname", "arkserver.bearynatural.dev"),
+              "RESOLVED_VPC_ID": pick("INPUT_VPC", "vpc_id"),
+              "RESOLVED_SUBNET_ID": pick("INPUT_SUBNET", "subnet_id"),
+              "RESOLVED_ARK_IMAGE": str(config.get("ark_image", "renegademaster/ark-se-dedicated-server:latest") or ""),
+              "RESOLVED_CPU": str(config.get("cpu", "4096") or ""),
+              "RESOLVED_MEMORY": str(config.get("memory", "8192") or ""),
+              "RESOLVED_SERVER_NAME": str(config.get("server_name", "BearyNaturalArk") or ""),
+              "RESOLVED_MAP_NAME": str(config.get("map_name", "TheIsland") or ""),
+              "RESOLVED_MAX_PLAYERS": str(config.get("max_players", "16") or ""),
+              "RESOLVED_GAME_PORT": str(config.get("game_port", "7777") or ""),
+              "RESOLVED_GAME_PORT_2": str(config.get("game_port_2", "7778") or ""),
+              "RESOLVED_QUERY_PORT": str(config.get("query_port", "27015") or ""),
+              "RESOLVED_AUTO_STOP_IDLE_SECONDS": str(config.get("auto_stop_idle_seconds", "1200") or ""),
+              "RESOLVED_LOG_GROUP_NAME": str(config.get("log_group_name", "/ecs/arkse") or ""),
+          }
+
+          for key, value in values.items():
+              print(f"{key}={value}")
+          PY
+
+      - name: Export shared variables
+        run: |
+          set -euo pipefail
+          echo "STACK_NAME=${{ github.event.inputs.stack_name }}" >> "$GITHUB_ENV"
+          echo "Using template path: ${RESOLVED_TEMPLATE_PATH}"
+          echo "Using DNS hostname: ${RESOLVED_DNS_HOSTNAME}"
+
+      - name: Ensure ArkSE AWS error notifier
+        env:
+          DISCORD_WEBHOOK_URL_SECRET: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+
+          if aws cloudformation describe-stacks --stack-name "$ARKSE_NOTIFIER_STACK_NAME" >/dev/null 2>&1; then
+            if [ -n "$DISCORD_WEBHOOK_URL_SECRET" ]; then
+              UPDATE_OUTPUT=$(aws cloudformation update-stack \
+                --stack-name "$ARKSE_NOTIFIER_STACK_NAME" \
+                --template-body "file://ArkSE_server/CFN_ArkSENotifier.yaml" \
+                --parameters ParameterKey=DiscordWebhookUrl,ParameterValue="$DISCORD_WEBHOOK_URL_SECRET" \
+                --capabilities CAPABILITY_NAMED_IAM 2>&1) || {
+                  if echo "$UPDATE_OUTPUT" | grep -q "No updates are to be performed"; then
+                    echo "ArkSE notifier stack already up to date."
+                  else
+                    echo "$UPDATE_OUTPUT"
+                    exit 1
+                  fi
+                }
+            else
+              UPDATE_OUTPUT=$(aws cloudformation update-stack \
+                --stack-name "$ARKSE_NOTIFIER_STACK_NAME" \
+                --template-body "file://ArkSE_server/CFN_ArkSENotifier.yaml" \
+                --parameters ParameterKey=DiscordWebhookUrl,UsePreviousValue=true \
+                --capabilities CAPABILITY_NAMED_IAM 2>&1) || {
+                  if echo "$UPDATE_OUTPUT" | grep -q "No updates are to be performed"; then
+                    echo "ArkSE notifier stack already up to date."
+                  else
+                    echo "$UPDATE_OUTPUT"
+                    exit 1
+                  fi
+                }
+            fi
+
+            STATUS=$(aws cloudformation describe-stacks \
+              --stack-name "$ARKSE_NOTIFIER_STACK_NAME" \
+              --query "Stacks[0].StackStatus" \
+              --output text)
+            if [ "$STATUS" = "UPDATE_IN_PROGRESS" ] || [ "$STATUS" = "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]; then
+              aws cloudformation wait stack-update-complete --stack-name "$ARKSE_NOTIFIER_STACK_NAME"
+            fi
+          else
+            if [ -z "$DISCORD_WEBHOOK_URL_SECRET" ]; then
+              echo "Missing GitHub secret DISCORD_WEBHOOK_URL. It is required to create the AWS-side error notifier."
+              exit 1
+            fi
+
+            aws cloudformation create-stack \
+              --stack-name "$ARKSE_NOTIFIER_STACK_NAME" \
+              --template-body "file://ArkSE_server/CFN_ArkSENotifier.yaml" \
+              --parameters ParameterKey=DiscordWebhookUrl,ParameterValue="$DISCORD_WEBHOOK_URL_SECRET" \
+              --capabilities CAPABILITY_NAMED_IAM
+
+            aws cloudformation wait stack-create-complete --stack-name "$ARKSE_NOTIFIER_STACK_NAME"
+          fi
+
+          TOPIC_ARN=$(aws cloudformation describe-stacks \
+            --stack-name "$ARKSE_NOTIFIER_STACK_NAME" \
+            --query "Stacks[0].Outputs[?OutputKey=='NotificationTopicArn'].OutputValue | [0]" \
+            --output text)
+
+          if [ -z "$TOPIC_ARN" ] || [ "$TOPIC_ARN" = "None" ]; then
+            echo "Could not resolve ArkSE notifier SNS topic ARN."
+            exit 1
+          fi
+
+          echo "ARKSE_NOTIFICATION_TOPIC_ARN=$TOPIC_ARN" >> "$GITHUB_ENV"
+
+      - name: Create ArkSE stack
+        if: ${{ github.event.inputs.action == 'create' }}
+        env:
+          ARK_ADMIN_PASSWORD_SECRET: ${{ secrets.ARK_ADMIN_PASSWORD }}
+          ARK_SERVER_PASSWORD_SECRET: ${{ secrets.ARK_SERVER_PASSWORD }}
+          DISCORD_WEBHOOK_URL_SECRET: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$ARK_ADMIN_PASSWORD_SECRET" ]; then
+            echo "Missing GitHub secret ARK_ADMIN_PASSWORD. Create it before creating the ARK stack."
+            exit 1
+          fi
+
+          if [ -z "$DISCORD_WEBHOOK_URL_SECRET" ]; then
+            echo "Missing GitHub secret DISCORD_WEBHOOK_URL. It is required for AWS-side Discord notifications."
+            exit 1
+          fi
+
+          if aws cloudformation describe-stacks --stack-name "$STACK_NAME" >/dev/null 2>&1; then
+            echo "Stack '$STACK_NAME' already exists. Aborting create."
+            exit 1
+          fi
+
+          VPC_ID="${RESOLVED_VPC_ID:-}"
+          SUBNET_ID="${RESOLVED_SUBNET_ID:-}"
+
+          if [ -z "$VPC_ID" ]; then
+            VPC_ID=$(aws ec2 describe-vpcs \
+              --filters Name=isDefault,Values=true \
+              --query "Vpcs[0].VpcId" \
+              --output text)
+          fi
+
+          if [ -z "$VPC_ID" ] || [ "$VPC_ID" = "None" ]; then
+            echo "No VPC resolved. Provide workflow input 'vpc_id'."
+            exit 1
+          fi
+
+          if [ -z "$SUBNET_ID" ]; then
+            SUBNET_ID=$(aws ec2 describe-subnets \
+              --filters Name=vpc-id,Values="$VPC_ID" Name=default-for-az,Values=true \
+              --query "Subnets[0].SubnetId" \
+              --output text)
+          fi
+
+          if [ -z "$SUBNET_ID" ] || [ "$SUBNET_ID" = "None" ]; then
+            SUBNET_ID=$(aws ec2 describe-subnets \
+              --filters Name=vpc-id,Values="$VPC_ID" \
+              --query "Subnets[0].SubnetId" \
+              --output text)
+          fi
+
+          if [ -z "$SUBNET_ID" ] || [ "$SUBNET_ID" = "None" ]; then
+            echo "No subnet resolved for VPC '$VPC_ID'. Provide workflow input 'subnet_id'."
+            exit 1
+          fi
+
+          PARAMETERS_FILE="$RUNNER_TEMP/arkse-create-parameters.json"
+          SERVER_STATE_ON_CREATE='${{ github.event.inputs.server_state_on_create }}'
+          export PARAMETERS_FILE SERVER_STATE_ON_CREATE VPC_ID SUBNET_ID
+          export ARK_ADMIN_PASSWORD_SECRET ARK_SERVER_PASSWORD_SECRET DISCORD_WEBHOOK_URL_SECRET
+          export RESOLVED_DNS_HOSTNAME RESOLVED_ARK_IMAGE RESOLVED_CPU RESOLVED_MEMORY
+          export RESOLVED_SERVER_NAME RESOLVED_MAP_NAME RESOLVED_MAX_PLAYERS
+          export RESOLVED_GAME_PORT RESOLVED_GAME_PORT_2 RESOLVED_QUERY_PORT
+          export RESOLVED_AUTO_STOP_IDLE_SECONDS RESOLVED_LOG_GROUP_NAME STACK_NAME
+
+          python3 - <<'PY'
+          import json
+          import os
+
+          def env(name):
+              return os.environ.get(name, "")
+
+          parameters = [
+              {"ParameterKey": "ServerState", "ParameterValue": env("SERVER_STATE_ON_CREATE")},
+              {"ParameterKey": "ECSClusterName", "ParameterValue": env("STACK_NAME")},
+              {"ParameterKey": "VpcId", "ParameterValue": env("VPC_ID")},
+              {"ParameterKey": "SubnetId", "ParameterValue": env("SUBNET_ID")},
+              {"ParameterKey": "DnsHostname", "ParameterValue": env("RESOLVED_DNS_HOSTNAME")},
+              {"ParameterKey": "ArkImage", "ParameterValue": env("RESOLVED_ARK_IMAGE")},
+              {"ParameterKey": "Cpu", "ParameterValue": env("RESOLVED_CPU")},
+              {"ParameterKey": "Memory", "ParameterValue": env("RESOLVED_MEMORY")},
+              {"ParameterKey": "ServerName", "ParameterValue": env("RESOLVED_SERVER_NAME")},
+              {"ParameterKey": "MapName", "ParameterValue": env("RESOLVED_MAP_NAME")},
+              {"ParameterKey": "MaxPlayers", "ParameterValue": env("RESOLVED_MAX_PLAYERS")},
+              {"ParameterKey": "GamePort", "ParameterValue": env("RESOLVED_GAME_PORT")},
+              {"ParameterKey": "GamePort2", "ParameterValue": env("RESOLVED_GAME_PORT_2")},
+              {"ParameterKey": "QueryPort", "ParameterValue": env("RESOLVED_QUERY_PORT")},
+              {"ParameterKey": "AutoStopIdleSeconds", "ParameterValue": env("RESOLVED_AUTO_STOP_IDLE_SECONDS")},
+              {"ParameterKey": "LogGroupName", "ParameterValue": env("RESOLVED_LOG_GROUP_NAME")},
+              {"ParameterKey": "AdminPassword", "ParameterValue": env("ARK_ADMIN_PASSWORD_SECRET")},
+              {"ParameterKey": "ServerPassword", "ParameterValue": env("ARK_SERVER_PASSWORD_SECRET")},
+              {"ParameterKey": "DiscordWebhookUrl", "ParameterValue": env("DISCORD_WEBHOOK_URL_SECRET")},
+          ]
+
+          with open(env("PARAMETERS_FILE"), "w", encoding="utf-8") as parameters_file:
+              json.dump(parameters, parameters_file)
+          PY
+
+          aws cloudformation create-stack \
+            --stack-name "$STACK_NAME" \
+            --template-body "file://$RESOLVED_TEMPLATE_PATH" \
+            --notification-arns "$ARKSE_NOTIFICATION_TOPIC_ARN" \
+            --parameters "file://$PARAMETERS_FILE" \
+            --capabilities CAPABILITY_NAMED_IAM
+
+          aws cloudformation wait stack-create-complete --stack-name "$STACK_NAME"
+
+      - name: Start ArkSE stack
+        if: ${{ github.event.inputs.action == 'start' }}
+        run: |
+          set -euo pipefail
+          if ! aws cloudformation update-stack \
+            --stack-name "$STACK_NAME" \
+            --use-previous-template \
+            --notification-arns "$ARKSE_NOTIFICATION_TOPIC_ARN" \
+            --parameters \
+              ParameterKey=ServerState,ParameterValue=Running \
+              ParameterKey=SubnetId,UsePreviousValue=true \
+              ParameterKey=VpcId,UsePreviousValue=true \
+              ParameterKey=ECSClusterName,UsePreviousValue=true \
+              ParameterKey=ArkImage,UsePreviousValue=true \
+              ParameterKey=Cpu,UsePreviousValue=true \
+              ParameterKey=Memory,UsePreviousValue=true \
+              ParameterKey=DnsHostname,UsePreviousValue=true \
+              ParameterKey=LogGroupName,UsePreviousValue=true \
+              ParameterKey=ServerName,UsePreviousValue=true \
+              ParameterKey=MapName,UsePreviousValue=true \
+              ParameterKey=MaxPlayers,UsePreviousValue=true \
+              ParameterKey=GamePort,UsePreviousValue=true \
+              ParameterKey=GamePort2,UsePreviousValue=true \
+              ParameterKey=QueryPort,UsePreviousValue=true \
+              ParameterKey=AdminPassword,UsePreviousValue=true \
+              ParameterKey=ServerPassword,UsePreviousValue=true \
+              ParameterKey=DiscordWebhookUrl,UsePreviousValue=true \
+              ParameterKey=AutoStopIdleSeconds,UsePreviousValue=true \
+            --capabilities CAPABILITY_NAMED_IAM; then
+            echo "No changes to apply or start update failed. Checking status..."
+          fi
+
+          STATUS=$(aws cloudformation describe-stacks \
+            --stack-name "$STACK_NAME" \
+            --query "Stacks[0].StackStatus" \
+            --output text)
+          if [ "$STATUS" = "UPDATE_IN_PROGRESS" ] || [ "$STATUS" = "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]; then
+            aws cloudformation wait stack-update-complete --stack-name "$STACK_NAME"
+          fi
+
+      - name: Stop ArkSE stack
+        if: ${{ github.event.inputs.action == 'stop' }}
+        run: |
+          set -euo pipefail
+          if ! aws cloudformation update-stack \
+            --stack-name "$STACK_NAME" \
+            --use-previous-template \
+            --notification-arns "$ARKSE_NOTIFICATION_TOPIC_ARN" \
+            --parameters \
+              ParameterKey=ServerState,ParameterValue=Stopped \
+              ParameterKey=SubnetId,UsePreviousValue=true \
+              ParameterKey=VpcId,UsePreviousValue=true \
+              ParameterKey=ECSClusterName,UsePreviousValue=true \
+              ParameterKey=ArkImage,UsePreviousValue=true \
+              ParameterKey=Cpu,UsePreviousValue=true \
+              ParameterKey=Memory,UsePreviousValue=true \
+              ParameterKey=DnsHostname,UsePreviousValue=true \
+              ParameterKey=LogGroupName,UsePreviousValue=true \
+              ParameterKey=ServerName,UsePreviousValue=true \
+              ParameterKey=MapName,UsePreviousValue=true \
+              ParameterKey=MaxPlayers,UsePreviousValue=true \
+              ParameterKey=GamePort,UsePreviousValue=true \
+              ParameterKey=GamePort2,UsePreviousValue=true \
+              ParameterKey=QueryPort,UsePreviousValue=true \
+              ParameterKey=AdminPassword,UsePreviousValue=true \
+              ParameterKey=ServerPassword,UsePreviousValue=true \
+              ParameterKey=DiscordWebhookUrl,UsePreviousValue=true \
+              ParameterKey=AutoStopIdleSeconds,UsePreviousValue=true \
+            --capabilities CAPABILITY_NAMED_IAM; then
+            echo "No changes to apply or stop update failed. Checking status..."
+          fi
+
+          STATUS=$(aws cloudformation describe-stacks \
+            --stack-name "$STACK_NAME" \
+            --query "Stacks[0].StackStatus" \
+            --output text)
+          if [ "$STATUS" = "UPDATE_IN_PROGRESS" ] || [ "$STATUS" = "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]; then
+            aws cloudformation wait stack-update-complete --stack-name "$STACK_NAME"
+          fi
+
+      - name: Delete ArkSE stack
+        if: ${{ github.event.inputs.action == 'delete' }}
+        run: |
+          set -euo pipefail
+          aws cloudformation delete-stack --stack-name "$STACK_NAME"
+          aws cloudformation wait stack-delete-complete --stack-name "$STACK_NAME"
+
+      - name: Ask AWS notifier to report workflow failure
+        if: ${{ failure() }}
+        run: |
+          set +e
+          ACTION='${{ github.event.inputs.action }}'
+          STACK_STATUS=$(aws cloudformation describe-stacks \
+            --stack-name "$STACK_NAME" \
+            --query "Stacks[0].StackStatus" \
+            --output text 2>/dev/null)
+          FUNCTION_NAME=$(aws cloudformation describe-stacks \
+            --stack-name "$STACK_NAME" \
+            --query "Stacks[0].Outputs[?OutputKey=='ArkDiscordFunctionName'].OutputValue | [0]" \
+            --output text 2>/dev/null)
+          STACK_EVENTS=$(aws cloudformation describe-stack-events \
+            --stack-name "$STACK_NAME" \
+            --query "StackEvents[?contains(ResourceStatus, 'FAILED') || contains(ResourceStatus, 'ROLLBACK')].[LogicalResourceId,ResourceStatus,ResourceStatusReason] | [0:5]" \
+            --output text 2>/dev/null)
+
+          if [ -z "$FUNCTION_NAME" ] || [ "$FUNCTION_NAME" = "None" ]; then
+            echo "No AWS notifier Lambda found for stack '$STACK_NAME'."
+            exit 0
+          fi
+
+          export ACTION STACK_STATUS STACK_EVENTS STACK_NAME
+          PAYLOAD=$(python3 - <<'PY'
+          import json
+          import os
+
+          message = (
+              f"ARK workflow action '{os.environ.get('ACTION')}' failed for stack '{os.environ.get('STACK_NAME')}'.\n"
+              f"CloudFormation status: {os.environ.get('STACK_STATUS') or 'unknown'}\n"
+              f"{os.environ.get('STACK_EVENTS') or 'No failed stack event details found.'}"
+          )
+          print(json.dumps({"manualAction": "notify", "message": message}))
+          PY
+          )
+
+          aws lambda invoke \
+            --function-name "$FUNCTION_NAME" \
+            --cli-binary-format raw-in-base64-out \
+            --payload "$PAYLOAD" \
+            "$RUNNER_TEMP/arkse-notifier-response.json" >/dev/null 2>&1 || true

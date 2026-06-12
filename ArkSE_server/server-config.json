@@ -13,6 +13,13 @@
         "game_port": "7777",
         "game_port_2": "7778",
         "query_port": "27015",
+        "exclusive_join": false,
+        "players": [
+            {
+                "name": "BearyNatural",
+                "steam_id": ""
+            }
+        ],
         "auto_stop_idle_seconds": "1200",
         "log_group_name": "/ecs/arkse"
     },
@@ -30,6 +37,13 @@
         "game_port": "7777",
         "game_port_2": "7778",
         "query_port": "27015",
+        "exclusive_join": false,
+        "players": [
+            {
+                "name": "BearyNatural",
+                "steam_id": ""
+            }
+        ],
         "auto_stop_idle_seconds": "1200",
         "log_group_name": "/ecs/arkse-dev"
     }

@@ -64,6 +64,20 @@ Parameters:
     Type: String
     Default: "27015"
 
+  ExclusiveJoin:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: Enable ARK exclusive join mode using AllowedPlayerSteamIds.
+
+  AllowedPlayerSteamIds:
+    Type: String
+    Default: ""
+    NoEcho: true
+    Description: Comma-separated Steam64 IDs allowed to join when ExclusiveJoin is true.
+
   AdminPassword:
     Type: String
     NoEcho: true
@@ -497,6 +511,83 @@ Resources:
         - Name: ark
           Image: !Ref ArkImage
           Essential: true
+          EntryPoint:
+            - /bin/bash
+            - -lc
+          Command:
+            - |
+              set -u -o pipefail
+
+              base_dir="/home/steam/ArkSE_Install"
+              config_dir="$base_dir/ShooterGame/Saved"
+              install_file="/home/steam/install_server.scmd"
+              steam_bin="${STEAM_PATH:-/home/steam/steamcmd/steamcmd.sh}"
+              server_config="$config_dir/Config/LinuxServer/GameUserSettings.ini"
+              server_rules_config="$config_dir/Config/LinuxServer/Game.ini"
+              max_retries=3
+
+              ADMIN_PASSWORD=${ADMIN_PASSWORD:-"changeme"}
+              GAME_PORT=${GAME_PORT:-"7777"}
+              GAME_PORT_2=${GAME_PORT_2:-"7778"}
+              GAME_VERSION=${GAME_VERSION:-"public"}
+              MAP_NAME=${MAP_NAME:-"TheIsland"}
+              MAX_PLAYERS=${MAX_PLAYERS:-"16"}
+              QUERY_PORT=${QUERY_PORT:-"27015"}
+              SERVER_NAME=${SERVER_NAME:-"ArkSeServer"}
+              SERVER_PASSWORD=${SERVER_PASSWORD:-""}
+
+              chown -R "$(id -u):$(id -g)" "$base_dir" 2>/dev/null || true
+              sed -i "s/beta .* /beta $GAME_VERSION /g" "$install_file"
+
+              update_ok=false
+              for attempt in $(seq 1 "$max_retries"); do
+                  printf "\n### Attempt %s to install/update ARK: Survival Evolved Server...\n" "$attempt"
+                  steam_output=$("$steam_bin" +runscript "$install_file" 2>&1)
+                  steam_status=$?
+                  printf "%s\n" "$steam_output"
+                  if [ "$steam_status" -eq 0 ] && printf "%s" "$steam_output" | grep -q "Success! App '376030' fully installed."; then
+                      update_ok=true
+                      break
+                  fi
+              done
+
+              if [ "$update_ok" != "true" ]; then
+                  printf "\n### Failed to install/update ARK: Survival Evolved Server.\n"
+                  exit 1
+              fi
+
+              build_exclusive_join_args() {
+                  exclusive_join_args=""
+                  if [ "${EXCLUSIVE_JOIN:-false}" = "true" ]; then
+                      allowlist_file="$base_dir/ShooterGame/Binaries/Linux/PlayersJoinNoCheckList.txt"
+                      mkdir -p "$(dirname "$allowlist_file")"
+                      printf "%s" "${ALLOWED_PLAYER_STEAM_IDS:-}" | tr "," "\n" | sed "/^[[:space:]]*$/d" > "$allowlist_file"
+                      exclusive_join_args="-exclusivejoin"
+                      printf "\n### Exclusive join enabled with %s configured Steam64 IDs.\n" "$(wc -l < "$allowlist_file")"
+                  else
+                      printf "\n### Exclusive join disabled.\n"
+                  fi
+              }
+
+              run_ark() {
+                  timeout_seconds="$1"
+                  build_exclusive_join_args
+                  timeout "$timeout_seconds" "$base_dir"/ShooterGame/Binaries/Linux/ShooterGameServer \
+                    "$MAP_NAME?listen?SessionName=$SERVER_NAME?ServerPassword=$SERVER_PASSWORD?ServerAdminPassword=$ADMIN_PASSWORD?Port=$GAME_PORT?QueryPort=$QUERY_PORT?MaxPlayers=$MAX_PLAYERS" \
+                    -servergamelog $exclusive_join_args
+              }
+
+              if [ ! -f "$server_config" ] || [ ! -f "$server_rules_config" ]; then
+                  printf "\n### First run detected; bootstrapping generated ARK config files.\n"
+                  run_ark 60 || true
+              fi
+
+              if [ -f "$server_config" ]; then
+                  uniq "$server_config" > "${server_config}.tmp"
+                  mv "${server_config}.tmp" "$server_config"
+              fi
+
+              run_ark 0
           Ulimits:
             - Name: nofile
               SoftLimit: 1000000
@@ -527,6 +618,10 @@ Resources:
               Value: !Ref ServerName
             - Name: SERVER_PASSWORD
               Value: !Ref ServerPassword
+            - Name: EXCLUSIVE_JOIN
+              Value: !Ref ExclusiveJoin
+            - Name: ALLOWED_PLAYER_STEAM_IDS
+              Value: !Ref AllowedPlayerSteamIds
           LogConfiguration:
             LogDriver: awslogs
             Options:

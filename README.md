@@ -47,12 +47,20 @@ aws cloudformation create-stack \
   --capabilities CAPABILITY_NAMED_IAM
 ```
 
-The OIDC role is configured with a 12-hour maximum session duration so S3 backup links can last as long as possible without long-lived AWS access keys. If the stack already exists, update it with the current `oidc-iam-setup.yaml` before relying on backup links.
+The OIDC role should use a 12-hour maximum session duration so S3 backup links can last as long as possible without long-lived AWS access keys. If you manage the role manually instead of updating the `oidc-iam-setup.yaml` CloudFormation stack, run:
 
-Then attach permissions policy to the role:
+```bash
+aws iam update-role \
+  --profile 2026simple \
+  --role-name GitHubActionsOIDCRole \
+  --max-session-duration 43200
+```
+
+Then attach the permissions policy to the role. Re-run this command whenever `github-actions-policy.json` changes:
 
 ```bash
 aws iam put-role-policy \
+  --profile 2026simple \
   --role-name GitHubActionsOIDCRole \
   --policy-name GitHubActionsMinecraftPolicy \
   --policy-document file://github-actions-policy.json
@@ -83,7 +91,7 @@ aws iam put-role-policy \
 The repo also includes a separate ARK: Survival Evolved setup under `ArkSE_server/`.
 
 - Template: `ArkSE_server/CFN_ArkSEServer.yaml`
-- Config profiles: `ArkSE_server/arkse-stack-config.json`
+- Config profiles: `ArkSE_server/server-config.json`
 - Workflow: `.github/workflows/arkse-stack-control.yml`
 
 The ArkSE stack runs the dedicated server container on ECS Fargate, persists server data on EFS, wakes on UDP/game-query traffic to `arkserver.bearynatural.dev`, shuts down after 20 minutes with no players, and sends Discord notifications from AWS Lambda. It does not create an S3 backup bucket or send backup URLs.
@@ -287,7 +295,7 @@ CICD_MC_server/
 ├── github-actions-policy.json        # IAM permissions policy
 ├── ArkSE_server/
 │   ├── README.md                     # ARK: Survival Evolved stack notes
-│   ├── arkse-stack-config.json       # ArkSE non-secret profile defaults
+│   ├── server-config.json            # ArkSE non-secret server/profile defaults
 │   ├── CFN_ArkSENotifier.yaml        # Persistent AWS-side Discord error notifier
 │   └── CFN_ArkSEServer.yaml          # ArkSE stack template
 ├── Minecraft_server/

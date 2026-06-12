@@ -20,7 +20,7 @@ on:
         required: true
         type: string
       stack_config_profile:
-        description: "Configuration profile from ArkSE_server/arkse-stack-config.json"
+        description: "Configuration profile from ArkSE_server/server-config.json"
         required: false
         default: "default"
         type: string
@@ -79,6 +79,10 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Resolve ArkSE stack config profile
+        env:
+          ARK_ALLOWED_PLAYER_STEAM_IDS_SECRET: ${{ secrets.ARK_ALLOWED_PLAYER_STEAM_IDS }}
+          ARK_ALLOWED_PLAYER_STEAM_IDS_DEFAULT_SECRET: ${{ secrets.ARK_ALLOWED_PLAYER_STEAM_IDS_DEFAULT }}
+          ARK_ALLOWED_PLAYER_STEAM_IDS_DEV_SECRET: ${{ secrets.ARK_ALLOWED_PLAYER_STEAM_IDS_DEV }}
         run: |
           set -euo pipefail
 
@@ -94,7 +98,7 @@ jobs:
           import json
           import os
 
-          config_path = "ArkSE_server/arkse-stack-config.json"
+          config_path = "ArkSE_server/server-config.json"
           profile = os.environ["PROFILE"]
 
           config = {}
@@ -107,6 +111,71 @@ jobs:
               if value:
                   return value
               return str(config.get(key, default) or "")
+
+          def bool_string(value):
+              normalized = str(value).strip().lower()
+              if normalized in ("true", "yes", "1", "on"):
+                  return "true"
+              if normalized in ("false", "no", "0", "off", ""):
+                  return "false"
+              raise SystemExit(f"Invalid boolean value for exclusive_join: {value}")
+
+          def add_steam_id(steam_ids, value):
+              steam_id = str(value or "").strip()
+              if steam_id:
+                  steam_ids.append(steam_id)
+
+          def add_steam_ids(steam_ids, value):
+              if isinstance(value, list):
+                  for item in value:
+                      add_steam_id(steam_ids, item)
+                  return
+
+              for part in str(value or "").split(","):
+                  add_steam_id(steam_ids, part)
+
+          def collect_allowed_player_steam_ids():
+              steam_ids = []
+
+              for player in config.get("players", []):
+                  if isinstance(player, dict):
+                      add_steam_id(steam_ids, player.get("steam_id"))
+                  else:
+                      add_steam_id(steam_ids, player)
+
+              add_steam_ids(steam_ids, config.get("allowed_player_steam_ids", []))
+
+              normalized_profile = "".join(
+                  char if char.isalnum() else "_"
+                  for char in profile.upper()
+              )
+              secret_value = (
+                  os.environ.get(f"ARK_ALLOWED_PLAYER_STEAM_IDS_{normalized_profile}_SECRET", "")
+                  or os.environ.get("ARK_ALLOWED_PLAYER_STEAM_IDS_SECRET", "")
+              )
+              add_steam_ids(steam_ids, secret_value)
+
+              deduped = []
+              seen = set()
+              for steam_id in steam_ids:
+                  if not steam_id.isdigit():
+                      raise SystemExit(
+                          f"Invalid Steam64 ID '{steam_id}'. Use players[].name for display names "
+                          "and players[].steam_id for the numeric Steam64 ID."
+                      )
+                  if steam_id not in seen:
+                      seen.add(steam_id)
+                      deduped.append(steam_id)
+
+              return ",".join(deduped)
+
+          exclusive_join = bool_string(config.get("exclusive_join", False))
+          allowed_player_steam_ids = collect_allowed_player_steam_ids()
+          if exclusive_join == "true" and not allowed_player_steam_ids:
+              raise SystemExit(
+                  "exclusive_join is true, but no Steam64 IDs were found in "
+                  "players[].steam_id or allowed_player_steam_ids."
+              )
 
           values = {
               "RESOLVED_TEMPLATE_PATH": pick("INPUT_TEMPLATE", "template_path", "ArkSE_server/CFN_ArkSEServer.yaml"),
@@ -122,6 +191,8 @@ jobs:
               "RESOLVED_GAME_PORT": str(config.get("game_port", "7777") or ""),
               "RESOLVED_GAME_PORT_2": str(config.get("game_port_2", "7778") or ""),
               "RESOLVED_QUERY_PORT": str(config.get("query_port", "27015") or ""),
+              "RESOLVED_EXCLUSIVE_JOIN": exclusive_join,
+              "RESOLVED_ALLOWED_PLAYER_STEAM_IDS": allowed_player_steam_ids,
               "RESOLVED_AUTO_STOP_IDLE_SECONDS": str(config.get("auto_stop_idle_seconds", "1200") or ""),
               "RESOLVED_LOG_GROUP_NAME": str(config.get("log_group_name", "/ecs/arkse") or ""),
           }
@@ -271,6 +342,7 @@ jobs:
           export RESOLVED_DNS_HOSTNAME RESOLVED_ARK_IMAGE RESOLVED_CPU RESOLVED_MEMORY
           export RESOLVED_SERVER_NAME RESOLVED_MAP_NAME RESOLVED_MAX_PLAYERS
           export RESOLVED_GAME_PORT RESOLVED_GAME_PORT_2 RESOLVED_QUERY_PORT
+          export RESOLVED_EXCLUSIVE_JOIN RESOLVED_ALLOWED_PLAYER_STEAM_IDS
           export RESOLVED_AUTO_STOP_IDLE_SECONDS RESOLVED_LOG_GROUP_NAME STACK_NAME
 
           python3 - <<'PY'
@@ -295,6 +367,8 @@ jobs:
               {"ParameterKey": "GamePort", "ParameterValue": env("RESOLVED_GAME_PORT")},
               {"ParameterKey": "GamePort2", "ParameterValue": env("RESOLVED_GAME_PORT_2")},
               {"ParameterKey": "QueryPort", "ParameterValue": env("RESOLVED_QUERY_PORT")},
+              {"ParameterKey": "ExclusiveJoin", "ParameterValue": env("RESOLVED_EXCLUSIVE_JOIN")},
+              {"ParameterKey": "AllowedPlayerSteamIds", "ParameterValue": env("RESOLVED_ALLOWED_PLAYER_STEAM_IDS")},
               {"ParameterKey": "AutoStopIdleSeconds", "ParameterValue": env("RESOLVED_AUTO_STOP_IDLE_SECONDS")},
               {"ParameterKey": "LogGroupName", "ParameterValue": env("RESOLVED_LOG_GROUP_NAME")},
               {"ParameterKey": "AdminPassword", "ParameterValue": env("ARK_ADMIN_PASSWORD_SECRET")},
@@ -339,6 +413,8 @@ jobs:
               ParameterKey=GamePort,UsePreviousValue=true \
               ParameterKey=GamePort2,UsePreviousValue=true \
               ParameterKey=QueryPort,UsePreviousValue=true \
+              ParameterKey=ExclusiveJoin,UsePreviousValue=true \
+              ParameterKey=AllowedPlayerSteamIds,UsePreviousValue=true \
               ParameterKey=AdminPassword,UsePreviousValue=true \
               ParameterKey=ServerPassword,UsePreviousValue=true \
               ParameterKey=DiscordWebhookUrl,UsePreviousValue=true \
@@ -379,6 +455,8 @@ jobs:
               ParameterKey=GamePort,UsePreviousValue=true \
               ParameterKey=GamePort2,UsePreviousValue=true \
               ParameterKey=QueryPort,UsePreviousValue=true \
+              ParameterKey=ExclusiveJoin,UsePreviousValue=true \
+              ParameterKey=AllowedPlayerSteamIds,UsePreviousValue=true \
               ParameterKey=AdminPassword,UsePreviousValue=true \
               ParameterKey=ServerPassword,UsePreviousValue=true \
               ParameterKey=DiscordWebhookUrl,UsePreviousValue=true \

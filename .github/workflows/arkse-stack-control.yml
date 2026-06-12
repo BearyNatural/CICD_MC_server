@@ -174,7 +174,8 @@ jobs:
           if exclusive_join == "true" and not allowed_player_steam_ids:
               raise SystemExit(
                   "exclusive_join is true, but no Steam64 IDs were found in "
-                  "players[].steam_id or allowed_player_steam_ids."
+                  "the ARK_ALLOWED_PLAYER_STEAM_IDS secret, players[].steam_id, "
+                  "or allowed_player_steam_ids."
               )
 
           values = {
@@ -393,35 +394,88 @@ jobs:
         if: ${{ github.event.inputs.action == 'start' }}
         run: |
           set -euo pipefail
-          if ! aws cloudformation update-stack \
+
+          PARAMETERS_FILE="$RUNNER_TEMP/arkse-start-parameters.json"
+          EXISTING_PARAMETERS_FILE="$RUNNER_TEMP/arkse-start-existing-parameters.json"
+          DESIRED_SERVER_STATE="Running"
+          export PARAMETERS_FILE EXISTING_PARAMETERS_FILE DESIRED_SERVER_STATE
+          export RESOLVED_DNS_HOSTNAME RESOLVED_ARK_IMAGE RESOLVED_CPU RESOLVED_MEMORY
+          export RESOLVED_SERVER_NAME RESOLVED_MAP_NAME RESOLVED_MAX_PLAYERS
+          export RESOLVED_GAME_PORT RESOLVED_GAME_PORT_2 RESOLVED_QUERY_PORT
+          export RESOLVED_EXCLUSIVE_JOIN RESOLVED_ALLOWED_PLAYER_STEAM_IDS
+          export RESOLVED_AUTO_STOP_IDLE_SECONDS RESOLVED_LOG_GROUP_NAME
+
+          aws cloudformation describe-stacks \
             --stack-name "$STACK_NAME" \
-            --use-previous-template \
+            --query "Stacks[0].Parameters[].ParameterKey" \
+            --output json > "$EXISTING_PARAMETERS_FILE"
+
+          python3 - <<'PY'
+          import json
+          import os
+
+          def env(name):
+              return os.environ.get(name, "")
+
+          with open(env("EXISTING_PARAMETERS_FILE"), "r", encoding="utf-8") as existing_file:
+              existing_keys = set(json.load(existing_file))
+
+          previous_value_keys = [
+              "ECSClusterName",
+              "VpcId",
+              "SubnetId",
+              "AdminPassword",
+              "ServerPassword",
+              "DiscordWebhookUrl",
+          ]
+          missing = [key for key in previous_value_keys if key not in existing_keys]
+          if missing:
+              raise SystemExit(
+                  "Existing stack is missing required parameters that must use previous values: "
+                  + ", ".join(missing)
+              )
+
+          parameters = [
+              {"ParameterKey": "ServerState", "ParameterValue": env("DESIRED_SERVER_STATE")},
+              {"ParameterKey": "ECSClusterName", "UsePreviousValue": True},
+              {"ParameterKey": "VpcId", "UsePreviousValue": True},
+              {"ParameterKey": "SubnetId", "UsePreviousValue": True},
+              {"ParameterKey": "DnsHostname", "ParameterValue": env("RESOLVED_DNS_HOSTNAME")},
+              {"ParameterKey": "ArkImage", "ParameterValue": env("RESOLVED_ARK_IMAGE")},
+              {"ParameterKey": "Cpu", "ParameterValue": env("RESOLVED_CPU")},
+              {"ParameterKey": "Memory", "ParameterValue": env("RESOLVED_MEMORY")},
+              {"ParameterKey": "LogGroupName", "ParameterValue": env("RESOLVED_LOG_GROUP_NAME")},
+              {"ParameterKey": "ServerName", "ParameterValue": env("RESOLVED_SERVER_NAME")},
+              {"ParameterKey": "MapName", "ParameterValue": env("RESOLVED_MAP_NAME")},
+              {"ParameterKey": "MaxPlayers", "ParameterValue": env("RESOLVED_MAX_PLAYERS")},
+              {"ParameterKey": "GamePort", "ParameterValue": env("RESOLVED_GAME_PORT")},
+              {"ParameterKey": "GamePort2", "ParameterValue": env("RESOLVED_GAME_PORT_2")},
+              {"ParameterKey": "QueryPort", "ParameterValue": env("RESOLVED_QUERY_PORT")},
+              {"ParameterKey": "ExclusiveJoin", "ParameterValue": env("RESOLVED_EXCLUSIVE_JOIN")},
+              {"ParameterKey": "AllowedPlayerSteamIds", "ParameterValue": env("RESOLVED_ALLOWED_PLAYER_STEAM_IDS")},
+              {"ParameterKey": "AutoStopIdleSeconds", "ParameterValue": env("RESOLVED_AUTO_STOP_IDLE_SECONDS")},
+              {"ParameterKey": "AdminPassword", "UsePreviousValue": True},
+              {"ParameterKey": "ServerPassword", "UsePreviousValue": True},
+              {"ParameterKey": "DiscordWebhookUrl", "UsePreviousValue": True},
+          ]
+
+          with open(env("PARAMETERS_FILE"), "w", encoding="utf-8") as parameters_file:
+              json.dump(parameters, parameters_file)
+          PY
+
+          UPDATE_OUTPUT=$(aws cloudformation update-stack \
+            --stack-name "$STACK_NAME" \
+            --template-body "file://$RESOLVED_TEMPLATE_PATH" \
             --notification-arns "$ARKSE_NOTIFICATION_TOPIC_ARN" \
-            --parameters \
-              ParameterKey=ServerState,ParameterValue=Running \
-              ParameterKey=SubnetId,UsePreviousValue=true \
-              ParameterKey=VpcId,UsePreviousValue=true \
-              ParameterKey=ECSClusterName,UsePreviousValue=true \
-              ParameterKey=ArkImage,UsePreviousValue=true \
-              ParameterKey=Cpu,UsePreviousValue=true \
-              ParameterKey=Memory,UsePreviousValue=true \
-              ParameterKey=DnsHostname,UsePreviousValue=true \
-              ParameterKey=LogGroupName,UsePreviousValue=true \
-              ParameterKey=ServerName,UsePreviousValue=true \
-              ParameterKey=MapName,UsePreviousValue=true \
-              ParameterKey=MaxPlayers,UsePreviousValue=true \
-              ParameterKey=GamePort,UsePreviousValue=true \
-              ParameterKey=GamePort2,UsePreviousValue=true \
-              ParameterKey=QueryPort,UsePreviousValue=true \
-              ParameterKey=ExclusiveJoin,UsePreviousValue=true \
-              ParameterKey=AllowedPlayerSteamIds,UsePreviousValue=true \
-              ParameterKey=AdminPassword,UsePreviousValue=true \
-              ParameterKey=ServerPassword,UsePreviousValue=true \
-              ParameterKey=DiscordWebhookUrl,UsePreviousValue=true \
-              ParameterKey=AutoStopIdleSeconds,UsePreviousValue=true \
-            --capabilities CAPABILITY_NAMED_IAM; then
-            echo "No changes to apply or start update failed. Checking status..."
-          fi
+            --parameters "file://$PARAMETERS_FILE" \
+            --capabilities CAPABILITY_NAMED_IAM 2>&1) || {
+              if echo "$UPDATE_OUTPUT" | grep -q "No updates are to be performed"; then
+                echo "ArkSE stack already started and up to date."
+              else
+                echo "$UPDATE_OUTPUT"
+                exit 1
+              fi
+            }
 
           STATUS=$(aws cloudformation describe-stacks \
             --stack-name "$STACK_NAME" \
@@ -435,35 +489,88 @@ jobs:
         if: ${{ github.event.inputs.action == 'stop' }}
         run: |
           set -euo pipefail
-          if ! aws cloudformation update-stack \
+
+          PARAMETERS_FILE="$RUNNER_TEMP/arkse-stop-parameters.json"
+          EXISTING_PARAMETERS_FILE="$RUNNER_TEMP/arkse-stop-existing-parameters.json"
+          DESIRED_SERVER_STATE="Stopped"
+          export PARAMETERS_FILE EXISTING_PARAMETERS_FILE DESIRED_SERVER_STATE
+          export RESOLVED_DNS_HOSTNAME RESOLVED_ARK_IMAGE RESOLVED_CPU RESOLVED_MEMORY
+          export RESOLVED_SERVER_NAME RESOLVED_MAP_NAME RESOLVED_MAX_PLAYERS
+          export RESOLVED_GAME_PORT RESOLVED_GAME_PORT_2 RESOLVED_QUERY_PORT
+          export RESOLVED_EXCLUSIVE_JOIN RESOLVED_ALLOWED_PLAYER_STEAM_IDS
+          export RESOLVED_AUTO_STOP_IDLE_SECONDS RESOLVED_LOG_GROUP_NAME
+
+          aws cloudformation describe-stacks \
             --stack-name "$STACK_NAME" \
-            --use-previous-template \
+            --query "Stacks[0].Parameters[].ParameterKey" \
+            --output json > "$EXISTING_PARAMETERS_FILE"
+
+          python3 - <<'PY'
+          import json
+          import os
+
+          def env(name):
+              return os.environ.get(name, "")
+
+          with open(env("EXISTING_PARAMETERS_FILE"), "r", encoding="utf-8") as existing_file:
+              existing_keys = set(json.load(existing_file))
+
+          previous_value_keys = [
+              "ECSClusterName",
+              "VpcId",
+              "SubnetId",
+              "AdminPassword",
+              "ServerPassword",
+              "DiscordWebhookUrl",
+          ]
+          missing = [key for key in previous_value_keys if key not in existing_keys]
+          if missing:
+              raise SystemExit(
+                  "Existing stack is missing required parameters that must use previous values: "
+                  + ", ".join(missing)
+              )
+
+          parameters = [
+              {"ParameterKey": "ServerState", "ParameterValue": env("DESIRED_SERVER_STATE")},
+              {"ParameterKey": "ECSClusterName", "UsePreviousValue": True},
+              {"ParameterKey": "VpcId", "UsePreviousValue": True},
+              {"ParameterKey": "SubnetId", "UsePreviousValue": True},
+              {"ParameterKey": "DnsHostname", "ParameterValue": env("RESOLVED_DNS_HOSTNAME")},
+              {"ParameterKey": "ArkImage", "ParameterValue": env("RESOLVED_ARK_IMAGE")},
+              {"ParameterKey": "Cpu", "ParameterValue": env("RESOLVED_CPU")},
+              {"ParameterKey": "Memory", "ParameterValue": env("RESOLVED_MEMORY")},
+              {"ParameterKey": "LogGroupName", "ParameterValue": env("RESOLVED_LOG_GROUP_NAME")},
+              {"ParameterKey": "ServerName", "ParameterValue": env("RESOLVED_SERVER_NAME")},
+              {"ParameterKey": "MapName", "ParameterValue": env("RESOLVED_MAP_NAME")},
+              {"ParameterKey": "MaxPlayers", "ParameterValue": env("RESOLVED_MAX_PLAYERS")},
+              {"ParameterKey": "GamePort", "ParameterValue": env("RESOLVED_GAME_PORT")},
+              {"ParameterKey": "GamePort2", "ParameterValue": env("RESOLVED_GAME_PORT_2")},
+              {"ParameterKey": "QueryPort", "ParameterValue": env("RESOLVED_QUERY_PORT")},
+              {"ParameterKey": "ExclusiveJoin", "ParameterValue": env("RESOLVED_EXCLUSIVE_JOIN")},
+              {"ParameterKey": "AllowedPlayerSteamIds", "ParameterValue": env("RESOLVED_ALLOWED_PLAYER_STEAM_IDS")},
+              {"ParameterKey": "AutoStopIdleSeconds", "ParameterValue": env("RESOLVED_AUTO_STOP_IDLE_SECONDS")},
+              {"ParameterKey": "AdminPassword", "UsePreviousValue": True},
+              {"ParameterKey": "ServerPassword", "UsePreviousValue": True},
+              {"ParameterKey": "DiscordWebhookUrl", "UsePreviousValue": True},
+          ]
+
+          with open(env("PARAMETERS_FILE"), "w", encoding="utf-8") as parameters_file:
+              json.dump(parameters, parameters_file)
+          PY
+
+          UPDATE_OUTPUT=$(aws cloudformation update-stack \
+            --stack-name "$STACK_NAME" \
+            --template-body "file://$RESOLVED_TEMPLATE_PATH" \
             --notification-arns "$ARKSE_NOTIFICATION_TOPIC_ARN" \
-            --parameters \
-              ParameterKey=ServerState,ParameterValue=Stopped \
-              ParameterKey=SubnetId,UsePreviousValue=true \
-              ParameterKey=VpcId,UsePreviousValue=true \
-              ParameterKey=ECSClusterName,UsePreviousValue=true \
-              ParameterKey=ArkImage,UsePreviousValue=true \
-              ParameterKey=Cpu,UsePreviousValue=true \
-              ParameterKey=Memory,UsePreviousValue=true \
-              ParameterKey=DnsHostname,UsePreviousValue=true \
-              ParameterKey=LogGroupName,UsePreviousValue=true \
-              ParameterKey=ServerName,UsePreviousValue=true \
-              ParameterKey=MapName,UsePreviousValue=true \
-              ParameterKey=MaxPlayers,UsePreviousValue=true \
-              ParameterKey=GamePort,UsePreviousValue=true \
-              ParameterKey=GamePort2,UsePreviousValue=true \
-              ParameterKey=QueryPort,UsePreviousValue=true \
-              ParameterKey=ExclusiveJoin,UsePreviousValue=true \
-              ParameterKey=AllowedPlayerSteamIds,UsePreviousValue=true \
-              ParameterKey=AdminPassword,UsePreviousValue=true \
-              ParameterKey=ServerPassword,UsePreviousValue=true \
-              ParameterKey=DiscordWebhookUrl,UsePreviousValue=true \
-              ParameterKey=AutoStopIdleSeconds,UsePreviousValue=true \
-            --capabilities CAPABILITY_NAMED_IAM; then
-            echo "No changes to apply or stop update failed. Checking status..."
-          fi
+            --parameters "file://$PARAMETERS_FILE" \
+            --capabilities CAPABILITY_NAMED_IAM 2>&1) || {
+              if echo "$UPDATE_OUTPUT" | grep -q "No updates are to be performed"; then
+                echo "ArkSE stack already stopped and up to date."
+              else
+                echo "$UPDATE_OUTPUT"
+                exit 1
+              fi
+            }
 
           STATUS=$(aws cloudformation describe-stacks \
             --stack-name "$STACK_NAME" \

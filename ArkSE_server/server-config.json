@@ -37,7 +37,7 @@
         "game_port": "7777",
         "game_port_2": "7778",
         "query_port": "27015",
-        "exclusive_join": false,
+        "exclusive_join": true,
         "players": [
             {
                 "name": "BearyNatural",

@@ -12,6 +12,13 @@ Parameters:
     Description: "GitHub repository name (e.g., CICD_MC_server)"
     AllowedPattern: "^[a-zA-Z0-9-_.]+$"
 
+  GitHubRoleMaxSessionDuration:
+    Type: Number
+    Default: 43200
+    MinValue: 3600
+    MaxValue: 43200
+    Description: "Maximum session duration for the GitHub Actions role, in seconds. 43200 is 12 hours."
+
 Resources:
   GitHubOIDCProvider:
     Type: AWS::IAM::OIDCProvider
@@ -26,6 +33,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: GitHubActionsOIDCRole
+      MaxSessionDuration: !Ref GitHubRoleMaxSessionDuration
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:

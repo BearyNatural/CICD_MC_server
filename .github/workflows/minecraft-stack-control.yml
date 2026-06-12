@@ -73,6 +73,9 @@ env:
   AWS_REGION: ap-southeast-2
   ROLE_NAME: GitHubActionsOIDCRole
   ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  BACKUP_LINK_EXPIRES_SECONDS: "43200"
+  BACKUP_LINK_EXPIRES_HOURS: "12"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   control-stack:
@@ -524,8 +527,16 @@ jobs:
             exit 1
           fi
 
+      - name: Refresh AWS credentials for backup URL
+        if: ${{ github.event.inputs.action == 'stop' && github.event.inputs.include_backup_link == 'yes' }}
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-duration-seconds: ${{ env.BACKUP_LINK_EXPIRES_SECONDS }}
+
       - name: Resolve latest backup object from S3
-        if: ${{ github.event.inputs.action == 'stop' }}
+        if: ${{ github.event.inputs.action == 'stop' && github.event.inputs.include_backup_link == 'yes' }}
         run: |
           set -euo pipefail
           BUCKET_NAME=$(aws cloudformation list-stack-resources \
@@ -572,7 +583,7 @@ jobs:
 
           echo "Backup object key for download URL: $LATEST_KEY"
 
-          if ! BACKUP_URL=$(aws s3 presign "s3://$BUCKET_NAME/$LATEST_KEY" --expires-in 86400); then
+          if ! BACKUP_URL=$(aws s3 presign "s3://$BUCKET_NAME/$LATEST_KEY" --expires-in "$BACKUP_LINK_EXPIRES_SECONDS"); then
             echo "Failed to generate pre-signed URL for s3://$BUCKET_NAME/$LATEST_KEY."
             exit 0
           fi
@@ -632,7 +643,13 @@ jobs:
             exit 0
           fi
 
-          if [ -z "${LATEST_BACKUP_URL:-}" ]; then
+          INCLUDE_BACKUP_LINK='${{ github.event.inputs.include_backup_link }}'
+          BACKUP_LINK_DISABLED=false
+
+          if [ "$INCLUDE_BACKUP_LINK" != "yes" ]; then
+            BACKUP_LINK_DISABLED=true
+            LATEST_BACKUP_URL=""
+          elif [ -z "${LATEST_BACKUP_URL:-}" ]; then
             BUCKET_NAME="${LATEST_BACKUP_BUCKET:-}"
             LATEST_KEY="${LATEST_BACKUP_KEY:-${BACKUP_KEY:-}}"
 
@@ -652,7 +669,7 @@ jobs:
             fi
 
             if [ -n "$BUCKET_NAME" ] && [ "$BUCKET_NAME" != "None" ] && [ -n "$LATEST_KEY" ] && [ "$LATEST_KEY" != "None" ]; then
-              if BACKUP_URL=$(aws s3 presign "s3://$BUCKET_NAME/$LATEST_KEY" --expires-in 86400); then
+              if BACKUP_URL=$(aws s3 presign "s3://$BUCKET_NAME/$LATEST_KEY" --expires-in "$BACKUP_LINK_EXPIRES_SECONDS"); then
                 LATEST_BACKUP_BUCKET="$BUCKET_NAME"
                 LATEST_BACKUP_KEY="$LATEST_KEY"
                 LATEST_BACKUP_URL="$BACKUP_URL"
@@ -664,11 +681,18 @@ jobs:
             MSG=$(cat <<EOF
           Minecraft stack '${STACK_NAME}' stopped.
 
-          Backup download link (expires in 24 hours):
+          Backup download link (expires in up to ${BACKUP_LINK_EXPIRES_HOURS} hours):
           ${LATEST_BACKUP_URL}
 
           S3 object:
           s3://${LATEST_BACKUP_BUCKET}/${LATEST_BACKUP_KEY}
+          EOF
+          )
+          elif [ "$BACKUP_LINK_DISABLED" = "true" ]; then
+            MSG=$(cat <<EOF
+          Minecraft stack '${STACK_NAME}' stopped.
+
+          Backup task completed. Download link was disabled for this run.
           EOF
           )
           else

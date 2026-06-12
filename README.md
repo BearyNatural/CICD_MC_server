@@ -46,6 +46,8 @@ aws cloudformation create-stack \
   --capabilities CAPABILITY_NAMED_IAM
 ```
 
+The OIDC role is configured with a 12-hour maximum session duration so S3 backup links can last as long as possible without long-lived AWS access keys. If the stack already exists, update it with the current `oidc-iam-setup.yaml` before relying on backup links.
+
 Then attach permissions policy to the role:
 
 ```bash
@@ -123,8 +125,13 @@ Example `stack-config.json`:
         "memory": "2048",
         "cpu": "1024",
         "seed": "5685761492797",
-        "whitelist": "kaylene,BenBenGold",
-        "admin_player_names": "kaylene",
+        "whitelist": [
+            "kaylene",
+            "BenBenGold"
+        ],
+        "admin_player_names": [
+            "kaylene"
+        ],
         "log_group_name": "/ecs/minecraft5"
     }
 }
@@ -185,8 +192,10 @@ When you **stop** the server, GitHub Actions:
 1. Runs a backup ECS task
 2. Zips `/data/world` directory
 3. Uploads to S3: `s3://{stack-name}-{seed}/world_YYYYMMDDhhmmss.zip`
-4. Generates 24-hour pre-signed download URL
+4. Generates an S3 pre-signed download URL valid for up to 12 hours
 5. Posts download link in Discord
+
+S3 pre-signed URLs created with GitHub OIDC credentials cannot outlive the temporary AWS role session that created them. The workflow requests the AWS maximum role session of 12 hours before generating the Discord backup link.
 
 ### Manual Restore
 

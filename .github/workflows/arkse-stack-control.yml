@@ -211,16 +211,16 @@ jobs:
 
       - name: Ensure ArkSE AWS error notifier
         env:
-          DISCORD_WEBHOOK_URL_SECRET: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ARK_DISCORD_URL_SECRET: ${{ secrets.ARK_DISCORD_URL }}
         run: |
           set -euo pipefail
 
           if aws cloudformation describe-stacks --stack-name "$ARKSE_NOTIFIER_STACK_NAME" >/dev/null 2>&1; then
-            if [ -n "$DISCORD_WEBHOOK_URL_SECRET" ]; then
+            if [ -n "$ARK_DISCORD_URL_SECRET" ]; then
               UPDATE_OUTPUT=$(aws cloudformation update-stack \
                 --stack-name "$ARKSE_NOTIFIER_STACK_NAME" \
                 --template-body "file://ArkSE_server/CFN_ArkSENotifier.yaml" \
-                --parameters ParameterKey=DiscordWebhookUrl,ParameterValue="$DISCORD_WEBHOOK_URL_SECRET" \
+                --parameters ParameterKey=DiscordWebhookUrl,ParameterValue="$ARK_DISCORD_URL_SECRET" \
                 --capabilities CAPABILITY_NAMED_IAM 2>&1) || {
                   if echo "$UPDATE_OUTPUT" | grep -q "No updates are to be performed"; then
                     echo "ArkSE notifier stack already up to date."
@@ -252,15 +252,15 @@ jobs:
               aws cloudformation wait stack-update-complete --stack-name "$ARKSE_NOTIFIER_STACK_NAME"
             fi
           else
-            if [ -z "$DISCORD_WEBHOOK_URL_SECRET" ]; then
-              echo "Missing GitHub secret DISCORD_WEBHOOK_URL. It is required to create the AWS-side error notifier."
+            if [ -z "$ARK_DISCORD_URL_SECRET" ]; then
+              echo "Missing GitHub secret ARK_DISCORD_URL. It is required to create the AWS-side Ark error notifier."
               exit 1
             fi
 
             aws cloudformation create-stack \
               --stack-name "$ARKSE_NOTIFIER_STACK_NAME" \
               --template-body "file://ArkSE_server/CFN_ArkSENotifier.yaml" \
-              --parameters ParameterKey=DiscordWebhookUrl,ParameterValue="$DISCORD_WEBHOOK_URL_SECRET" \
+              --parameters ParameterKey=DiscordWebhookUrl,ParameterValue="$ARK_DISCORD_URL_SECRET" \
               --capabilities CAPABILITY_NAMED_IAM
 
             aws cloudformation wait stack-create-complete --stack-name "$ARKSE_NOTIFIER_STACK_NAME"
@@ -283,7 +283,7 @@ jobs:
         env:
           ARK_ADMIN_PASSWORD_SECRET: ${{ secrets.ARK_ADMIN_PASSWORD }}
           ARK_SERVER_PASSWORD_SECRET: ${{ secrets.ARK_SERVER_PASSWORD }}
-          DISCORD_WEBHOOK_URL_SECRET: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ARK_DISCORD_URL_SECRET: ${{ secrets.ARK_DISCORD_URL }}
         run: |
           set -euo pipefail
 
@@ -292,8 +292,8 @@ jobs:
             exit 1
           fi
 
-          if [ -z "$DISCORD_WEBHOOK_URL_SECRET" ]; then
-            echo "Missing GitHub secret DISCORD_WEBHOOK_URL. It is required for AWS-side Discord notifications."
+          if [ -z "$ARK_DISCORD_URL_SECRET" ]; then
+            echo "Missing GitHub secret ARK_DISCORD_URL. It is required for Ark AWS-side Discord notifications."
             exit 1
           fi
 
@@ -339,7 +339,7 @@ jobs:
           PARAMETERS_FILE="$RUNNER_TEMP/arkse-create-parameters.json"
           SERVER_STATE_ON_CREATE='${{ github.event.inputs.server_state_on_create }}'
           export PARAMETERS_FILE SERVER_STATE_ON_CREATE VPC_ID SUBNET_ID
-          export ARK_ADMIN_PASSWORD_SECRET ARK_SERVER_PASSWORD_SECRET DISCORD_WEBHOOK_URL_SECRET
+          export ARK_ADMIN_PASSWORD_SECRET ARK_SERVER_PASSWORD_SECRET ARK_DISCORD_URL_SECRET
           export RESOLVED_DNS_HOSTNAME RESOLVED_ARK_IMAGE RESOLVED_CPU RESOLVED_MEMORY
           export RESOLVED_SERVER_NAME RESOLVED_MAP_NAME RESOLVED_MAX_PLAYERS
           export RESOLVED_GAME_PORT RESOLVED_GAME_PORT_2 RESOLVED_QUERY_PORT
@@ -374,7 +374,7 @@ jobs:
               {"ParameterKey": "LogGroupName", "ParameterValue": env("RESOLVED_LOG_GROUP_NAME")},
               {"ParameterKey": "AdminPassword", "ParameterValue": env("ARK_ADMIN_PASSWORD_SECRET")},
               {"ParameterKey": "ServerPassword", "ParameterValue": env("ARK_SERVER_PASSWORD_SECRET")},
-              {"ParameterKey": "DiscordWebhookUrl", "ParameterValue": env("DISCORD_WEBHOOK_URL_SECRET")},
+              {"ParameterKey": "DiscordWebhookUrl", "ParameterValue": env("ARK_DISCORD_URL_SECRET")},
           ]
 
           with open(env("PARAMETERS_FILE"), "w", encoding="utf-8") as parameters_file:
@@ -393,7 +393,7 @@ jobs:
       - name: Start ArkSE stack
         if: ${{ github.event.inputs.action == 'start' }}
         env:
-          DISCORD_WEBHOOK_URL_SECRET: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ARK_DISCORD_URL_SECRET: ${{ secrets.ARK_DISCORD_URL }}
         run: |
           set -euo pipefail
 
@@ -406,7 +406,7 @@ jobs:
           export RESOLVED_GAME_PORT RESOLVED_GAME_PORT_2 RESOLVED_QUERY_PORT
           export RESOLVED_EXCLUSIVE_JOIN RESOLVED_ALLOWED_PLAYER_STEAM_IDS
           export RESOLVED_AUTO_STOP_IDLE_SECONDS RESOLVED_LOG_GROUP_NAME
-          export DISCORD_WEBHOOK_URL_SECRET
+          export ARK_DISCORD_URL_SECRET
 
           aws cloudformation describe-stacks \
             --stack-name "$STACK_NAME" \
@@ -430,7 +430,7 @@ jobs:
               "AdminPassword",
               "ServerPassword",
           ]
-          if not env("DISCORD_WEBHOOK_URL_SECRET"):
+          if not env("ARK_DISCORD_URL_SECRET"):
               previous_value_keys.append("DiscordWebhookUrl")
 
           missing = [key for key in previous_value_keys if key not in existing_keys]
@@ -462,8 +462,8 @@ jobs:
               {"ParameterKey": "AdminPassword", "UsePreviousValue": True},
               {"ParameterKey": "ServerPassword", "UsePreviousValue": True},
           ]
-          if env("DISCORD_WEBHOOK_URL_SECRET"):
-              parameters.append({"ParameterKey": "DiscordWebhookUrl", "ParameterValue": env("DISCORD_WEBHOOK_URL_SECRET")})
+          if env("ARK_DISCORD_URL_SECRET"):
+              parameters.append({"ParameterKey": "DiscordWebhookUrl", "ParameterValue": env("ARK_DISCORD_URL_SECRET")})
           else:
               parameters.append({"ParameterKey": "DiscordWebhookUrl", "UsePreviousValue": True})
 
@@ -496,7 +496,7 @@ jobs:
       - name: Stop ArkSE stack
         if: ${{ github.event.inputs.action == 'stop' }}
         env:
-          DISCORD_WEBHOOK_URL_SECRET: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ARK_DISCORD_URL_SECRET: ${{ secrets.ARK_DISCORD_URL }}
         run: |
           set -euo pipefail
 
@@ -509,7 +509,7 @@ jobs:
           export RESOLVED_GAME_PORT RESOLVED_GAME_PORT_2 RESOLVED_QUERY_PORT
           export RESOLVED_EXCLUSIVE_JOIN RESOLVED_ALLOWED_PLAYER_STEAM_IDS
           export RESOLVED_AUTO_STOP_IDLE_SECONDS RESOLVED_LOG_GROUP_NAME
-          export DISCORD_WEBHOOK_URL_SECRET
+          export ARK_DISCORD_URL_SECRET
 
           aws cloudformation describe-stacks \
             --stack-name "$STACK_NAME" \
@@ -533,7 +533,7 @@ jobs:
               "AdminPassword",
               "ServerPassword",
           ]
-          if not env("DISCORD_WEBHOOK_URL_SECRET"):
+          if not env("ARK_DISCORD_URL_SECRET"):
               previous_value_keys.append("DiscordWebhookUrl")
 
           missing = [key for key in previous_value_keys if key not in existing_keys]
@@ -565,8 +565,8 @@ jobs:
               {"ParameterKey": "AdminPassword", "UsePreviousValue": True},
               {"ParameterKey": "ServerPassword", "UsePreviousValue": True},
           ]
-          if env("DISCORD_WEBHOOK_URL_SECRET"):
-              parameters.append({"ParameterKey": "DiscordWebhookUrl", "ParameterValue": env("DISCORD_WEBHOOK_URL_SECRET")})
+          if env("ARK_DISCORD_URL_SECRET"):
+              parameters.append({"ParameterKey": "DiscordWebhookUrl", "ParameterValue": env("ARK_DISCORD_URL_SECRET")})
           else:
               parameters.append({"ParameterKey": "DiscordWebhookUrl", "UsePreviousValue": True})
 

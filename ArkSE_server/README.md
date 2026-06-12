@@ -9,7 +9,7 @@ Add these GitHub Actions secrets before creating the stack:
 | Secret Name | Required | Notes |
 |-------------|----------|-------|
 | `AWS_ACCOUNT_ID` | yes | Existing OIDC workflow secret |
-| `DISCORD_WEBHOOK_URL` | yes | Stored in AWS Lambda env so Discord messages come from AWS |
+| `ARK_DISCORD_URL` | yes | Ark-only Discord webhook, stored in AWS Lambda env so Ark messages come from AWS |
 | `ARK_ADMIN_PASSWORD` | yes | ARK admin password |
 | `ARK_SERVER_PASSWORD` | no | Optional join password |
 
@@ -102,4 +102,4 @@ Example:
 
 When `exclusive_join` is true, the workflow fails early if no Steam64 IDs are found in the configured GitHub secret or `players[].steam_id`.
 
-Keep passwords and webhooks in GitHub Secrets, not in the config file.
+Keep passwords, Steam IDs, and webhooks in GitHub Secrets, not in the config file. Minecraft still uses `DISCORD_WEBHOOK_URL`; Ark uses `ARK_DISCORD_URL`.

@@ -5,7 +5,7 @@ Parameters:
   DiscordWebhookUrl:
     Type: String
     NoEcho: true
-    Description: Discord webhook URL used by the notifier Lambda.
+    Description: Ark Discord webhook URL used by the notifier Lambda. Pass from the GitHub ARK_DISCORD_URL secret.
 
 Resources:
   ArkSECloudFormationNotifications:

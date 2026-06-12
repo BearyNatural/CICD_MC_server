@@ -17,7 +17,8 @@ Automated CloudFormation stack management for containerised game servers on AWS 
 
 - An AWS account (new or existing)
 - GitHub repository access with Actions enabled
-- Discord webhook URL for notifications
+- Discord webhook URL for Minecraft notifications
+- Optional separate Discord webhook URL for ARK notifications
 
 ### 1. Configure GitHub Repository Secrets (Do this first)
 
@@ -26,7 +27,8 @@ Before running any workflow/scripts, go to **Settings** -> **Secrets and variabl
 | Secret Name | Value | Notes |
 |-------------|-------|-------|
 | `AWS_ACCOUNT_ID` | Your 12-digit AWS account ID | Found in AWS Console top-right |
-| `DISCORD_WEBHOOK_URL` | Your Discord webhook URL | [Create webhook](https://discord.com/developers/applications) ||
+| `DISCORD_WEBHOOK_URL` | Minecraft Discord webhook URL | [Create webhook](https://discord.com/developers/applications) |
+| `ARK_DISCORD_URL` | ARK Discord webhook URL | Used by Ark AWS Lambda notifications |
 
 ### 2. Configure DNS record (No Route 53 required)
 
@@ -94,7 +96,7 @@ The repo also includes a separate ARK: Survival Evolved setup under `ArkSE_serve
 - Config profiles: `ArkSE_server/server-config.json`
 - Workflow: `.github/workflows/arkse-stack-control.yml`
 
-The ArkSE stack runs the dedicated server container on ECS Fargate, persists server data on EFS, wakes on UDP/game-query traffic to `arkserver.bearynatural.dev`, shuts down after 20 minutes with no players, and sends Discord notifications from AWS Lambda. It does not create an S3 backup bucket or send backup URLs.
+The ArkSE stack runs the dedicated server container on ECS Fargate, persists server data on EFS, wakes on UDP/game-query traffic to `arkserver.bearynatural.dev`, shuts down after 20 minutes with no players, and sends Discord notifications from AWS Lambda using the `ARK_DISCORD_URL` GitHub secret. It does not create an S3 backup bucket or send backup URLs.
 
 ### Create Stack
 
@@ -253,7 +255,7 @@ To restore a backup:
 
 ### Discord notification doesn't arrive
 
-- Verify `DISCORD_WEBHOOK_URL` secret is set in GitHub
+- Verify `DISCORD_WEBHOOK_URL` is set for Minecraft, or `ARK_DISCORD_URL` is set for ARK
 - Check workflow logs for curl errors
 - Ensure Discord webhook URL is still valid (webhooks can expire)
 

@@ -92,7 +92,7 @@ Parameters:
   DiscordWebhookUrl:
     Type: String
     NoEcho: true
-    Description: Discord webhook used by AWS Lambda notifications.
+    Description: Ark Discord webhook used by AWS Lambda notifications. Pass from the GitHub ARK_DISCORD_URL secret.
 
   AutoStopIdleSeconds:
     Type: String

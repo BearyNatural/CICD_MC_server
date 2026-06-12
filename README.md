@@ -66,7 +66,7 @@ aws iam put-role-policy \
    - **action:** `create`
    - **stack_name:** `my-minecraft-server`
     - **stack_config_profile:** `default`
-   - **template_path:** `CFN_FargateServer.yaml`
+   - **template_path:** `Minecraft_server/CFN_FargateServer.yaml`
     - **dns_hostname:** `mc-yourname.mooo.com`
     - **vpc_id:** optional (leave blank to auto-discover default VPC)
     - **subnet_id:** optional (leave blank to auto-discover subnet)
@@ -85,7 +85,7 @@ Creates a new CloudFormation stack for a Minecraft server.
 action: create
 stack_name: my-server
 stack_config_profile: default
-template_path: CFN_FargateServer.yaml
+template_path: Minecraft_server/CFN_FargateServer.yaml
 dns_hostname: mc-yourname.mooo.com
 vpc_id:
 subnet_id:
@@ -106,18 +106,19 @@ dns_hostname: mc-yourname.mooo.com
 
 ## Stack Config Profiles
 
-The workflow can load non-secret defaults from `stack-config.json` using `stack_config_profile`.
+The workflow can load non-secret defaults from `Minecraft_server/stack-config.json` using `stack_config_profile`.
 
 - Inputs override profile values.
 - Profile values override empty inputs.
 - Keep secrets in GitHub Secrets (for example `FREEDNS_UPDATE_URL`).
+- `include_backup_link: true` includes a pre-signed backup URL in stop notifications; `false` disables the URL.
 
-Example `stack-config.json`:
+Example `Minecraft_server/stack-config.json`:
 
 ```json
 {
     "default": {
-        "template_path": "CFN_FargateServer.yaml",
+        "template_path": "Minecraft_server/CFN_FargateServer.yaml",
         "dns_hostname": "your-server.example.com",
         "vpc_id": "",
         "subnet_id": "",
@@ -132,7 +133,8 @@ Example `stack-config.json`:
         "admin_player_names": [
             "kaylene"
         ],
-        "log_group_name": "/ecs/minecraft5"
+        "log_group_name": "/ecs/minecraft5",
+        "include_backup_link": true
     }
 }
 ```
@@ -144,7 +146,7 @@ Stops the server and runs backup task before shutdown.
 ```
 action: stop
 stack_name: my-server
-include_backup_link: yes
+include_backup_link: true
 ```
 
 ### Idle Auto-Shutdown
@@ -164,7 +166,7 @@ stack_name: my-server
 
 ## CloudFormation Templates
 
-### CFN_FargateServer.yaml
+### Minecraft_server/CFN_FargateServer.yaml
 
 Creates:
 - ECS Cluster & Fargate Service
@@ -175,10 +177,10 @@ Creates:
 - Optional FreeDNS metadata parameters for stable hostname reporting
 
 **Parameters:**
-- Non-sensitive server settings are managed in `stack-config.json` and passed on `create`.
-- Typical profile keys are `memory`, `cpu`, `seed`, `whitelist`, `admin_player_names`, `minecraft_image_tag`, `log_group_name`, and `dns_hostname`.
+- Non-sensitive server settings are managed in `Minecraft_server/stack-config.json` and passed on `create`.
+- Typical profile keys are `memory`, `cpu`, `seed`, `whitelist`, `admin_player_names`, `minecraft_image_tag`, `log_group_name`, `dns_hostname`, and `include_backup_link`.
 - `ServerState` is controlled by workflow action (`create` initial state, then `start` and `stop`).
-- Keep sensitive values out of `stack-config.json`. Use GitHub Secrets for `FREEDNS_UPDATE_URL`.
+- Keep sensitive values out of `Minecraft_server/stack-config.json`. Use GitHub Secrets for `FREEDNS_UPDATE_URL`.
 
 Workflow note:
 - `vpc_id` and `subnet_id` are optional workflow inputs for `create`.
@@ -270,10 +272,11 @@ Discord Webhook
 ```
 CICD_MC_server/
 ├── README.md                          # This file
-├── stack-config.json                  # Non-secret profile defaults for workflow
 ├── oidc-iam-setup.yaml               # CloudFormation for OIDC + IAM
 ├── github-actions-policy.json        # IAM permissions policy
-├── CFN_FargateServer.yaml            # Minecraft stack template
+├── Minecraft_server/
+│   ├── stack-config.json             # Non-secret profile defaults for workflow
+│   └── CFN_FargateServer.yaml        # Minecraft stack template
 ├── .github/workflows/
 │   └── minecraft-stack-control.yml   # GitHub Actions workflow
 └── .gitignore

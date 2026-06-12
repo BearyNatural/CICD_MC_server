@@ -1,6 +1,6 @@
 {
     "default": {
-        "template_path": "CFN_FargateServer.yaml",
+        "template_path": "Minecraft_server/CFN_FargateServer.yaml",
         "dns_hostname": "minecraft.bearynatural.dev",
         "vpc_id": "",
         "subnet_id": "",
@@ -16,10 +16,11 @@
         "admin_player_names": [
             "kaylene"
         ],
-        "log_group_name": "/ecs/minecraft1"
+        "log_group_name": "/ecs/minecraft1",
+        "include_backup_link": true
     },
     "dev": {
-        "template_path": "CFN_FargateServer.yaml",
+        "template_path": "Minecraft_server/CFN_FargateServer.yaml",
         "dns_hostname": "minecraft_test.bearynatural.dev",
         "vpc_id": "",
         "subnet_id": "",
@@ -33,6 +34,7 @@
         "admin_player_names": [
             "kaylene"
         ],
-        "log_group_name": "/ecs/minecraft_temp"
+        "log_group_name": "/ecs/minecraft_temp",
+        "include_backup_link": true
     }
 }

@@ -19,14 +19,14 @@ on:
         required: true
         type: string
       stack_config_profile:
-        description: "Configuration profile from stack-config.json"
+        description: "Configuration profile from Minecraft_server/stack-config.json"
         required: false
         default: "default"
         type: string
       template_path:
         description: "Template path for create action"
         required: false
-        default: "CFN_FargateServer.yaml"
+        default: "Minecraft_server/CFN_FargateServer.yaml"
         type: string
       dns_hostname:
         description: "Optional stable Minecraft hostname override"
@@ -59,11 +59,8 @@ on:
       include_backup_link:
         description: "Include latest S3 backup pre-signed URL in stop notification"
         required: false
-        default: "yes"
-        type: choice
-        options:
-          - yes
-          - no
+        default: true
+        type: boolean
 
 permissions:
   id-token: write
@@ -96,6 +93,7 @@ jobs:
           echo "STACK_NAME=${{ github.event.inputs.stack_name }}" >> "$GITHUB_ENV"
 
       - name: Resolve stack config profile
+        id: resolve-config
         run: |
           set -euo pipefail
 
@@ -105,6 +103,7 @@ jobs:
           INPUT_VPC='${{ github.event.inputs.vpc_id }}'
           INPUT_SUBNET='${{ github.event.inputs.subnet_id }}'
           INPUT_SEED='${{ github.event.inputs.seed }}'
+          INPUT_INCLUDE_BACKUP_LINK='${{ github.event.inputs.include_backup_link }}'
 
           RESOLVED_TEMPLATE="$INPUT_TEMPLATE"
           RESOLVED_DNS="$INPUT_DNS"
@@ -117,20 +116,35 @@ jobs:
           RESOLVED_WHITELIST=""
           RESOLVED_ADMIN_PLAYERS=""
           RESOLVED_LOG_GROUP_NAME=""
+          RESOLVED_INCLUDE_BACKUP_LINK="$INPUT_INCLUDE_BACKUP_LINK"
 
-          if [ -f "stack-config.json" ]; then
-            RESOLVED_TEMPLATE=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("template_path","") or ""))' "$PROFILE" "$INPUT_TEMPLATE")
-            RESOLVED_DNS=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("dns_hostname","") or ""))' "$PROFILE" "$INPUT_DNS")
-            RESOLVED_VPC=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("vpc_id","") or ""))' "$PROFILE" "$INPUT_VPC")
-            RESOLVED_SUBNET=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("subnet_id","") or ""))' "$PROFILE" "$INPUT_SUBNET")
-            RESOLVED_MINECRAFT_IMAGE_TAG=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("minecraft_image_tag","") or ""))' "$PROFILE")
-            RESOLVED_MEMORY=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("memory","") or ""))' "$PROFILE")
-            RESOLVED_CPU=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("cpu","") or ""))' "$PROFILE")
-            RESOLVED_SEED=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("seed","") or ""))' "$PROFILE" "$INPUT_SEED")
-            RESOLVED_WHITELIST=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); v=d.get(p,{}).get("whitelist","") or ""; print(",".join(v) if isinstance(v, list) else str(v))' "$PROFILE")
-            RESOLVED_ADMIN_PLAYERS=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); v=d.get(p,{}).get("admin_player_names","") or ""; print(",".join(v) if isinstance(v, list) else str(v))' "$PROFILE")
-            RESOLVED_LOG_GROUP_NAME=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("log_group_name","") or ""))' "$PROFILE")
+          if [ -f "Minecraft_server/stack-config.json" ]; then
+            RESOLVED_TEMPLATE=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("template_path","") or ""))' "$PROFILE" "$INPUT_TEMPLATE")
+            RESOLVED_DNS=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("dns_hostname","") or ""))' "$PROFILE" "$INPUT_DNS")
+            RESOLVED_VPC=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("vpc_id","") or ""))' "$PROFILE" "$INPUT_VPC")
+            RESOLVED_SUBNET=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("subnet_id","") or ""))' "$PROFILE" "$INPUT_SUBNET")
+            RESOLVED_MINECRAFT_IMAGE_TAG=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("minecraft_image_tag","") or ""))' "$PROFILE")
+            RESOLVED_MEMORY=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("memory","") or ""))' "$PROFILE")
+            RESOLVED_CPU=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("cpu","") or ""))' "$PROFILE")
+            RESOLVED_SEED=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); print(i or str(d.get(p,{}).get("seed","") or ""))' "$PROFILE" "$INPUT_SEED")
+            RESOLVED_WHITELIST=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); v=d.get(p,{}).get("whitelist","") or ""; print(",".join(v) if isinstance(v, list) else str(v))' "$PROFILE")
+            RESOLVED_ADMIN_PLAYERS=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); v=d.get(p,{}).get("admin_player_names","") or ""; print(",".join(v) if isinstance(v, list) else str(v))' "$PROFILE")
+            RESOLVED_LOG_GROUP_NAME=$(python3 -c 'import json,sys; p=sys.argv[1]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); print(str(d.get(p,{}).get("log_group_name","") or ""))' "$PROFILE")
+            RESOLVED_INCLUDE_BACKUP_LINK=$(python3 -c 'import json,sys; p=sys.argv[1]; i=sys.argv[2]; d=json.load(open("Minecraft_server/stack-config.json","r",encoding="utf-8")); v=d.get(p,{}).get("include_backup_link",""); print(i or str(v if v is not None else ""))' "$PROFILE" "$INPUT_INCLUDE_BACKUP_LINK")
           fi
+
+          case "$(echo "${RESOLVED_INCLUDE_BACKUP_LINK:-true}" | tr '[:upper:]' '[:lower:]')" in
+            true|yes|1|on)
+              RESOLVED_INCLUDE_BACKUP_LINK="true"
+              ;;
+            false|no|0|off)
+              RESOLVED_INCLUDE_BACKUP_LINK="false"
+              ;;
+            *)
+              echo "Invalid include_backup_link value: '$RESOLVED_INCLUDE_BACKUP_LINK'. Use true or false."
+              exit 1
+              ;;
+          esac
 
           echo "RESOLVED_TEMPLATE_PATH=$RESOLVED_TEMPLATE" >> "$GITHUB_ENV"
           echo "RESOLVED_DNS_HOSTNAME=$RESOLVED_DNS" >> "$GITHUB_ENV"
@@ -143,10 +157,13 @@ jobs:
           echo "RESOLVED_WHITELIST=$RESOLVED_WHITELIST" >> "$GITHUB_ENV"
           echo "RESOLVED_ADMIN_PLAYER_NAMES=$RESOLVED_ADMIN_PLAYERS" >> "$GITHUB_ENV"
           echo "RESOLVED_LOG_GROUP_NAME=$RESOLVED_LOG_GROUP_NAME" >> "$GITHUB_ENV"
+          echo "RESOLVED_INCLUDE_BACKUP_LINK=$RESOLVED_INCLUDE_BACKUP_LINK" >> "$GITHUB_ENV"
+          echo "include_backup_link=$RESOLVED_INCLUDE_BACKUP_LINK" >> "$GITHUB_OUTPUT"
 
           echo "Using config profile: $PROFILE"
           echo "Resolved template path: $RESOLVED_TEMPLATE"
           echo "Resolved DNS hostname: ${RESOLVED_DNS:-<none>}"
+          echo "Include backup link: $RESOLVED_INCLUDE_BACKUP_LINK"
 
       - name: Create stack
         if: ${{ github.event.inputs.action == 'create' }}
@@ -528,7 +545,7 @@ jobs:
           fi
 
       - name: Refresh AWS credentials for backup URL
-        if: ${{ github.event.inputs.action == 'stop' && github.event.inputs.include_backup_link == 'yes' }}
+        if: ${{ github.event.inputs.action == 'stop' && steps.resolve-config.outputs.include_backup_link == 'true' }}
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE_NAME }}
@@ -536,7 +553,7 @@ jobs:
           role-duration-seconds: ${{ env.BACKUP_LINK_EXPIRES_SECONDS }}
 
       - name: Resolve latest backup object from S3
-        if: ${{ github.event.inputs.action == 'stop' && github.event.inputs.include_backup_link == 'yes' }}
+        if: ${{ github.event.inputs.action == 'stop' && steps.resolve-config.outputs.include_backup_link == 'true' }}
         run: |
           set -euo pipefail
           BUCKET_NAME=$(aws cloudformation list-stack-resources \
@@ -643,10 +660,10 @@ jobs:
             exit 0
           fi
 
-          INCLUDE_BACKUP_LINK='${{ github.event.inputs.include_backup_link }}'
+          INCLUDE_BACKUP_LINK="${RESOLVED_INCLUDE_BACKUP_LINK:-true}"
           BACKUP_LINK_DISABLED=false
 
-          if [ "$INCLUDE_BACKUP_LINK" != "yes" ]; then
+          if [ "$INCLUDE_BACKUP_LINK" != "true" ]; then
             BACKUP_LINK_DISABLED=true
             LATEST_BACKUP_URL=""
           elif [ -z "${LATEST_BACKUP_URL:-}" ]; then

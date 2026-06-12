@@ -183,7 +183,7 @@ jobs:
               "RESOLVED_DNS_HOSTNAME": pick("INPUT_DNS", "dns_hostname", "arkserver.bearynatural.dev"),
               "RESOLVED_VPC_ID": pick("INPUT_VPC", "vpc_id"),
               "RESOLVED_SUBNET_ID": pick("INPUT_SUBNET", "subnet_id"),
-              "RESOLVED_ARK_IMAGE": str(config.get("ark_image", "renegademaster/ark-se-dedicated-server:latest") or ""),
+              "RESOLVED_ARK_IMAGE": str(config.get("ark_image", "renegademaster/ark-se-dedicated-server:1.0.0") or ""),
               "RESOLVED_CPU": str(config.get("cpu", "4096") or ""),
               "RESOLVED_MEMORY": str(config.get("memory", "8192") or ""),
               "RESOLVED_SERVER_NAME": str(config.get("server_name", "BearyNaturalArk") or ""),

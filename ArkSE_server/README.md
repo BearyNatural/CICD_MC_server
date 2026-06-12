@@ -50,7 +50,7 @@ stack_name: my-ark-server
 
 ## Runtime Behavior
 
-- The ARK server runs as `renegademaster/ark-se-dedicated-server:latest`.
+- The ARK server runs as `renegademaster/ark-se-dedicated-server:1.0.0`.
 - ARK data is persisted on EFS. No S3 backup bucket or backup URL is created.
 - UDP ports `7777`, `7778`, and `27015` are exposed through a Network Load Balancer.
 - `arkserver.bearynatural.dev` should point at the stack output `ArkLoadBalancerDNS`.

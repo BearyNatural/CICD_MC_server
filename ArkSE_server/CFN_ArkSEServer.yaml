@@ -22,7 +22,7 @@ Parameters:
 
   ArkImage:
     Type: String
-    Default: renegademaster/ark-se-dedicated-server:latest
+    Default: renegademaster/ark-se-dedicated-server:1.0.0
 
   Cpu:
     Type: String
